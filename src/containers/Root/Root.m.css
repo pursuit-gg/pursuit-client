@@ -1,0 +1,8 @@
+.wrapper {
+  text-align: center;
+  background-color: #F5F5F5;
+  min-height: 100vh;
+  color: #636161;
+  display: flex;
+  justify-content: center;
+}

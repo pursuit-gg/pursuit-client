@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 30 30" style="enable-background:new 0 0 30 30;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#A1CF69;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:0.25;stroke-miterlimit:10;}
+	.st2{fill:#7FAA46;}
+	.st3{clip-path:url(#SVGID_2_);fill:#ED5766;}
+	.st4{display:none;}
+	.st5{display:inline;}
+	.st6{fill:#56C6D2;}
+</style>
+<g id="Layer_1">
+	<circle class="st0" cx="15" cy="15" r="15"/>
+	<path class="st1" d="M21.1,16.9"/>
+	<path class="st1" d="M8.6,16.9"/>
+	<path class="st1" d="M21.1,19.2"/>
+	<path class="st1" d="M8.6,19.2"/>
+	<path class="st1" d="M21.1,21.8"/>
+	<path class="st1" d="M8.6,21.8"/>
+</g>
+<g id="Layer_4">
+	<path class="st2" d="M20.7,5.3l9,6.8C29.9,13,30,14,30,15c0,7.5-5.5,13.7-12.7,14.8l-8.6-6.1l1.9-18.4H20.7z"/>
+</g>
+<g id="Layer_5">
+	<g>
+		<defs>
+			<path id="SVGID_1_" d="M8.8,23.8c-0.2-0.2-0.3-0.5-0.3-0.7V6.9c0-1,0.9-1.9,2.1-1.9h8.8c1.1,0,2.1,0.8,2.1,1.9v16.3
+				c0,0.2-0.1,0.5-0.3,0.7C21.1,24,20.9,24,20.6,24c-0.1,0-0.2,0-0.3-0.1l-5.3-4l-5.3,4C9.7,24,9.6,24,9.5,24C9.3,24,9,24,8.8,23.8z
+				"/>
+		</defs>
+		<clipPath id="SVGID_2_">
+			<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+		</clipPath>
+		<rect x="3.6" y="0" class="st3" width="23" height="29"/>
+	</g>
+</g>
+<g id="Layer_3" class="st4">
+	<g class="st5">
+		<g>
+			<path class="st6" d="M4.6,10.6v8.9c0,0.9,0.7,1.6,1.6,1.6l0,0h17c0.9,0,1.6-0.7,1.6-1.6l0,0v-8.9H4.6z M12.9,18v-4.2l3.7,2.1
+				L12.9,18z"/>
+			<polygon class="st6" points="8.8,6.7 6.9,10.1 9.8,10.1 11.8,6.7 			"/>
+			<path class="st6" d="M4.6,8.4v1.7h1.6l1.9-3.4H6.2C5.3,6.7,4.6,7.5,4.6,8.4z"/>
+			<polygon class="st6" points="12.4,6.7 10.5,10.1 13.4,10.1 15.4,6.7 			"/>
+			<path class="st6" d="M23.2,6.7l-1.9,3.3h3.6V8.4C24.9,7.5,24.1,6.7,23.2,6.7z"/>
+			<polygon class="st6" points="16,6.7 14.1,10.1 17.1,10.1 19,6.7 			"/>
+			<polygon class="st6" points="19.6,6.7 17.7,10.1 20.7,10.1 22.6,6.7 			"/>
+		</g>
+	</g>
+</g>
+</svg>

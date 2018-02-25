@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.2 (43514) - http://www.bohemiancoding.com/sketch -->
+    <title>pursuit history copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbol" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Pursuit-History--Empty-State" transform="translate(-104.000000, -40.000000)" fill-rule="nonzero">
+            <g id="pursuit-history-copy" transform="translate(104.000000, 40.000000)">
+                <g id="Layer_1">
+                    <circle id="Oval" fill="#F37586" cx="25" cy="25" r="25"></circle>
+                    <path d="M49.5,20.1666667 C49.8333333,21.6666667 50,23.3333333 50,25 C50,37.5 40.8333333,47.8333333 28.8333333,49.6666667 L8.83333333,34.8333333 L7.5,20.6666667 L7.5,14 L11.8333333,11 L37.5,11 L40.8333333,12.1666667 L49.5,20.1666667 Z" id="Shape" fill="#ED5565"></path>
+                </g>
+                <g id="Layer_3" transform="translate(6.666667, 10.000000)" fill="#76C4E0">
+                    <g id="Group">
+                        <path d="M1,7.66666667 L1,22.5 C1,24 2.16666667,25.1666667 3.66666667,25.1666667 L3.66666667,25.1666667 L32,25.1666667 C33.5,25.1666667 34.6666667,24 34.6666667,22.5 L34.6666667,22.5 L34.6666667,7.66666667 L1,7.66666667 Z M14.8333333,20 L14.8333333,13 L21,16.5 L14.8333333,20 Z" id="Shape"></path>
+                        <polygon id="Shape" points="8 1.16666667 4.83333333 6.83333333 9.66666667 6.83333333 13 1.16666667"></polygon>
+                        <path d="M1,4 L1,6.83333333 L3.66666667,6.83333333 L6.83333333,1.16666667 L3.66666667,1.16666667 C2.16666667,1.16666667 1,2.5 1,4 Z" id="Shape"></path>
+                        <polygon id="Shape" points="14 1.16666667 10.8333333 6.83333333 15.6666667 6.83333333 19 1.16666667"></polygon>
+                        <path d="M32,1.16666667 L28.8333333,6.66666667 L34.8333333,6.66666667 L34.8333333,4 C34.8333333,2.5 33.5,1.16666667 32,1.16666667 Z" id="Shape"></path>
+                        <polygon id="Shape" points="20 1.16666667 16.8333333 6.83333333 21.8333333 6.83333333 25 1.16666667"></polygon>
+                        <polygon id="Shape" points="26 1.16666667 22.8333333 6.83333333 27.8333333 6.83333333 31 1.16666667"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,82 @@
+.wrapper {
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.header {
+  margin: 25px 0px;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #A6A8AB;;
+}
+
+.headerText {
+  display: inline-block;
+  margin-bottom: 5px;
+  margin-left: 44px;
+}
+
+.xIcon {
+  padding: 2px;
+  height: 20px;
+}
+
+.xIconWrapper {
+  display: inline-block;
+  height: 24px;
+  margin-right: 20px;
+  margin-bottom: 5px;
+  float: right;
+  cursor: pointer;
+}
+
+.settingWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.settingText {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.checkbox {
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  background-color: #FFFFFF;
+  border: 1px solid #A6A8AB;
+}
+
+.checkbox:after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 4px;
+  background: transparent;
+  top: 4px;
+  left: 3px;
+  border: 3px solid #FFF;
+  border-top: none;
+  border-right: none;
+  transform: rotate(-45deg);
+}
+
+.checkbox:checked {
+  background-color: #4FC1E9;
+  border: 1px solid #4FC1E9;
+}
+
+.checkbox:focus {
+  outline: none;
+}
+
+.buttonWrapper {
+  margin-top: 40px;
+}
+

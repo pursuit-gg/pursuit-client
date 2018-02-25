@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="45px" height="45px" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/sadface</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 45 45 45 45 0 0 0"></polygon>
+    </defs>
+    <g id="Symbol" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon/sadface">
+            <g id="1f615">
+                <g id="g10" transform="translate(22.500000, 22.500000) scale(-1, 1) rotate(-180.000000) translate(-22.500000, -22.500000) ">
+                    <g id="g12">
+                        <g id="g14-Clipped">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="path18"></g>
+                            <g id="g14" mask="url(#mask-2)" fill-rule="nonzero">
+                                <g id="g20" fill="#FFCC4D">
+                                    <path d="M45,22.5 C45,10.07375 34.92625,0 22.5,0 C10.075,0 0,10.07375 0,22.5 C0,34.925 10.075,45 22.5,45 C34.92625,45 45,34.925 45,22.5" id="path22"></path>
+                                </g>
+                                <g id="g24" transform="translate(11.250000, 19.375000)" fill="#664500">
+                                    <path d="M6.25,5 C6.25,2.5825 4.85125,0.625 3.125,0.625 C1.39875,0.625 0,2.5825 0,5 C0,7.41625 1.39875,9.375 3.125,9.375 C4.85125,9.375 6.25,7.41625 6.25,5" id="path26"></path>
+                                </g>
+                                <g id="g28" transform="translate(27.500000, 19.375000)" fill="#664500">
+                                    <path d="M6.25,5 C6.25,2.5825 4.85125,0.625 3.125,0.625 C1.39875,0.625 0,2.5825 0,5 C0,7.41625 1.39875,9.375 3.125,9.375 C4.85125,9.375 6.25,7.41625 6.25,5" id="path30"></path>
+                                </g>
+                                <g id="g32" transform="translate(15.000000, 10.000000)" fill="#664500">
+                                    <path d="M0,0 C2.5,6.25 16.25,6.25 16.25,3.75 C16.25,2.5 6.25,5 0,0" id="path34"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

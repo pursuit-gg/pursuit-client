@@ -1,0 +1,82 @@
+.wrapper {
+  width: 400px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.orangeBackground {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  background: linear-gradient(180deg, #FC8A23 0%, #D5560E 100%);
+  color: #FFFFFF;
+}
+
+.logo {
+
+}
+
+.welcomeMessage {
+  width: 100%;
+  margin-top: 60px;
+  margin-bottom: 120px
+}
+
+.title {
+  width: 100%;
+  margin-top: 30px;
+  min-height: 72px;
+}
+
+.imageWrapper {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.imageScale {
+  max-width: 400px;
+  max-height: 400px;
+  box-shadow: 0px 2px 4px 2px rgba(0,0,0,0.5);
+}
+
+.arrow {
+  position: absolute;
+  right: 4px;
+  top: -32px;
+  height: 250px;
+}
+
+.circle {
+  border: 1px solid #48CFAD;
+  height: 9px;
+  width: 9px;
+  border-radius: 9px;
+  background-color: transparent;
+  margin-left: 2px;
+  margin-right: 2px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.active {
+  background-color: #48CFAD;
+}
+
+.faintLink {
+  color: #646464;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-decoration: underline;
+  display: inline-block;
+}

@@ -1,0 +1,18 @@
+.errorTitle {
+  margin-bottom: 10px;
+}
+
+.wrapper {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.sadFace {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  display: block;
+}

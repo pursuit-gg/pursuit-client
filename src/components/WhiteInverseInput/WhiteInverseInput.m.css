@@ -1,0 +1,21 @@
+.wrapper {
+  margin-bottom: 35px;
+  text-align: left;
+}
+
+.label {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.outlinedInput {
+  border: 1px solid #D8D8D8;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-radius: 4px;
+  color: #636161;
+  padding: 10px 10px;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 13px;
+}

@@ -1,0 +1,86 @@
+<html>
+  <p> Upload Captures </p>
+  <script type="text/javascript" src="../awsSettings.js"></script>
+  <script type="text/javascript">
+    const AWS = require('aws-sdk');
+    const ipc = require('electron').ipcRenderer;
+    const fs = require('fs-extra');
+    const tar = require('tar');
+    const PassThrough = require('stream').PassThrough;
+
+    // set the default config object
+    AWS.config.region = AWS_REGION;
+    const creds = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: AWS_IDENTITY_POOL_ID,
+    });
+    AWS.config.credentials = creds;
+    let uploadTries = 0;
+
+    function deleteFolder(folder, userId) {
+      fs.remove(folder, (removeErr) => {
+        if (removeErr) {
+          console.error(removeErr);
+        }
+        ipc.send('capture-folder-upload-finished', folder, userId);
+        window.close();
+      });
+    }
+
+    function uploadFolder(folder, userId) {
+      console.log(folder);
+      uploadTries += 1;
+      fs.pathExists(folder, (err, exists) => {
+        if (err) {
+          console.error(err);
+          ipc.send('capture-folder-upload-error', folder, userId, err);
+          if (uploadTries < 5) {
+            setTimeout(() => uploadFolder(folder, userId), 3000);
+          } else {
+            deleteFolder(folder, userId);
+          }
+          return;
+        } else if (!exists) {
+          ipc.send('capture-folder-upload-finished', folder, userId);
+          window.close();
+          return;
+        }
+        const folderName = folder.match(/[\\/]([^\\/]+)$/)[1];
+        const uploadKey = `packed/${userId}/${folderName}.tar.gz`;
+        console.log('pre zip');
+        const passThrough = new PassThrough();
+        tar.create({ gzip: true }, [folder]).pipe(passThrough);
+        console.log('post zip');
+        const params = {
+          Bucket: AWS_S3_CAPTURE_BUCKET,
+          Key: uploadKey,
+          ContentType: 'application/x-compressed-tar',
+          Body: passThrough,
+          ACL: 'private',
+        };
+        console.log('upload');
+        const upload = new AWS.S3.ManagedUpload({ params });
+        upload.on('httpUploadProgress', (progress) => {
+          ipc.send('capture-folder-uploading', folder, userId, progress);
+        }).send((uploadErr, uploadData) => {
+          if (uploadErr) {
+            console.error(uploadErr);
+            ipc.send('capture-folder-upload-error', folder, userId, uploadErr);
+            if (uploadTries < 40) {
+              setTimeout(() => uploadFolder(folder, userId), 3000);
+            } else {
+              deleteFolder(folder, userId);
+            }
+          } else {
+            console.log(uploadData);
+            deleteFolder(folder, userId);
+          }
+        });
+      });
+    }
+
+    ipc.on('upload', (event, folder, userId) => {
+      console.log('upload', folder, userId);
+      uploadFolder(folder, userId);
+    });
+  </script>
+</html>

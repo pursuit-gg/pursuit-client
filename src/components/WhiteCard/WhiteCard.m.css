@@ -1,0 +1,12 @@
+.wrapper {
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 4px 0 #BBBDBF;
+}
+
+.fullPadding {
+  padding: 30px;
+}
+
+.slimPadding {
+  padding: 5px;
+}

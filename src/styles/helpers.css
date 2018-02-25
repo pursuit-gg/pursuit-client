@@ -1,0 +1,68 @@
+/* Text */
+.bold {
+  font-weight: 700;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.underline {
+  text-decoration: underline;
+}
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.italic {
+  font-style: italic;
+}
+
+/* Display */
+.inlineBlock {
+  display: inline-block;
+}
+.inline {
+  display: inline;
+}
+.block {
+  display: block;
+}
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+.spaceBetween {
+  justify-content: space-between;
+}
+
+/* Positioning */
+.clear {
+  clear: both;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+  text-align: right;
+}
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
+
+.center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.noScroll {
+  overflow: hidden;
+}

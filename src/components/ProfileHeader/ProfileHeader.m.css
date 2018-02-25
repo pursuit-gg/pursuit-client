@@ -1,0 +1,108 @@
+.header {
+  opacity: 1;
+  color: #FFFFFF;
+  position: fixed;
+  background-color: #504F4F;
+  width: 100%;
+  z-index: 3;
+  top: 0px;
+  left: 0px;
+  text-align: left;
+}
+
+.logo {
+  height: 28px;
+  margin: 6px 30px;
+  vertical-align: top;
+}
+
+.dropdown {
+  float: right;
+  text-align: right;
+  padding-right: 45px;
+  position: relative;
+  display: inline-block;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  padding-left: 25px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #FFFFFF;
+  min-width: 120px;
+  box-shadow: 0 2px 4px 1px #BBBDBF;
+  z-index: 2;
+  right: 20px;
+  top: 40px;
+  text-align: left;
+  padding: 8px 5px;
+  border-radius: 0px 0px 4px 4px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  padding: 8px 5px;
+  display: block;
+}
+
+.triangleDown {
+  width: 0; 
+  height: 0; 
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #FFF;
+  position: absolute;
+  right: 25px;
+  bottom: 17px;
+}
+
+.update {
+  float: right;
+  text-align: right;
+  position: relative;
+  display: inline-block;
+  padding: 7px 10px;
+}
+
+.update:focus {
+  outline: none;
+}
+
+.update:hover .updateDropdown {
+  display: block;
+}
+
+.updateDropdown {
+  display: none;
+  position: absolute;
+  background-color: #FFFFFF;
+  min-width: 130px;
+  box-shadow: 0 2px 4px 1px #BBBDBF;
+  z-index: 2;
+  right: -5px;
+  top: 40px;
+  text-align: left;
+  padding: 8px 5px;
+  border-radius: 0px 0px 4px 4px;
+}
+
+.updateDropdown a {
+  padding: 8px 5px;
+  display: block;
+}
+
+.lightbulb {
+  height: 18px;
+}
+
+.lightbulbBackground {
+  background-color: #ED5565;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 4px;
+}

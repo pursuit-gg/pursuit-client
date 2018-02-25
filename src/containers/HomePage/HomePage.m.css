@@ -1,0 +1,97 @@
+.wrapper {
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  padding-bottom: 143px;
+}
+
+.title {
+  margin-top: 10px;
+  padding-bottom: 5px;
+  text-align: center;
+  border-bottom: 1px solid #A6A8AB;
+}
+
+.statusIcon {
+  display: inline-block;
+  height: 60px;
+  width: 60px;
+}
+
+.statusWrapper {
+  margin-top: 20px;
+  margin-left: 10px;
+  min-height: 70px;
+}
+
+.statusText {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 18px;
+  margin-left: 10px;
+}
+
+.tipWrapper {
+  padding: 10px;
+  margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
+  width: 300px;
+  text-align: center;
+  border-radius: 4px;
+  border: 1px solid #46C1A6;
+}
+
+.toggleWrapper {
+  vertical-align: top;
+  float: right;
+  margin-right: 35px;
+}
+
+.capturePreviewWrapper {
+
+}
+
+.showPreview:hover {
+  text-decoration: none;
+  color: #636161;
+}
+
+.dropdownTriangle {
+  height: 6px;
+  padding: 4px;
+  margin: 0px 4px;
+  vertical-align: top;
+}
+
+.troubleshootWrapper {
+  padding: 10px 20px;
+  color: #FFFFFF;
+  background-color: #636161;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+}
+
+.troubleshootTitle {
+  display: inline-block;
+  letter-spacing: 4px;
+  border-bottom: 3px solid #DB6955;
+  margin-bottom: 10px;
+}
+
+.troubleshoot {
+  margin-bottom: 5px;
+}
+
+.troubleshootButton {
+  text-align: center;
+  padding-top: 5px;
+}
+
+.troubleshootLink {
+  color: #61BFE1;
+}

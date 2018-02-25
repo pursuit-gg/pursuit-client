@@ -1,0 +1,12 @@
+.wrapper {
+  width: 175px;
+  height: 98px;
+  background-color: #E5E6E7;
+  border: 1px solid #636161;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
