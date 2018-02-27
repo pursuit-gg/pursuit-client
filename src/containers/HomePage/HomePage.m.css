@@ -54,9 +54,9 @@
 
 }
 
-.showPreview:hover {
-  text-decoration: none;
-  color: #636161;
+.showPreview {
+  text-decoration: underline;
+  color: #61BFE1;
 }
 
 .dropdownTriangle {

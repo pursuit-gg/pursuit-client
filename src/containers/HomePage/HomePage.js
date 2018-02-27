@@ -71,12 +71,7 @@ class HomePage extends Component {
               className="inlineBlock"
               onClick={() => this.setState({ showPreview: !this.state.showPreview })}
             >
-              Capture Preview
-              {this.state.showPreview ?
-                <img src={collapse} alt="collapse" styleName="dropdownTriangle" />
-                :
-                <img src={open} alt="open" styleName="dropdownTriangle" />
-              }
+              {this.state.showPreview ? 'Hide Capture Preview' : 'Show Capture Preview'}
             </a>
           </h5>
           {this.state.showPreview && <CapturePreview />}
