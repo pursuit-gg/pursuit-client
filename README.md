@@ -46,3 +46,6 @@ Pursuit.gg Desktop Client
   To create an unsigned version, change the following in package.json then run ```npm run dist``` again:
   - ```forceCodeSigning: true``` *->* ```forceCodeSigning: false```
   - ```"dist:win": "export CSC_LINK=~/Dev/codesigning/WindowsCodeSigningCert.p12; read -s -p \"Certificate Password: \" certPassword; export CSC_KEY_PASSWORD=\"$certPassword\"; build --win``` *->* ```"dist:win": build --win"```
+
+## Acknowledgements
+The pursuit client is built on top of <a className="blueLink" href="https://github.com/jp9000/obs-studio" target="_blank"> OBS Studio </a> and the <a className="blueLink" href="https://github.com/stream-labs/obs-studio-node" target="_blank"> OBS Studio Node Wrapper </a>. The hard work done by the OBS and Streamlabs teams enables us to be compatible with many different systems and minimize our performance impact.
