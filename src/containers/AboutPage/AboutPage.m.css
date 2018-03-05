@@ -40,6 +40,11 @@
   margin-bottom: 15px;
 }
 
+.acknowledgements {
+  margin-bottom: 10px;
+  margin-top: 30px;
+}
+
 .underlinedLink {
   text-decoration: underline;
 }
@@ -55,4 +60,8 @@
 
 .socialIcon {
   display: inline-block;
+}
+
+.otherLinks {
+  margin-top: 30px;
 }
