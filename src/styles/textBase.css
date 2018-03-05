@@ -50,3 +50,9 @@ a:hover {
   color: #61BFE1;
   text-decoration: underline;
 }
+
+.largeText {
+  font-size: 14px;
+  line-height: 16px;
+}
+

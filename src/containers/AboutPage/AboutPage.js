@@ -23,7 +23,7 @@ const AboutPage = () => (
     <div styleName="pursuitInfo">
       <h3 className="bold"> Pursuit Client</h3>
       <h5 styleName="linkSpacing"> v{appVersion}</h5>
-      <h5 styleName="openSourceInfo"> The Pursuit client is open source
+      <h5 className="largeText"> The Pursuit client is open source
       and available on <a
         styleName="underlinedLink"
         onClick={(e) => {
@@ -32,7 +32,7 @@ const AboutPage = () => (
         }}
       >Github </a>
       </h5>
-      <h3 styleName="acknowledgements"> Acknowledgements </h3>
+      <h5 className="bold" styleName="acknowledgements"> Acknowledgements </h5>
       <h5>
         The Pursuit client is built on top of
         <a
