@@ -87,9 +87,14 @@
   margin-bottom: 5px;
 }
 
-.troubleshootButton {
+.troubleshootButtons {
   text-align: center;
   padding-top: 5px;
+}
+
+.troubleshootButton {
+  display: inline-block;
+  padding: 0px 5px;
 }
 
 .troubleshootLink {

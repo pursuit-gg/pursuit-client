@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import './DefaultButton.m.css';
 
-
 const getStyles = (outline, slim, color, stateDisable, spacedHz) => {
   let styles = slim ? 'slim ' : 'basic ';
   styles = `${styles}${stateDisable ? 'greyDisable ' : ''}`;

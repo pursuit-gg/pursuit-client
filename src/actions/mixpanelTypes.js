@@ -4,4 +4,4 @@ export const MP_ONBOARDING_NEXT = 'Onboarding - Next';
 export const MP_ONBOARDING_SKIP = 'Onboarding - Skip';
 export const MP_ONBOARDING_CHANGE_SCREEN = 'Onboarding - Change Screen';
 
-export const MP_HOME_PAGE_LOAD = 'Home Page Load';
+export const MP_CLIENT_LOAD = 'Client Load';

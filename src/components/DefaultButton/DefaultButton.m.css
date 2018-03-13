@@ -127,3 +127,22 @@
 .solidAqua:focus {
   outline:0;
 }
+
+.solidBurple {
+  background-color: #7289DA;
+  border: 0px;
+  color: #FFF;
+}
+
+.solidBurple:hover {
+  background-color: #8C9DD8;
+}
+
+.solidBurple:active {
+  box-shadow: inset 0 2px 1px 0 rgba(0,0,0,0.10); 
+  background-color: #8C9DD8;
+}
+
+.solidBurple:focus {
+  outline:0;
+}

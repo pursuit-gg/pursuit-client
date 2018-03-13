@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
-import { MP_HOME_PAGE_LOAD } from 'actions/mixpanelTypes';
+import { MP_CLIENT_LOAD } from 'actions/mixpanelTypes';
 import ManualCaptureUploadToggle from 'components/ManualCaptureUploadToggle/ManualCaptureUploadToggle';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import UploadButton from 'components/UploadButton/UploadButton';
@@ -28,7 +28,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    mixpanel.track(MP_HOME_PAGE_LOAD, {
+    mixpanel.track(MP_CLIENT_LOAD, {
       username: this.props.user.username,
       user_id: this.props.user.id,
     });
@@ -132,15 +132,29 @@ class HomePage extends Component {
               electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot`);
             }}
           >troubleshooting</a>.</h5>
-          <div styleName="troubleshootButton">
-            <DefaultButton
-              text="Contact Us"
-              color="Aqua"
-              onClick={(e) => {
-                e.preventDefault();
-                electron.shell.openExternal('mailto:support@pursuit.gg');
-              }}
-            />
+          <div styleName="troubleshootButtons">
+            <div styleName="troubleshootButton">
+              <DefaultButton
+                text="Email Us"
+                color="Aqua"
+                styles={{width: '175px'}}
+                onClick={(e) => {
+                  e.preventDefault();
+                  electron.shell.openExternal('mailto:support@pursuit.gg');
+                }}
+              />
+            </div>
+            <div styleName="troubleshootButton">
+              <DefaultButton
+                text="Join Our Discord"
+                color="Burple"
+                styles={{width: '175px'}}
+                onClick={(e) => {
+                  e.preventDefault();
+                  electron.shell.openExternal('https://discord.gg/wqymsEZ');
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
