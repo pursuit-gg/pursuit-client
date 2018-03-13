@@ -15,8 +15,6 @@ import notTracking from 'images/captureStatusIcons/notTracking.png';
 import upToDate from 'images/captureStatusIcons/upToDate.png';
 import uploading from 'images/captureStatusIcons/uploading.png';
 import error from 'images/captureStatusIcons/error.png';
-import collapse from 'images/genericIcons/upArrow.svg';
-import open from 'images/genericIcons/downArrow.svg';
 import './HomePage.m.css';
 
 const electron = window.require('electron');
@@ -137,7 +135,7 @@ class HomePage extends Component {
               <DefaultButton
                 text="Email Us"
                 color="Aqua"
-                styles={{width: '175px'}}
+                styles={{ width: '175px' }}
                 onClick={(e) => {
                   e.preventDefault();
                   electron.shell.openExternal('mailto:support@pursuit.gg');
@@ -148,7 +146,7 @@ class HomePage extends Component {
               <DefaultButton
                 text="Join Our Discord"
                 color="Burple"
-                styles={{width: '175px'}}
+                styles={{ width: '175px' }}
                 onClick={(e) => {
                   e.preventDefault();
                   electron.shell.openExternal('https://discord.gg/wqymsEZ');
