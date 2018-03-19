@@ -9,9 +9,10 @@ import {
   CAPTURE_UPLOAD_ERRORED,
 } from 'actions/types';
 
-export function captureStarted() {
+export function captureStarted(scaleRes) {
   return {
     type: CAPTURE_STARTED,
+    scaleRes,
   };
 }
 

@@ -11,6 +11,7 @@ import {
 
 const INITIAL_STATE = {
   capturing: false,
+  scaleRes: '1920x1080',
   uploadQueue: [],
   currentUpload: null,
   latestUploadAt: null,
@@ -22,6 +23,7 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         capturing: true,
+        scaleRes: action.scaleRes || state.scaleRes,
       };
     case CAPTURE_STOPPED:
       return {

@@ -48,8 +48,8 @@ class RequireAuthContainer extends Component {
     ipcRenderer.on('capture-folder-upload-error', (event, folder, userId, uploadErr) => {
       this.props.captureUploadErrored(folder, userId, uploadErr);
     });
-    ipcRenderer.on('start-capture', (event, userId) => {
-      this.props.captureStarted();
+    ipcRenderer.on('start-capture', (event, scaleRes) => {
+      this.props.captureStarted(scaleRes);
     });
     ipcRenderer.on('stop-capture', (event) => {
       this.props.captureStopped();
@@ -134,8 +134,8 @@ const mapDispatchToProps = dispatch => ({
   goLogin: () => {
     dispatch(push('/login'));
   },
-  captureStarted: () => {
-    dispatch(captureStarted());
+  captureStarted: (scaleRes) => {
+    dispatch(captureStarted(scaleRes));
   },
   captureStopped: () => {
     dispatch(captureStopped());
