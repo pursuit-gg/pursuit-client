@@ -21,18 +21,35 @@ let captureWindow;
 let trackerWindow;
 
 let obsInput;
+let obsScene;
+let obsSceneItem;
 let obsOutput;
 let obsDisplayInfo = {
   name: 'Overwatch Display',
   show: false,
   capturing: false,
-  width: 175,
-  height: 98,
+  width: 174,
+  height: 99,
   x: 0,
   y: 0,
+  scaleRes: '1920x1080',
+  changingRes: false,
 };
+let resTrackingInterval;
 
 app.disableHardwareAcceleration();
+
+function updateOBSSettings(setting, changes) {
+  const obsSettings = nodeObs.OBS_settings_getSettings(setting);
+  for (const group of obsSettings) {
+    for (const obsSetting of group.parameters) {
+      if (changes[obsSetting.name] !== undefined) {
+        obsSetting.currentValue = changes[obsSetting.name];
+      }
+    }
+  }
+  nodeObs.OBS_settings_saveSettings(setting, obsSettings);
+}
 
 function setupOBSCapture() {
   if (process.platform !== 'win32') {
@@ -45,55 +62,32 @@ function setupOBSCapture() {
     ),
   );
   nodeObs.OBS_API_initAPI(path.join(app.getPath('userData'), 'obs-client'));
-  let obsSettings = nodeObs.OBS_settings_getSettings('Video');
-  for (const group of obsSettings) {
-    for (const obsSetting of group.parameters) {
-      if (obsSetting.name === 'Base') {
-        obsSetting.currentValue = '1920x1080';
-      }
-      if (obsSetting.name === 'Output') {
-        obsSetting.currentValue = '1920x1080';
-      }
-      if (obsSetting.name === 'FPSType') {
-        obsSetting.currentValue = 'Fractional FPS Value';
-      }
-    }
-  }
-  nodeObs.OBS_settings_saveSettings('Video', obsSettings);
-  obsSettings = nodeObs.OBS_settings_getSettings('Video');
-  for (const group of obsSettings) {
-    for (const obsSetting of group.parameters) {
-      if (obsSetting.name === 'FPSNum') {
-        obsSetting.currentValue = 1;
-      }
-      if (obsSetting.name === 'FPSDen') {
-        obsSetting.currentValue = 2;
-      }
-    }
-  }
-  nodeObs.OBS_settings_saveSettings('Video', obsSettings);
-
-  obsSettings = nodeObs.OBS_settings_getSettings('Advanced');
-  for (const group of obsSettings) {
-    for (const obsSetting of group.parameters) {
-      if (obsSetting.name === 'ColorFormat') {
-        obsSetting.currentValue = 'RGB';
-      }
-    }
-  }
-  nodeObs.OBS_settings_saveSettings('Advanced', obsSettings);
+  updateOBSSettings('Video', {
+    Base: '1920x1080',
+    Output: '1920x1080',
+    FPSType: 'Fractional FPS Value',
+  });
+  updateOBSSettings('Video', {
+    FPSNum: 1,
+    FPSDen: 2,
+  });
+  updateOBSSettings('Advanced', {
+    ColorFormat: 'RGB',
+  });
   nodeObs.OBS_service_resetVideoContext();
 
+  obsScene = nodeObs.Scene.create('Overwatch Capture Scene');
   const settings = {
     capture_mode: 'window',
     window: 'Overwatch:TankWindowClass:Overwatch.exe',
     priority: 2,
     limit_framerate: true,
-    force_scaling: true,
-    scale_res: '1920x1080',
+    force_scaling: false,
+    scale_res: '0x0',
   };
   obsInput = nodeObs.Input.create('game_capture', 'Overwatch Capture', settings);
-  nodeObs.Global.setOutputSource(0, obsInput);
+  obsSceneItem = obsScene.add(obsInput);
+  nodeObs.Global.setOutputSource(0, obsScene.source);
   obsOutput = nodeObs.Output.create(
     'frame_output',
     'Frame Output',
@@ -108,9 +102,15 @@ function destroyOBSCapture() {
   if (process.platform !== 'win32') {
     return;
   }
+  if (resTrackingInterval) {
+    clearInterval(resTrackingInterval);
+    resTrackingInterval = undefined;
+  }
   obsOutput.release();
   nodeObs.Global.setOutputSource(0, null);
+  obsSceneItem.remove();
   obsInput.release();
+  obsScene.source.release();
   nodeObs.OBS_API_destroyOBS_API();
 }
 
@@ -295,15 +295,69 @@ ipcMain.on('capture-folder-upload-error', (event, folder, userId, uploadErr) => 
 });
 
 ipcMain.on('start-capture', (event, userId) => {
+  if (!resTrackingInterval) {
+    resTrackingInterval = setInterval(() => {
+      const width = obsInput.width;
+      const height = obsInput.height;
+      if (width !== 0 && height !== 0) {
+        let xScale = 1;
+        let yScale = 1;
+        if (width / height > 2.38) { // 43:18
+          obsDisplayInfo.scaleRes = '2580x1080';
+          xScale = 2580 / width;
+          yScale = 1080 / height;
+        } else if (width / height > 2.1) { // 64:27
+          obsDisplayInfo.scaleRes = '2560x1080';
+          xScale = 2560 / width;
+          yScale = 1080 / height;
+        } else if (width / height > 1.7) { // 16:9
+          obsDisplayInfo.scaleRes = '1920x1080';
+          xScale = 1920 / width;
+          yScale = 1080 / height;
+        } else if (width / height > 1.5) { // 16:10
+          obsDisplayInfo.scaleRes = '1920x1200';
+          xScale = 1920 / width;
+          yScale = 1200 / height;
+        } else if (width / height > 1.2) { // 4:3
+          obsDisplayInfo.scaleRes = '1920x1440';
+          xScale = 1920 / width;
+          yScale = 1440 / height;
+        }
+        const newScale = { x: xScale, y: yScale };
+        if (obsSceneItem.scale !== newScale) {
+          obsSceneItem.scale = newScale;
+        }
+        if (`${obsScene.source.width}x${obsScene.source.height}` !== obsDisplayInfo.scaleRes && !obsDisplayInfo.changingRes) {
+          obsDisplayInfo.changingRes = true;
+          obsOutput.stop();
+          updateOBSSettings('Video', {
+            Base: obsDisplayInfo.scaleRes,
+            Output: obsDisplayInfo.scaleRes,
+          });
+          if (resTrackingInterval) {
+            if (mainWindow) {
+              mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
+            }
+            obsOutput.start();
+          }
+          obsDisplayInfo.changingRes = false;
+        }
+      }
+    }, 500);
+  }
   if (captureWindow) {
     captureWindow.webContents.send('start-capture', userId);
     if (mainWindow) {
-      mainWindow.webContents.send('start-capture', userId);
+      mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
     }
   }
 });
 
 ipcMain.on('stop-capture', () => {
+  if (resTrackingInterval) {
+    clearInterval(resTrackingInterval);
+    resTrackingInterval = undefined;
+  }
   if (captureWindow) {
     captureWindow.webContents.send('stop-capture');
     if (mainWindow) {
