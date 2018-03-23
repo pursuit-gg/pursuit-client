@@ -9,6 +9,7 @@ import { MP_CLIENT_LOAD } from 'actions/mixpanelTypes';
 import ManualCaptureUploadToggle from 'components/ManualCaptureUploadToggle/ManualCaptureUploadToggle';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import UploadButton from 'components/UploadButton/UploadButton';
+import UploadProgressBar from 'components/UploadProgressBar/UploadProgressBar';
 import CapturePreview from 'components/CapturePreview/CapturePreview';
 import tracking from 'images/captureStatusIcons/tracking.png';
 import notTracking from 'images/captureStatusIcons/notTracking.png';
@@ -114,6 +115,7 @@ class HomePage extends Component {
             </div>
           </div>
         }
+        <UploadProgressBar />
         <div styleName="tipWrapper">
           <p> Once you finish a match, it should appear in <br />your match history within 10 minutes. </p>
         </div>
