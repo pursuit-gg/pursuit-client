@@ -50,30 +50,39 @@
         const passThrough = new PassThrough();
         tar.create({ gzip: true }, [folder]).pipe(passThrough);
         console.log('post zip');
-        const params = {
-          Bucket: AWS_S3_CAPTURE_BUCKET,
-          Key: uploadKey,
-          ContentType: 'application/x-compressed-tar',
-          Body: passThrough,
-          ACL: 'private',
-        };
-        console.log('upload');
-        const upload = new AWS.S3.ManagedUpload({ params });
-        upload.on('httpUploadProgress', (progress) => {
-          ipc.send('capture-folder-uploading', folder, userId, progress);
-        }).send((uploadErr, uploadData) => {
-          if (uploadErr) {
-            console.error(uploadErr);
-            ipc.send('capture-folder-upload-error', folder, userId, uploadErr);
-            if (uploadTries < 40) {
-              setTimeout(() => uploadFolder(folder, userId), 3000);
+        const bufs = [];
+        passThrough.on('data', data => bufs.push(data));
+        passThrough.on('end', () => {
+          const buf = Buffer.concat(bufs);
+          const params = {
+            Bucket: AWS_S3_CAPTURE_BUCKET,
+            Key: uploadKey,
+            ContentType: 'application/x-compressed-tar',
+            Body: buf,
+            ACL: 'private',
+          };
+          console.log('upload');
+          const upload = new AWS.S3.ManagedUpload({ params, queueSize: 1 });
+          let loaded = 0;
+          upload.on('httpUploadProgress', (progress) => {
+            console.log(progress);
+            ipc.send('capture-folder-uploading', folder, userId, (loaded / progress.total) * 100);
+            loaded = progress.loaded;
+          }).send((uploadErr, uploadData) => {
+            if (uploadErr) {
+              console.error(uploadErr);
+              ipc.send('capture-folder-upload-error', folder, userId, uploadErr);
+              if (uploadTries < 40) {
+                setTimeout(() => uploadFolder(folder, userId), 3000);
+              } else {
+                setTimeout(() => deleteFolder(folder, userId), 500);
+              }
             } else {
-              deleteFolder(folder, userId);
+              console.log(uploadData);
+              ipc.send('capture-folder-uploading', folder, userId, 100);
+              setTimeout(() => deleteFolder(folder, userId), 1000);
             }
-          } else {
-            console.log(uploadData);
-            deleteFolder(folder, userId);
-          }
+          });
         });
       });
     }

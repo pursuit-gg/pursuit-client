@@ -1,0 +1,26 @@
+.wrapper {
+  text-align: center;
+  margin: 0px 10px;
+}
+
+.progressBackground {
+  height: 20px;
+  width: 100%;
+  border-radius: 4px;
+  background-color: #A6A8AB;
+  overflow: hidden;
+  margin: 5px 0px;
+}
+
+.progressBar {
+  height: 20px;
+  background-color: #48CFAD;
+}
+
+.progressError {
+  height: 20px;
+  width: 100%;
+  border-radius: 4px;
+  background-color: #ED5565;
+  overflow: hidden;
+}
