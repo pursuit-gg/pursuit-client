@@ -6,8 +6,6 @@ import mixpanel from 'mixpanel-browser';
 
 import {
   MP_ONBOARDING_NEXT,
-  MP_ONBOARDING_SKIP,
-  MP_ONBOARDING_CHANGE_SCREEN,
 } from 'actions/mixpanelTypes';
 import { setOnboardingComplete } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
@@ -18,27 +16,16 @@ import arrow from 'images/onboarding/arrow.svg';
 import './OnboardingPage.m.css';
 
 const stepTitles = [
-  'Make sure Pursuit is running when you play Overwatch.',
-  'Toggle off auto uploading if you are experiencing latency or performance issues.',
+  'When Overwatch is running the tracking icon will turn from grey to blue.',
+  'Upload your matches after your session, or set Pursuit to upload them automatically.',
 ];
 
 class OnboardingPage extends Component {
   constructor(props) {
     super(props);
     this.state = { step: 1 };
-    this.setStep = this.setStep.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.goToHome = this.goToHome.bind(this);
-  }
-
-  setStep(step) {
-    mixpanel.track(MP_ONBOARDING_CHANGE_SCREEN, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
-      current_step: this.state.step,
-      next_step: step,
-    });
-    this.setState({ step });
   }
 
   nextStep() {
@@ -50,9 +37,8 @@ class OnboardingPage extends Component {
     this.setState({ step: this.state.step + 1 });
   }
 
-  goToHome(skip) {
-    const eventName = skip ? MP_ONBOARDING_SKIP : MP_ONBOARDING_NEXT;
-    mixpanel.track(eventName, {
+  goToHome() {
+    mixpanel.track(MP_ONBOARDING_NEXT, {
       username: this.props.user.username,
       user_id: this.props.user.id,
       step: this.state.step,
@@ -84,6 +70,9 @@ class OnboardingPage extends Component {
       <div styleName="wrapper">
         <img styleName="logo" src={logoLarge} alt="Pursuit" />
         <h2 styleName="title"> {stepTitles[this.state.step - 2]} </h2>
+        {this.state.step === 3 &&
+          <h5 styleName="notice"> (this may cause ping spikes with slower internet connections) </h5>
+        }
         <div styleName="imageWrapper">
           {this.state.step === 3 &&
             <img
@@ -110,10 +99,11 @@ class OnboardingPage extends Component {
             onClick={() => this.goToHome(false)}
           />
         }
-        <p> <a styleName="faintLink" onClick={() => this.goToHome(true)}> Skip </a> </p>
-        <div styleName={this.state.step === 1 ? 'circle active' : 'circle'} onClick={() => this.setStep(1)} />
-        <div styleName={this.state.step === 2 ? 'circle active' : 'circle'} onClick={() => this.setStep(2)} />
-        <div styleName={this.state.step === 3 ? 'circle active' : 'circle'} onClick={() => this.setStep(3)} />
+        <div styleName="indicators">
+          <div styleName={this.state.step === 1 ? 'circle active' : 'circle'} />
+          <div styleName={this.state.step === 2 ? 'circle active' : 'circle'} />
+          <div styleName={this.state.step === 3 ? 'circle active' : 'circle'} />
+        </div>
       </div>
     );
   }
