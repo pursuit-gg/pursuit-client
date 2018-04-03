@@ -119,7 +119,7 @@ function createWindow() {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 775,
+    minHeight: 725,
     icon: path.join(__dirname, 'icon.png'),
     backgroundColor: '#F5F5F5',
   });

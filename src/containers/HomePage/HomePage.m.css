@@ -3,7 +3,7 @@
   margin-left: auto;
   margin-right: auto;
   text-align: left;
-  padding-bottom: 143px;
+  padding-bottom: 92px;
 }
 
 .title {
@@ -76,15 +76,12 @@
   left: 0px;
 }
 
-.troubleshootTitle {
-  display: inline-block;
-  letter-spacing: 4px;
-  border-bottom: 3px solid #DB6955;
-  margin-bottom: 10px;
-}
-
 .troubleshoot {
   margin-bottom: 5px;
+  text-align: center;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .troubleshootButtons {
@@ -95,8 +92,4 @@
 .troubleshootButton {
   display: inline-block;
   padding: 0px 5px;
-}
-
-.troubleshootLink {
-  color: #61BFE1;
 }

@@ -120,27 +120,18 @@ class HomePage extends Component {
           <p> Once you finish a match, it should appear in <br />your match history within 10 minutes. </p>
         </div>
         <div styleName="troubleshootWrapper">
-          <h3 styleName="troubleshootTitle" className="uppercase"> Ping Issues? </h3>
           <h5 styleName="troubleshoot">
-            Try turning auto upload off and manually upload your matches at the end of your session.
+            If you are having any issues, see our troubleshooting or contact us on Discord.
           </h5>
-          <h5 styleName="troubleshoot"> If you are seeing inaccurate matches, see our <a
-            styleName="troubleshootLink"
-            className="underline inlineBlock"
-            onClick={(e) => {
-              e.preventDefault();
-              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot`);
-            }}
-          >troubleshooting</a>.</h5>
           <div styleName="troubleshootButtons">
             <div styleName="troubleshootButton">
               <DefaultButton
-                text="Email Us"
+                text="Troubleshooting"
                 color="Aqua"
                 styles={{ width: '175px' }}
                 onClick={(e) => {
                   e.preventDefault();
-                  electron.shell.openExternal('mailto:support@pursuit.gg');
+                  electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot`);
                 }}
               />
             </div>
