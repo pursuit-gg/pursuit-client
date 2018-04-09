@@ -7,7 +7,7 @@ import {
 
 const INITIAL_STATE = {
   updateAvailable: false,
-  manualCaptureUpload: false,
+  manualCaptureUpload: true,
   onboardingComplete: false,
   launchOnStartup: true,
 };
