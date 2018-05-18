@@ -66,7 +66,7 @@ function setupOBSCapture() {
       'node_modules/@streamlabs/obs-studio-node',
     ),
   );
-  nodeObs.OBS_API_initAPI(path.join(app.getPath('userData'), 'obs-client'));
+  nodeObs.OBS_API_initAPI('en-US', path.join(app.getPath('userData'), 'obs-client'));
   updateOBSSettings('Video', {
     Base: '1920x1080',
     Output: '1920x1080',
@@ -338,15 +338,17 @@ ipcMain.on('sign-in', (event, userId) => {
 ipcMain.on('sign-out', (event, userId) => {
   userInfo.userId = null;
 
-  // perform stop-capture event logic
-  if (resTrackingInterval) {
-    clearInterval(resTrackingInterval);
-    resTrackingInterval = undefined;
-  }
-  if (captureWindow) {
-    captureWindow.webContents.send('stop-capture');
-    if (mainWindow) {
-      mainWindow.webContents.send('stop-capture');
+  if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
+    // perform stop-capture event logic
+    if (resTrackingInterval) {
+      clearInterval(resTrackingInterval);
+      resTrackingInterval = undefined;
+    }
+    if (captureWindow) {
+      captureWindow.webContents.send('stop-capture');
+      if (mainWindow) {
+        mainWindow.webContents.send('stop-capture');
+      }
     }
   }
 });

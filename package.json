@@ -50,7 +50,7 @@
     "dist": "npm run dist:win"
   },
   "dependencies": {
-    "@streamlabs/obs-studio-node": "https://github.com/stream-labs/obs-studio-node/releases/download/v0.0.34/iojs-v2.0.1-signed.tar.gz",
+    "@streamlabs/obs-studio-node": "https://github.com/stream-labs/obs-studio-node/releases/download/v0.0.35/iojs-v2.0.1-signed.tar.gz",
     "aws-sdk": "^2.212.1",
     "babel-plugin-react-css-modules": "^2.7.1",
     "datejs": "^1.0.0-rc3",
