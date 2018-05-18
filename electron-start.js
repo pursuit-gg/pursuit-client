@@ -19,6 +19,7 @@ const url = require('url');
 let mainWindow;
 let captureWindow;
 let trackerWindow;
+let trackCapturesWindow;
 
 let obsInput;
 let obsScene;
@@ -36,6 +37,10 @@ let obsDisplayInfo = {
   changingRes: false,
 };
 let resTrackingInterval;
+let userInfo = {
+  userId: null,
+  externalOBSCapture: null,
+};
 
 app.disableHardwareAcceleration();
 
@@ -141,20 +146,39 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
-    if (trackerWindow) {
-      trackerWindow.webContents.send('close');
+    if (trackCapturesWindow === null) {
+      trackCapturesWindow.webContents.send('close');
     }
-    if (captureWindow) {
-      captureWindow.webContents.send('close');
+    if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
+      if (trackerWindow) {
+        trackerWindow.webContents.send('close');
+      }
+      if (captureWindow) {
+        captureWindow.webContents.send('close');
+      }
+      destroyOBSCapture();
     }
-    destroyOBSCapture();
+    
   });
 
   if (process.platform === 'darwin') {
     require('./osx-menu');
   }
 
-  setupOBSCapture();
+}
+
+function createTrackCapturesWindow() {
+  const trackCapturesWindowURL = url.format({
+    pathname: path.join(__dirname, '/src/trackCapturesBW.html'),
+    protocol: 'file:',
+    slashes: true,
+  });
+  trackCapturesWindow = new BrowserWindow({ show: false });
+  trackCapturesWindow.loadURL(trackCapturesWindowURL);
+  // trackCapturesWindow.webContents.openDevTools();
+  trackCapturesWindow.on('closed', () => {
+    trackCapturesWindow = null;
+  });
 }
 
 function createTrackerWindow() {
@@ -193,8 +217,7 @@ function createCaptureWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow();
-  createCaptureWindow();
-  createTrackerWindow();
+  createTrackCapturesWindow();
   autoUpdater.checkForUpdates();
 });
 
@@ -213,11 +236,17 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
-  if (captureWindow === null) {
-    createCaptureWindow();
+  if (trackCapturesWindow === null) {
+    createTrackCapturesWindow();
   }
-  if (trackerWindow === null) {
-    createTrackerWindow();
+  if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
+    setupOBSCapture();
+    if (captureWindow === null) {
+      createCaptureWindow();
+    }
+    if (trackerWindow === null) {
+      createTrackerWindow();
+    }
   }
 });
 
@@ -244,15 +273,23 @@ ipcMain.on('set-launch-on-startup', (event, launchOnStartup) => {
   });
 });
 
-ipcMain.on('sign-in', (event, userId) => {
-  if (trackerWindow) {
-    trackerWindow.webContents.send('sign-in', userId);
-  }
-});
-
-ipcMain.on('sign-out', (event, userId) => {
-  if (trackerWindow) {
-    trackerWindow.webContents.send('sign-out', userId);
+ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
+  if (userInfo.externalOBSCapture !== externalOBSCapture) {
+    if (!externalOBSCapture) {
+      setupOBSCapture();
+      createCaptureWindow();
+      createTrackerWindow();
+    }
+    if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
+      if (trackerWindow) {
+        trackerWindow.webContents.send('close');
+      }
+      if (captureWindow) {
+        captureWindow.webContents.send('close');
+      }
+      destroyOBSCapture();
+    }
+    userInfo.externalOBSCapture = externalOBSCapture;
   }
 });
 
@@ -270,9 +307,9 @@ ipcMain.on('upload-capture-folder', (event, folder, userId) => {
   });
 });
 
-ipcMain.on('queue-capture-folder-upload', (event, folder, userId) => {
+ipcMain.on('queue-capture-folder-upload', (event, folder) => {
   if (mainWindow) {
-    mainWindow.webContents.send('queue-capture-folder-upload', folder, userId);
+    mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId);
   }
 });
 
@@ -294,7 +331,30 @@ ipcMain.on('capture-folder-upload-error', (event, folder, userId, uploadErr) => 
   }
 });
 
-ipcMain.on('start-capture', (event, userId) => {
+ipcMain.on('sign-in', (event, userId) => {
+  userInfo.userId = userId;
+});
+
+ipcMain.on('sign-out', (event, userId) => {
+  userInfo.userId = null;
+
+  // perform stop-capture event logic
+  if (resTrackingInterval) {
+    clearInterval(resTrackingInterval);
+    resTrackingInterval = undefined;
+  }
+  if (captureWindow) {
+    captureWindow.webContents.send('stop-capture');
+    if (mainWindow) {
+      mainWindow.webContents.send('stop-capture');
+    }
+  }
+});
+
+ipcMain.on('start-capture', () => {
+  if (userInfo.userId === null) {
+    return;
+  }
   if (!resTrackingInterval) {
     resTrackingInterval = setInterval(() => {
       const width = obsInput.width;
@@ -346,7 +406,7 @@ ipcMain.on('start-capture', (event, userId) => {
     }, 500);
   }
   if (captureWindow) {
-    captureWindow.webContents.send('start-capture', userId);
+    captureWindow.webContents.send('start-capture');
     if (mainWindow) {
       mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
     }
@@ -372,19 +432,13 @@ ipcMain.on('start-obs-capture', (event, folder) => {
   obsOutput.start();
 });
 
-ipcMain.on('stop-obs-capture', (event, folder, userId) => {
+ipcMain.on('stop-obs-capture', (event, folder) => {
   obsDisplayInfo.capturing = false;
   obsOutput.stop();
-  if (mainWindow) {
-    mainWindow.webContents.send('queue-capture-folder-upload', folder, userId);
-  }
 });
 
-ipcMain.on('update-obs-capture-folder', (event, prevFolder, nextFolder, userId) => {
-  obsOutput.update({ save_path: nextFolder });
-  if (mainWindow) {
-    mainWindow.webContents.send('queue-capture-folder-upload', prevFolder, userId);
-  }
+ipcMain.on('update-obs-capture-folder', (event, folder) => {
+  obsOutput.update({ save_path: folder });
 });
 
 ipcMain.on('create-obs-display', () => {

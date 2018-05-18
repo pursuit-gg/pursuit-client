@@ -10,7 +10,6 @@
     const capturesPerFolder = 60;
     let captureFolder;
     let captureInterval = null;
-    let userId = null;
 
     const pad = (n, w) => (`${n}`.length > w ? `${n}` : `0000${n}`.slice(w * -1));
 
@@ -38,16 +37,14 @@
       ipc.send('start-obs-capture', captureFolder);
       ipc.send('create-obs-display');
       captureInterval = setInterval(() => {
-        const prevFolder = captureFolder;
         createCaptureFolder();
-        ipc.send('update-obs-capture-folder', prevFolder, captureFolder, userId);
+        ipc.send('update-obs-capture-folder', captureFolder);
       }, captureFrequency * capturesPerFolder);
     };
 
-    ipc.on('start-capture', (event, uid) => {
+    ipc.on('start-capture', () => {
       if (captureInterval === null) {
-        console.log('start', uid);
-        userId = uid;
+        console.log('start');
         startOBSCapture();
       }
     });
@@ -58,7 +55,7 @@
         clearInterval(captureInterval);
         captureInterval = null;
         ipc.send('remove-obs-display');
-        ipc.send('stop-obs-capture', captureFolder, userId);
+        ipc.send('stop-obs-capture');
       }
     });
 
@@ -67,7 +64,7 @@
         clearInterval(captureInterval);
         captureInterval = null;
         ipc.send('remove-obs-display');
-        ipc.send('stop-obs-capture', captureFolder, userId);
+        ipc.send('stop-obs-capture');
       }
       window.close();
     });

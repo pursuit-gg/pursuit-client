@@ -1,0 +1,13 @@
+<html>
+  <p> Track Captures </p>
+  <script type="text/javascript">
+    const electron = require('electron');
+
+    const ipc = electron.ipcRenderer;
+
+    ipc.on('close', () => {
+      window.close();
+    });
+
+  </script>
+</html>

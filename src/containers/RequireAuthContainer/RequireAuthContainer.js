@@ -27,6 +27,7 @@ class RequireAuthContainer extends Component {
     if (this.props.user.rehydrated) {
       ipcRenderer.send('sign-in', this.props.user.id);
       ipcRenderer.send('set-launch-on-startup', this.props.launchOnStartup);
+      ipcRenderer.send('set-external-obs-capture', this.props.externalOBSCapture);
       mixpanel.identify(this.props.user.id);
       mixpanel.people.set({
         $username: this.props.user.username,
@@ -69,6 +70,7 @@ class RequireAuthContainer extends Component {
     if (!this.props.user.rehydrated && nextProps.user.rehydrated) {
       ipcRenderer.send('sign-in', nextProps.user.id);
       ipcRenderer.send('set-launch-on-startup', nextProps.launchOnStartup);
+      ipcRenderer.send('set-external-obs-capture', nextProps.externalOBSCapture);
       mixpanel.identify(nextProps.user.id);
       mixpanel.people.set({
         $username: nextProps.user.username,
@@ -112,6 +114,7 @@ RequireAuthContainer.propTypes = {
   captureStatus: PropTypes.object.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
   launchOnStartup: PropTypes.bool.isRequired,
+  externalOBSCapture: PropTypes.bool.isRequired,
   goLogin: PropTypes.func.isRequired,
   captureStarted: PropTypes.func.isRequired,
   captureStopped: PropTypes.func.isRequired,
@@ -128,6 +131,7 @@ const mapStateToProps = ({ user, captureStatus, settings }) => ({
   captureStatus,
   manualCaptureUpload: settings.manualCaptureUpload,
   launchOnStartup: settings.launchOnStartup,
+  externalOBSCapture: settings.externalOBSCapture,
 });
 
 const mapDispatchToProps = dispatch => ({

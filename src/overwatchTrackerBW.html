@@ -1,5 +1,5 @@
 <html>
-<p> Track Overwatch </p>
+  <p> Track Overwatch </p>
   <script type="text/javascript">
     const electron = require('electron');
     const tasklist = require('tasklist');
@@ -8,7 +8,6 @@
     const platform = os.platform();
     const ipc = electron.ipcRenderer;
     const checkFrequency = 15000;
-    let userId = null;
     let checkInterval = null;
 
     if (platform === 'win32') {
@@ -17,10 +16,10 @@
           // console.log(tasks);
           let running = false;
           tasks.forEach((task) => {
-            if (task && userId !== null) {
+            if (task) {
               running = true;
               console.log('start');
-              ipc.send('start-capture', userId);
+              ipc.send('start-capture');
             }
           });
           if (!running) {
@@ -30,17 +29,6 @@
         }).catch(err => console.log(err));
       }, checkFrequency);
     }
-
-    ipc.on('sign-in', (event, uid) => {
-      console.log('sign-in', uid);
-      userId = uid;
-    });
-
-    ipc.on('sign-out', (event, uid) => {
-      console.log('sign-out', uid);
-      userId = null;
-      ipc.send('stop-capture');
-    });
 
     ipc.on('close', (event) => {
       clearInterval(checkInterval);

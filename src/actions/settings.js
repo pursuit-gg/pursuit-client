@@ -3,6 +3,7 @@ import {
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
+  SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
 } from 'actions/types';
 
 export function setUpdateAvailable(isAvailable) {
@@ -30,5 +31,12 @@ export function setLaunchOnStartup(launchOnStartup) {
   return {
     type: SETTINGS_SET_LAUNCH_ON_STARTUP,
     launchOnStartup,
+  };
+}
+
+export function setExternalOBSCapture(externalOBSCapture) {
+  return {
+    type: SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
+    externalOBSCapture,
   };
 }
