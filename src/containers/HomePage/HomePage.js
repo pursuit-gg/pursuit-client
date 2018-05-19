@@ -70,7 +70,6 @@ class HomePage extends Component {
             <img src={obsMode} alt="OBS Mode" styleName="statusIcon" />
             <h2 styleName="statusText">
               OBS Mode
-              <p className="italic"> Keep this running while you play Overwatch </p>
             </h2>
           </div>
         }

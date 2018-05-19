@@ -50,6 +50,11 @@
   margin-top: 5px;
 }
 
+.restartText {
+  margin-left: 10px;
+  color: #DB6955;
+}
+
 .checkbox {
   appearance: none;
   cursor: pointer;

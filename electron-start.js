@@ -223,31 +223,7 @@ app.on('ready', () => {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow();
-  }
-  if (trackCapturesWindow === null) {
-    createTrackCapturesWindow();
-  }
-  if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
-    setupOBSCapture();
-    if (captureWindow === null) {
-      createCaptureWindow();
-    }
-    if (trackerWindow === null) {
-      createTrackerWindow();
-    }
-  }
+  app.quit();
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -274,20 +250,11 @@ ipcMain.on('set-launch-on-startup', (event, launchOnStartup) => {
 });
 
 ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
-  if (userInfo.externalOBSCapture !== externalOBSCapture) {
+  if (userInfo.externalOBSCapture === null) {
     if (!externalOBSCapture) {
       setupOBSCapture();
       createCaptureWindow();
       createTrackerWindow();
-    }
-    if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
-      if (trackerWindow) {
-        trackerWindow.webContents.send('close');
-      }
-      if (captureWindow) {
-        captureWindow.webContents.send('close');
-      }
-      destroyOBSCapture();
     }
     userInfo.externalOBSCapture = externalOBSCapture;
   }

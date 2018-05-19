@@ -12,6 +12,7 @@ const INITIAL_STATE = {
   onboardingComplete: false,
   launchOnStartup: true,
   externalOBSCapture: false,
+  pendingExternalOBSCapture: false,
 };
 
 const settings = (state = INITIAL_STATE, action) => {
@@ -39,7 +40,7 @@ const settings = (state = INITIAL_STATE, action) => {
     case SETTINGS_SET_EXTERNAL_OBS_CAPTURE:
       return {
         ...state,
-        externalOBSCapture: action.externalOBSCapture,
+        pendingExternalOBSCapture: action.externalOBSCapture,
       };
     default:
       return state;

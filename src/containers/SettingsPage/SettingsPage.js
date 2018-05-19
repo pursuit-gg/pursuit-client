@@ -12,7 +12,7 @@ import './SettingsPage.m.css';
 const electron = window.require('electron');
 const ipcRenderer = electron.ipcRenderer;
 
-const SettingsPage = ({ launchOnStartup, externalOBSCapture, setAutoStartup, setExternalOBSCapture }) => (
+const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSCapture, setAutoStartup, setExternalOBSCapture }) => (
   <div styleName="wrapper">
     <div styleName="header">
       <h1 styleName="headerText"> CLIENT SETTINGS </h1>
@@ -41,14 +41,14 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, setAutoStartup, set
           id="externalOBSCapture"
           type="checkbox"
           styleName="checkbox"
-          checked={externalOBSCapture}
-          onChange={() => {
-            ipcRenderer.send('set-external-obs-capture', !externalOBSCapture);
-            setExternalOBSCapture(!externalOBSCapture);
-          }}
+          checked={pendingExternalOBSCapture}
+          onChange={() => setExternalOBSCapture(!pendingExternalOBSCapture)}
         />
       </label>
       <h5 styleName="settingText"> OBS Mode </h5>
+      {pendingExternalOBSCapture !== externalOBSCapture &&
+        <p styleName="restartText" className="bold"> (restart Pursuit to apply) </p>
+      }
     </div>
     <h5 styleName="settingSubtext"> OBS plugin instructions <a
         className="blueLink"
@@ -71,6 +71,7 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, setAutoStartup, set
 SettingsPage.propTypes = {
   launchOnStartup: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
+  pendingExternalOBSCapture: PropTypes.bool.isRequired,
   setAutoStartup: PropTypes.func.isRequired,
   setExternalOBSCapture: PropTypes.func.isRequired,
 };
@@ -78,6 +79,7 @@ SettingsPage.propTypes = {
 const mapStateToProps = ({ settings }) => ({
   launchOnStartup: settings.launchOnStartup,
   externalOBSCapture: settings.externalOBSCapture,
+  pendingExternalOBSCapture: settings.pendingExternalOBSCapture,
 });
 
 const mapDispatchToProps = dispatch => ({
