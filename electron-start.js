@@ -146,7 +146,7 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
-    if (trackCapturesWindow === null) {
+    if (trackCapturesWindow) {
       trackCapturesWindow.webContents.send('close');
     }
     if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
@@ -217,7 +217,6 @@ function createCaptureWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow();
-  createTrackCapturesWindow();
   autoUpdater.checkForUpdates();
 });
 
@@ -275,7 +274,7 @@ ipcMain.on('upload-capture-folder', (event, folder, userId) => {
 });
 
 ipcMain.on('queue-capture-folder-upload', (event, folder) => {
-  if (mainWindow) {
+  if (mainWindow && userInfo.userId) {
     mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId);
   }
 });
@@ -300,10 +299,19 @@ ipcMain.on('capture-folder-upload-error', (event, folder, userId, uploadErr) => 
 
 ipcMain.on('sign-in', (event, userId) => {
   userInfo.userId = userId;
+  if (trackCapturesWindow) {
+    trackCapturesWindow.webContents.send('sign-in');
+  } else {
+    createTrackCapturesWindow();
+  }
 });
 
 ipcMain.on('sign-out', (event, userId) => {
   userInfo.userId = null;
+
+  if (trackCapturesWindow) {
+    trackCapturesWindow.webContents.send('sign-out');
+  }
 
   if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
     // perform stop-capture event logic
