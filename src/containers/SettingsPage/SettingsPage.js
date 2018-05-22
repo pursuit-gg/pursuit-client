@@ -14,7 +14,7 @@ import './SettingsPage.m.css';
 const electron = window.require('electron');
 const ipcRenderer = electron.ipcRenderer;
 
-const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSCapture, setAutoStartup, setExternalOBSCapture }) => (
+const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSCapture, setAutoStartup, setOBSMode }) => (
   <div styleName="wrapper">
     <div styleName="header">
       <h1 styleName="headerText"> CLIENT SETTINGS </h1>
@@ -48,7 +48,7 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSC
           styleName="checkbox"
           checked={pendingExternalOBSCapture}
           onChange={() => {
-            setExternalOBSCapture(!pendingExternalOBSCapture);
+            setOBSMode(!pendingExternalOBSCapture);
             mixpanel.track(MP_OBS_MODE_TOGGLE, {
               state: !pendingExternalOBSCapture,
             });
@@ -61,10 +61,9 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSC
       }
     </div>
     <h5 styleName="settingSubtext"> OBS plugin instructions <a
-        className="blueLink"
-        onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
-      >here</a>.
-    </h5>
+      className="blueLink"
+      onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
+    >here</a>.</h5>
     <div styleName="buttonWrapper">
       <DefaultButton
         text="Account Settings"
@@ -83,7 +82,7 @@ SettingsPage.propTypes = {
   externalOBSCapture: PropTypes.bool.isRequired,
   pendingExternalOBSCapture: PropTypes.bool.isRequired,
   setAutoStartup: PropTypes.func.isRequired,
-  setExternalOBSCapture: PropTypes.func.isRequired,
+  setOBSMode: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ settings }) => ({
@@ -96,9 +95,9 @@ const mapDispatchToProps = dispatch => ({
   setAutoStartup: (launchOnStartup) => {
     dispatch(setLaunchOnStartup(launchOnStartup));
   },
-  setExternalOBSCapture: (externalOBSCapture) => {
+  setOBSMode: (externalOBSCapture) => {
     dispatch(setExternalOBSCapture(externalOBSCapture));
-  }
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage);

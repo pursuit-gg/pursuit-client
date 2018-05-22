@@ -107,12 +107,8 @@ class OnboardingPage extends Component {
 
 OnboardingPage.propTypes = {
   goToHome: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = ({ user }) => ({
-  user,
-});
 
 const mapDispatchToProps = dispatch => ({
   goToHome: () => {
@@ -121,4 +117,4 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(OnboardingPage);
+export default connect(() => ({}), mapDispatchToProps)(OnboardingPage);

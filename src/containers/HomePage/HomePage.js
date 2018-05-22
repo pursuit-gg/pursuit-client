@@ -73,7 +73,7 @@ class HomePage extends Component {
             </h2>
           </div>
         }
-        {!this.props.externalOBSCapture && 
+        {!this.props.externalOBSCapture &&
           <div styleName="capturePreviewWrapper">
             <h5 className="center italic">
               <a
@@ -102,10 +102,9 @@ class HomePage extends Component {
         }
         {this.props.externalOBSCapture &&
           <h5 styleName="obsModeText"> Detailed instructions on how to use the plugin are <a
-              className="blueLink"
-              onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
-            >here</a>.
-          </h5>
+            className="blueLink"
+            onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
+          >here</a>.</h5>
         }
         {!this.props.manualCaptureUpload && this.props.captureStatus.currentUpload === null &&
           <div styleName="statusWrapper">

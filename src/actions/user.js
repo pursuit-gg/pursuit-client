@@ -36,7 +36,7 @@ function authSuccess(json, signUp) {
   mixpanel.register({
     username: json.data.username,
     user_id: json.data.id,
-  })
+  });
   return {
     type: AUTH_SUCCESS,
     user: json.data,

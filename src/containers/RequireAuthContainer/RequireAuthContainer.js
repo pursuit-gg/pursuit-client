@@ -56,7 +56,7 @@ class RequireAuthContainer extends Component {
     ipcRenderer.on('start-capture', (event, scaleRes) => {
       this.props.captureStarted(scaleRes);
     });
-    ipcRenderer.on('stop-capture', (event) => {
+    ipcRenderer.on('stop-capture', () => {
       this.props.captureStopped();
     });
   }
@@ -75,7 +75,7 @@ class RequireAuthContainer extends Component {
       mixpanel.register({
         username: nextProps.user.username,
         user_id: nextProps.user.id,
-      })
+      });
     }
     if (nextProps.captureStatus.currentUpload !== null && (this.props.captureStatus.currentUpload === null ||
         this.props.captureStatus.currentUpload.folder !== nextProps.captureStatus.currentUpload.folder)) {

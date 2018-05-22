@@ -37,7 +37,7 @@ let obsDisplayInfo = {
   changingRes: false,
 };
 let resTrackingInterval;
-let userInfo = {
+const userInfo = {
   userId: null,
   externalOBSCapture: null,
 };
@@ -158,13 +158,11 @@ function createWindow() {
       }
       destroyOBSCapture();
     }
-    
   });
 
   if (process.platform === 'darwin') {
     require('./osx-menu');
   }
-
 }
 
 function createTrackCapturesWindow() {
@@ -409,7 +407,7 @@ ipcMain.on('start-obs-capture', (event, folder) => {
   obsOutput.start();
 });
 
-ipcMain.on('stop-obs-capture', (event, folder) => {
+ipcMain.on('stop-obs-capture', () => {
   obsDisplayInfo.capturing = false;
   obsOutput.stop();
 });
