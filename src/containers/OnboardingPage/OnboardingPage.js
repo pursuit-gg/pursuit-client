@@ -30,8 +30,6 @@ class OnboardingPage extends Component {
 
   nextStep() {
     mixpanel.track(MP_ONBOARDING_NEXT, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
       step: this.state.step,
     });
     this.setState({ step: this.state.step + 1 });
@@ -39,8 +37,6 @@ class OnboardingPage extends Component {
 
   goToHome() {
     mixpanel.track(MP_ONBOARDING_NEXT, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
       step: this.state.step,
     });
     this.props.goToHome();

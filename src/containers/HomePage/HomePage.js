@@ -88,6 +88,19 @@ class HomePage extends Component {
           </div>
         }
         {this.props.externalOBSCapture &&
+          <div styleName="seeCapturesWrapper">
+            <DefaultButton
+              text="See Captures"
+              onClick={(e) => {
+                e.preventDefault();
+                electron.shell.openExternal(`file://${electron.remote.app.getPath('userData')}/Captures`);
+              }}
+              slim
+              color="Aqua"
+            />
+          </div>
+        }
+        {this.props.externalOBSCapture &&
           <h5 styleName="obsModeText"> Detailed instructions on how to use the plugin are <a
               className="blueLink"
               onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}

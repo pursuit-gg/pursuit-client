@@ -27,11 +27,16 @@ export function resetStateOnLogout() {
 function authSuccess(json, signUp) {
   mixpanel.identify(json.data.id);
   mixpanel.people.set({
+    $user_id: json.data.id,
     $username: json.data.username,
     $email: json.data.email,    // only special properties need the $
     $created: json.data.created_at,
     $last_login: new Date(),         // properties can be dates...
   });
+  mixpanel.register({
+    username: json.data.username,
+    user_id: json.data.id,
+  })
   return {
     type: AUTH_SUCCESS,
     user: json.data,
@@ -42,10 +47,7 @@ function authSuccess(json, signUp) {
     meta: {
       mixpanel: {
         event: signUp ? MP_USER_SIGNUP : MP_USER_LOGIN,
-        props: {
-          username: json.data.username,
-          user_id: json.data.id,
-        },
+        props: {},
       },
     },
   };

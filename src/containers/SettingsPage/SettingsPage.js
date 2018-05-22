@@ -3,7 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+import mixpanel from 'mixpanel-browser';
 
+import { MP_OPEN_ON_STARTUP_TOGGLE, MP_OBS_MODE_TOGGLE } from 'actions/mixpanelTypes';
 import { setLaunchOnStartup, setExternalOBSCapture } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import xIcon from 'images/genericIcons/darkGreyX.svg';
@@ -30,6 +32,9 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSC
           onChange={() => {
             ipcRenderer.send('set-launch-on-startup', !launchOnStartup);
             setAutoStartup(!launchOnStartup);
+            mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, {
+              state: !launchOnStartup,
+            });
           }}
         />
       </label>
@@ -42,7 +47,12 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSC
           type="checkbox"
           styleName="checkbox"
           checked={pendingExternalOBSCapture}
-          onChange={() => setExternalOBSCapture(!pendingExternalOBSCapture)}
+          onChange={() => {
+            setExternalOBSCapture(!pendingExternalOBSCapture);
+            mixpanel.track(MP_OBS_MODE_TOGGLE, {
+              state: !pendingExternalOBSCapture,
+            });
+          }}
         />
       </label>
       <h5 styleName="settingText"> OBS Mode </h5>

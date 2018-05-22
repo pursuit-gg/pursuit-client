@@ -20,11 +20,8 @@ const ipcRenderer = window.require('electron').ipcRenderer;
 
 class RequireAuthContainer extends Component {
   componentWillMount() {
-    if (this.props.captureStatus.currentUpload !== null) {
-      this.props.requeueCaptureUpload();
-    }
     this.checkAuth(this.props);
-    if (this.props.user.rehydrated) {
+    if (this.props.isAuthenticated) {
       ipcRenderer.send('sign-in', this.props.user.id);
       ipcRenderer.send('set-launch-on-startup', this.props.launchOnStartup);
       ipcRenderer.send('set-external-obs-capture', this.props.externalOBSCapture);
@@ -33,6 +30,13 @@ class RequireAuthContainer extends Component {
         $username: this.props.user.username,
         $email: this.props.user.email,
       });
+      mixpanel.register({
+        username: this.props.user.username,
+        user_id: this.props.user.id,
+      });
+    }
+    if (this.props.captureStatus.currentUpload !== null) {
+      this.props.requeueCaptureUpload();
     }
   }
 
@@ -58,16 +62,8 @@ class RequireAuthContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.captureStatus.currentUpload !== null && (this.props.captureStatus.currentUpload === null ||
-        this.props.captureStatus.currentUpload.folder !== nextProps.captureStatus.currentUpload.folder)) {
-      ipcRenderer.send(
-        'upload-capture-folder',
-        nextProps.captureStatus.currentUpload.folder,
-        nextProps.captureStatus.currentUpload.userId,
-      );
-    }
     this.checkAuth(nextProps);
-    if (!this.props.user.rehydrated && nextProps.user.rehydrated) {
+    if (!this.props.user.rehydrated && nextProps.user.rehydrated && nextProps.isAuthenticated) {
       ipcRenderer.send('sign-in', nextProps.user.id);
       ipcRenderer.send('set-launch-on-startup', nextProps.launchOnStartup);
       ipcRenderer.send('set-external-obs-capture', nextProps.externalOBSCapture);
@@ -76,6 +72,18 @@ class RequireAuthContainer extends Component {
         $username: nextProps.user.username,
         $email: nextProps.user.email,
       });
+      mixpanel.register({
+        username: nextProps.user.username,
+        user_id: nextProps.user.id,
+      })
+    }
+    if (nextProps.captureStatus.currentUpload !== null && (this.props.captureStatus.currentUpload === null ||
+        this.props.captureStatus.currentUpload.folder !== nextProps.captureStatus.currentUpload.folder)) {
+      ipcRenderer.send(
+        'upload-capture-folder',
+        nextProps.captureStatus.currentUpload.folder,
+        nextProps.captureStatus.currentUpload.userId,
+      );
     }
   }
 
@@ -98,7 +106,7 @@ class RequireAuthContainer extends Component {
   render() {
     return (
       <div>
-        {this.props.isAuthenticated === true
+        {this.props.isAuthenticated
           ? this.props.children
           : null
         }
