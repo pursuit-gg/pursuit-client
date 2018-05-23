@@ -28,10 +28,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    mixpanel.track(MP_CLIENT_LOAD, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
-    });
+    mixpanel.track(MP_CLIENT_LOAD, {});
   }
 
   render() {

@@ -19,6 +19,9 @@ class ManualCaptureUploadToggle extends Component {
     mixpanel.track(MP_AUTO_UPLOAD_MODE_TOGGLE, {
       state: this.props.manualCaptureUpload,
     });
+    mixpanel.people.set({
+      auto_upload: !this.props.manualCaptureUpload,
+    });
   }
 
   render() {

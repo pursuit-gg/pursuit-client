@@ -35,6 +35,9 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSC
             mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, {
               state: !launchOnStartup,
             });
+            mixpanel.people.set({
+              open_on_startup: !launchOnStartup,
+            });
           }}
         />
       </label>
@@ -52,12 +55,19 @@ const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSC
             mixpanel.track(MP_OBS_MODE_TOGGLE, {
               state: !pendingExternalOBSCapture,
             });
+            mixpanel.people.set({
+              obs_mode: !pendingExternalOBSCapture,
+            });
           }}
         />
       </label>
       <h5 styleName="settingText"> OBS Mode </h5>
       {pendingExternalOBSCapture !== externalOBSCapture &&
-        <p styleName="restartText" className="bold"> (restart Pursuit to apply) </p>
+        <p styleName="settingText restartText" className="bold"> (<a
+          styleName="restartText"
+          className="underline"
+          onClick={() => ipcRenderer.send('restart')}
+        >restart</a> Pursuit to apply) </p>
       }
     </div>
     <h5 styleName="settingSubtext"> OBS plugin instructions <a

@@ -240,6 +240,15 @@ ipcMain.on('install-update', (event, arg) => {
   autoUpdater.quitAndInstall();
 });
 
+ipcMain.on('restart', () => {
+  app.relaunch();
+  if (mainWindow) {
+    mainWindow.close();
+  } else {
+    app.quit();
+  }
+});
+
 ipcMain.on('set-launch-on-startup', (event, launchOnStartup) => {
   app.setLoginItemSettings({
     openAtLogin: launchOnStartup,
