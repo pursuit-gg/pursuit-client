@@ -1,0 +1,40 @@
+<html>
+  <p> Track Captures </p>
+  <script type="text/javascript">
+    const electron = require('electron');
+    const chokidar = require('chokidar');
+
+    const ipc = electron.ipcRenderer;
+    const capturesPath = `${electron.remote.app.getPath('userData')}/Captures`;
+
+    const watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\../ });
+
+    const startWatch = () => {
+      watcher.on('add', path => {
+        pathMatch = path.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
+        if (pathMatch) {
+          console.log(pathMatch[1]);
+          ipc.send('queue-capture-folder-upload', pathMatch[1]);
+        }
+      }).on('error', err => {
+        console.log(err);
+      });
+    };
+
+    ipc.on('sign-in', () => {
+      startWatch();
+    });
+
+    ipc.on('sign-out', () => {
+      watcher.close();
+    });
+
+    ipc.on('close', () => {
+      watcher.close();
+      window.close();
+    });
+
+    startWatch();
+
+  </script>
+</html>

@@ -3,8 +3,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+import mixpanel from 'mixpanel-browser';
 
-import { setLaunchOnStartup } from 'actions/settings';
+import { MP_OPEN_ON_STARTUP_TOGGLE, MP_OBS_MODE_TOGGLE } from 'actions/mixpanelTypes';
+import { setLaunchOnStartup, setExternalOBSCapture } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import xIcon from 'images/genericIcons/darkGreyX.svg';
 import './SettingsPage.m.css';
@@ -12,7 +14,7 @@ import './SettingsPage.m.css';
 const electron = window.require('electron');
 const ipcRenderer = electron.ipcRenderer;
 
-const SettingsPage = ({ launchOnStartup, setAutoStartup }) => (
+const SettingsPage = ({ launchOnStartup, externalOBSCapture, pendingExternalOBSCapture, setAutoStartup, setOBSMode }) => (
   <div styleName="wrapper">
     <div styleName="header">
       <h1 styleName="headerText"> CLIENT SETTINGS </h1>
@@ -30,11 +32,48 @@ const SettingsPage = ({ launchOnStartup, setAutoStartup }) => (
           onChange={() => {
             ipcRenderer.send('set-launch-on-startup', !launchOnStartup);
             setAutoStartup(!launchOnStartup);
+            mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, {
+              state: !launchOnStartup,
+            });
+            mixpanel.people.set({
+              open_on_startup: !launchOnStartup,
+            });
           }}
         />
       </label>
       <h5 styleName="settingText"> Launch automatically on startup </h5>
     </div>
+    <div styleName="settingWrapper">
+      <label htmlFor="externalOBSCapture" className="flex">
+        <input
+          id="externalOBSCapture"
+          type="checkbox"
+          styleName="checkbox"
+          checked={pendingExternalOBSCapture}
+          onChange={() => {
+            setOBSMode(!pendingExternalOBSCapture);
+            mixpanel.track(MP_OBS_MODE_TOGGLE, {
+              state: !pendingExternalOBSCapture,
+            });
+            mixpanel.people.set({
+              obs_mode: !pendingExternalOBSCapture,
+            });
+          }}
+        />
+      </label>
+      <h5 styleName="settingText"> OBS Mode </h5>
+      {pendingExternalOBSCapture !== externalOBSCapture &&
+        <p styleName="settingText restartText" className="bold"> (<a
+          styleName="restartText"
+          className="underline"
+          onClick={() => ipcRenderer.send('restart')}
+        >restart</a> Pursuit to apply) </p>
+      }
+    </div>
+    <h5 styleName="settingSubtext"> OBS plugin instructions <a
+      className="blueLink"
+      onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
+    >here</a>.</h5>
     <div styleName="buttonWrapper">
       <DefaultButton
         text="Account Settings"
@@ -50,16 +89,24 @@ const SettingsPage = ({ launchOnStartup, setAutoStartup }) => (
 
 SettingsPage.propTypes = {
   launchOnStartup: PropTypes.bool.isRequired,
+  externalOBSCapture: PropTypes.bool.isRequired,
+  pendingExternalOBSCapture: PropTypes.bool.isRequired,
   setAutoStartup: PropTypes.func.isRequired,
+  setOBSMode: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ settings }) => ({
   launchOnStartup: settings.launchOnStartup,
+  externalOBSCapture: settings.externalOBSCapture,
+  pendingExternalOBSCapture: settings.pendingExternalOBSCapture,
 });
 
 const mapDispatchToProps = dispatch => ({
   setAutoStartup: (launchOnStartup) => {
     dispatch(setLaunchOnStartup(launchOnStartup));
+  },
+  setOBSMode: (externalOBSCapture) => {
+    dispatch(setExternalOBSCapture(externalOBSCapture));
   },
 });
 

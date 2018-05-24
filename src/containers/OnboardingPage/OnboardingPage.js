@@ -30,8 +30,6 @@ class OnboardingPage extends Component {
 
   nextStep() {
     mixpanel.track(MP_ONBOARDING_NEXT, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
       step: this.state.step,
     });
     this.setState({ step: this.state.step + 1 });
@@ -39,8 +37,6 @@ class OnboardingPage extends Component {
 
   goToHome() {
     mixpanel.track(MP_ONBOARDING_NEXT, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
       step: this.state.step,
     });
     this.props.goToHome();
@@ -111,12 +107,8 @@ class OnboardingPage extends Component {
 
 OnboardingPage.propTypes = {
   goToHome: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = ({ user }) => ({
-  user,
-});
 
 const mapDispatchToProps = dispatch => ({
   goToHome: () => {
@@ -125,4 +117,4 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(OnboardingPage);
+export default connect(() => ({}), mapDispatchToProps)(OnboardingPage);

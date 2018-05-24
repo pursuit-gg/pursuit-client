@@ -13,6 +13,7 @@ import UploadProgressBar from 'components/UploadProgressBar/UploadProgressBar';
 import CapturePreview from 'components/CapturePreview/CapturePreview';
 import tracking from 'images/captureStatusIcons/tracking.png';
 import notTracking from 'images/captureStatusIcons/notTracking.png';
+import obsMode from 'images/captureStatusIcons/obsMode.png';
 import upToDate from 'images/captureStatusIcons/upToDate.png';
 import uploading from 'images/captureStatusIcons/uploading.png';
 import error from 'images/captureStatusIcons/error.png';
@@ -27,10 +28,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    mixpanel.track(MP_CLIENT_LOAD, {
-      username: this.props.user.username,
-      user_id: this.props.user.id,
-    });
+    mixpanel.track(MP_CLIENT_LOAD, {});
   }
 
   render() {
@@ -46,7 +44,7 @@ class HomePage extends Component {
           color="Aqua"
         />
         <h1 styleName="title"> STATUS </h1>
-        {this.props.captureStatus.capturing ?
+        {!this.props.externalOBSCapture && this.props.captureStatus.capturing &&
           <div styleName="statusWrapper">
             <img src={tracking} alt="tracking" styleName="statusIcon" />
             <h2 styleName="statusText">
@@ -54,7 +52,8 @@ class HomePage extends Component {
               <p className="italic"> Keep this running while you play Overwatch </p>
             </h2>
           </div>
-          :
+        }
+        {!this.props.externalOBSCapture && !this.props.captureStatus.capturing &&
           <div styleName="statusWrapper">
             <img src={notTracking} alt="not tracking" styleName="statusIcon" />
             <h2 styleName="statusText">
@@ -63,18 +62,47 @@ class HomePage extends Component {
             </h2>
           </div>
         }
-        <div styleName="capturePreviewWrapper">
-          <h5 className="center italic">
-            <a
-              styleName="showPreview"
-              className="inlineBlock"
-              onClick={() => this.setState({ showPreview: !this.state.showPreview })}
-            >
-              {this.state.showPreview ? 'Hide Capture Preview' : 'Show Capture Preview'}
-            </a>
-          </h5>
-          {this.state.showPreview && <CapturePreview />}
-        </div>
+        {this.props.externalOBSCapture &&
+          <div styleName="statusWrapper">
+            <img src={obsMode} alt="OBS Mode" styleName="statusIcon" />
+            <h2 styleName="statusText">
+              OBS Mode
+            </h2>
+          </div>
+        }
+        {!this.props.externalOBSCapture &&
+          <div styleName="capturePreviewWrapper">
+            <h5 className="center italic">
+              <a
+                styleName="showPreview"
+                className="inlineBlock"
+                onClick={() => this.setState({ showPreview: !this.state.showPreview })}
+              >
+                {this.state.showPreview ? 'Hide Capture Preview' : 'Show Capture Preview'}
+              </a>
+            </h5>
+            {this.state.showPreview && <CapturePreview />}
+          </div>
+        }
+        {this.props.externalOBSCapture &&
+          <div styleName="seeCapturesWrapper">
+            <DefaultButton
+              text="See Captures"
+              onClick={(e) => {
+                e.preventDefault();
+                electron.shell.openExternal(`file://${electron.remote.app.getPath('userData')}/Captures`);
+              }}
+              slim
+              color="Aqua"
+            />
+          </div>
+        }
+        {this.props.externalOBSCapture &&
+          <h5 styleName="obsModeText"> Detailed instructions on how to use the plugin are <a
+            className="blueLink"
+            onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
+          >here</a>.</h5>
+        }
         {!this.props.manualCaptureUpload && this.props.captureStatus.currentUpload === null &&
           <div styleName="statusWrapper">
             <img src={upToDate} alt="up to date" styleName="statusIcon" />
@@ -156,12 +184,14 @@ class HomePage extends Component {
 HomePage.propTypes = {
   user: PropTypes.object.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
+  externalOBSCapture: PropTypes.bool.isRequired,
   captureStatus: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = ({ user, settings, captureStatus }) => ({
   user,
   manualCaptureUpload: settings.manualCaptureUpload,
+  externalOBSCapture: settings.externalOBSCapture,
   captureStatus,
 });
 

@@ -7,6 +7,7 @@ export const SETTINGS_SET_UPDATE_AVAILABLE = 'set_update_available';
 export const SETTINGS_SET_MANUAL_CAPTURE_UPLOAD = 'set_manual_capture_upload';
 export const SETTINGS_SET_ONBOARDING_COMPLETE = 'set_onboarding_complete';
 export const SETTINGS_SET_LAUNCH_ON_STARTUP = 'set_launch_on_startup';
+export const SETTINGS_SET_EXTERNAL_OBS_CAPTURE = 'set_external_obs_capture';
 
 export const CLEAR_ERRORS = 'clear_errors';
 export const ADD_ERROR = 'add_error';

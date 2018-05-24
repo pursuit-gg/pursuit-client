@@ -17,6 +17,27 @@ const INITIAL_STATE = {
   latestUploadAt: null,
 };
 
+const alreadyQueued = (uploadQueue, currentUpload, newUpload) => {
+  const newUploadMatch = newUpload.folder.match(/[\\/](\d+)$/);
+  if (!newUploadMatch) {
+    return true;
+  }
+  if (currentUpload) {
+    const currentUploadMatch = currentUpload.folder.match(/[\\/](\d+)$/);
+    if (currentUploadMatch && currentUploadMatch[1] === newUploadMatch[1]) {
+      return true;
+    }
+  }
+  const matchingFolders = uploadQueue.reduce((matchCount, queuedUpload) => {
+    const queuedUploadMatch = queuedUpload.folder.match(/[\\/](\d+)$/);
+    if (queuedUploadMatch && queuedUploadMatch[1] === newUploadMatch[1]) {
+      return matchCount + 1;
+    }
+    return matchCount;
+  }, 0);
+  return matchingFolders > 0;
+};
+
 const captureStatus = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case CAPTURE_STARTED:
@@ -31,6 +52,9 @@ const captureStatus = (state = INITIAL_STATE, action) => {
         capturing: false,
       };
     case QUEUE_CAPTURE_UPLOAD:
+      if (alreadyQueued(state.uploadQueue, state.currentUpload, action.capture)) {
+        return state;
+      }
       if (action.manualCaptureUpload || state.currentUpload !== null) {
         return {
           ...state,

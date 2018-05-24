@@ -26,8 +26,6 @@ class ProfileHeader extends Component {
     ipcRenderer.on('update-downloaded', (event, info) => {
       this.props.setUpdateAvailable(true);
       mixpanel.track('Update - Downloaded', {
-        username: this.props.user.username,
-        user_id: this.props.user.id,
         current_version: appVersion,
         update_version: info.version,
       });

@@ -30,6 +30,9 @@ const rootReducer = (state, action) => {
         if (current === 'user') {
           newState[current] = { ...newState[current], rehydrated: true };
         }
+        if (current === 'settings') {
+          newState[current] = { ...newState[current], externalOBSCapture: newState[current].pendingExternalOBSCapture };
+        }
         return newState;
       }, {});
     default:

@@ -3,6 +3,7 @@ import {
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
+  SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -10,6 +11,8 @@ const INITIAL_STATE = {
   manualCaptureUpload: true,
   onboardingComplete: false,
   launchOnStartup: true,
+  externalOBSCapture: false,
+  pendingExternalOBSCapture: false,
 };
 
 const settings = (state = INITIAL_STATE, action) => {
@@ -33,6 +36,11 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         launchOnStartup: action.launchOnStartup,
+      };
+    case SETTINGS_SET_EXTERNAL_OBS_CAPTURE:
+      return {
+        ...state,
+        pendingExternalOBSCapture: action.externalOBSCapture,
       };
     default:
       return state;

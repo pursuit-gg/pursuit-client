@@ -32,6 +32,18 @@
   margin-left: 10px;
 }
 
+.seeCapturesWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+.obsModeText {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
 .tipWrapper {
   padding: 10px;
   margin-top: 15px;
