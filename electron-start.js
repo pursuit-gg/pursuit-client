@@ -17,7 +17,6 @@ const url = require('url');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let captureWindow;
 let trackerWindow;
 let trackCapturesWindow;
 
@@ -44,7 +43,7 @@ const userInfo = {
 
 app.disableHardwareAcceleration();
 
-function updateOBSSettings(setting, changes) {
+const updateOBSSettings = (setting, changes) => {
   const obsSettings = nodeObs.OBS_settings_getSettings(setting);
   for (const group of obsSettings) {
     for (const obsSetting of group.parameters) {
@@ -54,9 +53,106 @@ function updateOBSSettings(setting, changes) {
     }
   }
   nodeObs.OBS_settings_saveSettings(setting, obsSettings);
-}
+};
 
-function setupOBSCapture() {
+const createOBSDisplay = () => {
+  if (!obsDisplayInfo.capturing || !obsDisplayInfo.show) {
+    return;
+  }
+  nodeObs.OBS_content_createDisplay(
+    mainWindow.getNativeWindowHandle(),
+    obsDisplayInfo.name,
+  );
+  nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
+  nodeObs.OBS_content_moveDisplay(obsDisplayInfo.name, obsDisplayInfo.x, obsDisplayInfo.y);
+};
+
+const removeOBSDisplay = () => {
+  nodeObs.OBS_content_destroyDisplay(obsDisplayInfo.name);
+};
+
+const updateOBSDisplay = (show, width, height, x, y) => {
+  obsDisplayInfo = Object.assign(obsDisplayInfo, { show, width, height, x, y });
+  nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
+  nodeObs.OBS_content_moveDisplay(obsDisplayInfo.name, obsDisplayInfo.x, obsDisplayInfo.y);
+};
+
+const startCapture = () => {
+  if (userInfo.userId === null) {
+    return;
+  }
+  if (!resTrackingInterval) {
+    resTrackingInterval = setInterval(() => {
+      const width = obsInput.width;
+      const height = obsInput.height;
+      if (width !== 0 && height !== 0) {
+        let xScale = 1;
+        let yScale = 1;
+        if (width / height > 2.38) { // 43:18
+          obsDisplayInfo.scaleRes = '2580x1080';
+          xScale = 2580 / width;
+          yScale = 1080 / height;
+        } else if (width / height > 2.1) { // 64:27
+          obsDisplayInfo.scaleRes = '2560x1080';
+          xScale = 2560 / width;
+          yScale = 1080 / height;
+        } else if (width / height > 1.7) { // 16:9
+          obsDisplayInfo.scaleRes = '1920x1080';
+          xScale = 1920 / width;
+          yScale = 1080 / height;
+        } else if (width / height > 1.5) { // 16:10
+          obsDisplayInfo.scaleRes = '1920x1200';
+          xScale = 1920 / width;
+          yScale = 1200 / height;
+        } else if (width / height > 1.2) { // 4:3
+          obsDisplayInfo.scaleRes = '1920x1440';
+          xScale = 1920 / width;
+          yScale = 1440 / height;
+        }
+        const newScale = { x: xScale, y: yScale };
+        if (obsSceneItem.scale !== newScale) {
+          obsSceneItem.scale = newScale;
+        }
+        if (`${obsScene.source.width}x${obsScene.source.height}` !== obsDisplayInfo.scaleRes && !obsDisplayInfo.changingRes) {
+          obsDisplayInfo.changingRes = true;
+          obsOutput.stop();
+          updateOBSSettings('Video', {
+            Base: obsDisplayInfo.scaleRes,
+            Output: obsDisplayInfo.scaleRes,
+          });
+          if (resTrackingInterval) {
+            if (mainWindow) {
+              mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
+            }
+            obsOutput.start();
+          }
+          obsDisplayInfo.changingRes = false;
+        }
+      }
+    }, 500);
+  }
+  if (mainWindow) {
+    mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
+  }
+  obsDisplayInfo.capturing = true;
+  obsOutput.start();
+  createOBSDisplay();
+};
+
+const stopCapture = () => {
+  if (resTrackingInterval) {
+    clearInterval(resTrackingInterval);
+    resTrackingInterval = undefined;
+  }
+  if (mainWindow) {
+    mainWindow.webContents.send('stop-capture');
+  }
+  removeOBSDisplay();
+  obsDisplayInfo.capturing = false;
+  obsOutput.stop();
+};
+
+const setupOBSCapture = () => {
   if (process.platform !== 'win32') {
     return;
   }
@@ -94,32 +190,26 @@ function setupOBSCapture() {
   obsSceneItem = obsScene.add(obsInput);
   nodeObs.Global.setOutputSource(0, obsScene.source);
   obsOutput = nodeObs.Output.create(
-    'frame_output',
-    'Frame Output',
-    {
-      save_path: path.join(app.getPath('userData'), 'Captures'),
-      quality: 90,
-    },
+    'pursuit_frame_output',
+    'Pursuit Frame Output',
+    {},
   );
-}
+};
 
-function destroyOBSCapture() {
+const destroyOBSCapture = () => {
   if (process.platform !== 'win32') {
     return;
   }
-  if (resTrackingInterval) {
-    clearInterval(resTrackingInterval);
-    resTrackingInterval = undefined;
-  }
+  stopCapture();
   obsOutput.release();
   nodeObs.Global.setOutputSource(0, null);
   obsSceneItem.remove();
   obsInput.release();
   obsScene.source.release();
   nodeObs.OBS_API_destroyOBS_API();
-}
+};
 
-function createWindow() {
+const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 475,
     height: 875,
@@ -153,9 +243,6 @@ function createWindow() {
       if (trackerWindow) {
         trackerWindow.webContents.send('close');
       }
-      if (captureWindow) {
-        captureWindow.webContents.send('close');
-      }
       destroyOBSCapture();
     }
   });
@@ -163,9 +250,9 @@ function createWindow() {
   if (process.platform === 'darwin') {
     require('./osx-menu');
   }
-}
+};
 
-function createTrackCapturesWindow() {
+const createTrackCapturesWindow = () => {
   const trackCapturesWindowURL = url.format({
     pathname: path.join(__dirname, '/src/trackCapturesBW.html'),
     protocol: 'file:',
@@ -177,9 +264,9 @@ function createTrackCapturesWindow() {
   trackCapturesWindow.on('closed', () => {
     trackCapturesWindow = null;
   });
-}
+};
 
-function createTrackerWindow() {
+const createTrackerWindow = () => {
   const trackerWindowURL = url.format({
     pathname: path.join(__dirname, '/src/overwatchTrackerBW.html'),
     protocol: 'file:',
@@ -190,25 +277,9 @@ function createTrackerWindow() {
   // trackerWindow.webContents.openDevTools();
   trackerWindow.on('closed', () => {
     trackerWindow = null;
-    if (captureWindow) {
-      captureWindow.webContents.send('close');
-    }
+    stopCapture();
   });
-}
-
-function createCaptureWindow() {
-  const captureWindowURL = url.format({
-    pathname: path.join(__dirname, '/src/takeCaptureBW.html'),
-    protocol: 'file:',
-    slashes: true,
-  });
-  captureWindow = new BrowserWindow({ show: false });
-  captureWindow.loadURL(captureWindowURL);
-  // captureWindow.webContents.openDevTools();
-  captureWindow.on('closed', () => {
-    captureWindow = null;
-  });
-}
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -259,7 +330,6 @@ ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
   if (userInfo.externalOBSCapture === null) {
     if (!externalOBSCapture) {
       setupOBSCapture();
-      createCaptureWindow();
       createTrackerWindow();
     }
     userInfo.externalOBSCapture = externalOBSCapture;
@@ -321,128 +391,26 @@ ipcMain.on('sign-out', (event, userId) => {
   }
 
   if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
-    // perform stop-capture event logic
-    if (resTrackingInterval) {
-      clearInterval(resTrackingInterval);
-      resTrackingInterval = undefined;
-    }
-    if (captureWindow) {
-      captureWindow.webContents.send('stop-capture');
-      if (mainWindow) {
-        mainWindow.webContents.send('stop-capture');
-      }
-    }
+    stopCapture();
   }
 });
 
 ipcMain.on('start-capture', () => {
-  if (userInfo.userId === null) {
-    return;
-  }
-  if (!resTrackingInterval) {
-    resTrackingInterval = setInterval(() => {
-      const width = obsInput.width;
-      const height = obsInput.height;
-      if (width !== 0 && height !== 0) {
-        let xScale = 1;
-        let yScale = 1;
-        if (width / height > 2.38) { // 43:18
-          obsDisplayInfo.scaleRes = '2580x1080';
-          xScale = 2580 / width;
-          yScale = 1080 / height;
-        } else if (width / height > 2.1) { // 64:27
-          obsDisplayInfo.scaleRes = '2560x1080';
-          xScale = 2560 / width;
-          yScale = 1080 / height;
-        } else if (width / height > 1.7) { // 16:9
-          obsDisplayInfo.scaleRes = '1920x1080';
-          xScale = 1920 / width;
-          yScale = 1080 / height;
-        } else if (width / height > 1.5) { // 16:10
-          obsDisplayInfo.scaleRes = '1920x1200';
-          xScale = 1920 / width;
-          yScale = 1200 / height;
-        } else if (width / height > 1.2) { // 4:3
-          obsDisplayInfo.scaleRes = '1920x1440';
-          xScale = 1920 / width;
-          yScale = 1440 / height;
-        }
-        const newScale = { x: xScale, y: yScale };
-        if (obsSceneItem.scale !== newScale) {
-          obsSceneItem.scale = newScale;
-        }
-        if (`${obsScene.source.width}x${obsScene.source.height}` !== obsDisplayInfo.scaleRes && !obsDisplayInfo.changingRes) {
-          obsDisplayInfo.changingRes = true;
-          obsOutput.stop();
-          updateOBSSettings('Video', {
-            Base: obsDisplayInfo.scaleRes,
-            Output: obsDisplayInfo.scaleRes,
-          });
-          if (resTrackingInterval) {
-            if (mainWindow) {
-              mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
-            }
-            obsOutput.start();
-          }
-          obsDisplayInfo.changingRes = false;
-        }
-      }
-    }, 500);
-  }
-  if (captureWindow) {
-    captureWindow.webContents.send('start-capture');
-    if (mainWindow) {
-      mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
-    }
-  }
+  startCapture();
 });
 
 ipcMain.on('stop-capture', () => {
-  if (resTrackingInterval) {
-    clearInterval(resTrackingInterval);
-    resTrackingInterval = undefined;
-  }
-  if (captureWindow) {
-    captureWindow.webContents.send('stop-capture');
-    if (mainWindow) {
-      mainWindow.webContents.send('stop-capture');
-    }
-  }
-});
-
-ipcMain.on('start-obs-capture', (event, folder) => {
-  obsDisplayInfo.capturing = true;
-  obsOutput.update({ save_path: folder });
-  obsOutput.start();
-});
-
-ipcMain.on('stop-obs-capture', () => {
-  obsDisplayInfo.capturing = false;
-  obsOutput.stop();
-});
-
-ipcMain.on('update-obs-capture-folder', (event, folder) => {
-  obsOutput.update({ save_path: folder });
+  stopCapture();
 });
 
 ipcMain.on('create-obs-display', () => {
-  if (!obsDisplayInfo.capturing || !obsDisplayInfo.show) {
-    return;
-  }
-  nodeObs.OBS_content_createDisplay(
-    mainWindow.getNativeWindowHandle(),
-    obsDisplayInfo.name,
-  );
-  nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
-  nodeObs.OBS_content_moveDisplay(obsDisplayInfo.name, obsDisplayInfo.x, obsDisplayInfo.y);
+  createOBSDisplay();
 });
 
-ipcMain.on('remove-obs-display', () => (
-  nodeObs.OBS_content_destroyDisplay(obsDisplayInfo.name)
-));
+ipcMain.on('remove-obs-display', () => {
+  removeOBSDisplay();
+});
 
 ipcMain.on('update-obs-display', (event, show, width, height, x, y) => {
-  obsDisplayInfo = Object.assign(obsDisplayInfo, { show, width, height, x, y });
-  nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
-  nodeObs.OBS_content_moveDisplay(obsDisplayInfo.name, obsDisplayInfo.x, obsDisplayInfo.y);
+  updateOBSDisplay(show, width, height, x, y);
 });
