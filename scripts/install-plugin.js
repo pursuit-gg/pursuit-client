@@ -6,7 +6,7 @@ const os = require('os');
 const colors = require('colors/safe');
 const zip = require('7zip-bin');
 
-const OBS_FRAME_OUTPUT_VERSION = '0.1.1';
+const OBS_FRAME_OUTPUT_VERSION = '0.1.2';
 
 async function runScript() {
   const zipExe = zip.path7za;
