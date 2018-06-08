@@ -140,6 +140,9 @@ const startCapture = () => {
 };
 
 const stopCapture = () => {
+  if (process.platform !== 'win32') {
+    return;
+  }
   if (resTrackingInterval) {
     clearInterval(resTrackingInterval);
     resTrackingInterval = undefined;
@@ -346,7 +349,7 @@ ipcMain.on('upload-capture-folder', (event, folder, userId) => {
   win.loadURL(backgroundWindowURL);
   // win.webContents.openDevTools();
   win.webContents.on('did-finish-load', () => {
-    win.webContents.send('upload', folder, userId);
+    win.webContents.send('upload', folder, userId, 1.5);
   });
 });
 

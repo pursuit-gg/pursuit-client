@@ -7,6 +7,8 @@
     const fs = require('fs-extra');
     const tar = require('tar');
     const PassThrough = require('stream').PassThrough;
+    const proxyAgent = require('proxy-agent');
+    const proxy = require('throttle-proxy');
 
     // set the default config object
     AWS.config.region = AWS_REGION;
@@ -14,9 +16,22 @@
       IdentityPoolId: AWS_IDENTITY_POOL_ID,
     });
     AWS.config.credentials = creds;
+    AWS.config.update({
+      httpOptions: { agent: proxyAgent('socks5://localhost:1080') },
+    });
+
     let uploadTries = 0;
 
-    function deleteFolder(folder, userId) {
+    const createProxy = bandwidth => (
+      proxy({
+        port: 1080,
+        incomingSpeed: bandwidth * ((1024 * 1024) / 8), //convert from Mbps to Bps
+        outgoingSpeed: bandwidth * ((1024 * 1024) / 8),
+        delay: 0,
+      })
+    );
+
+    const deleteFolder = (folder, userId) => {
       fs.remove(folder, (removeErr) => {
         if (removeErr) {
           console.error(removeErr);
@@ -24,9 +39,9 @@
         ipc.send('capture-folder-upload-finished', folder, userId);
         window.close();
       });
-    }
+    };
 
-    function uploadFolder(folder, userId) {
+    const uploadFolder = (folder, userId) => {
       console.log(folder);
       uploadTries += 1;
       fs.pathExists(folder, (err, exists) => {
@@ -85,10 +100,11 @@
           });
         });
       });
-    }
+    };
 
-    ipc.on('upload', (event, folder, userId) => {
+    ipc.on('upload', (event, folder, userId, bandwidth) => {
       console.log('upload', folder, userId);
+      createProxy(bandwidth);
       uploadFolder(folder, userId);
     });
   </script>
