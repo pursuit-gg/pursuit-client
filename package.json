@@ -59,6 +59,7 @@
     "fs-extra": "^4.0.0",
     "mixpanel-browser": "^2.11.1",
     "normalizr": "^3.2.3",
+    "portscanner": "^2.2.0",
     "prop-types": "^15.5.10",
     "proxy-agent": "^3.0.0",
     "rc-tooltip": "^3.5.0",

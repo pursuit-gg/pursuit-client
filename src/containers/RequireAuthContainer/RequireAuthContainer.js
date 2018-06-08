@@ -79,6 +79,7 @@ class RequireAuthContainer extends Component {
         'upload-capture-folder',
         nextProps.captureStatus.currentUpload.folder,
         nextProps.captureStatus.currentUpload.userId,
+        nextProps.uploadBandwidth,
       );
     }
   }
@@ -117,6 +118,7 @@ RequireAuthContainer.propTypes = {
   user: PropTypes.object.isRequired,
   captureStatus: PropTypes.object.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
+  uploadBandwidth: PropTypes.number.isRequired,
   goLogin: PropTypes.func.isRequired,
   captureStarted: PropTypes.func.isRequired,
   captureStopped: PropTypes.func.isRequired,
@@ -132,6 +134,7 @@ const mapStateToProps = ({ user, captureStatus, settings }) => ({
   user,
   captureStatus,
   manualCaptureUpload: settings.manualCaptureUpload,
+  uploadBandwidth: settings.uploadBandwidth,
 });
 
 const mapDispatchToProps = dispatch => ({

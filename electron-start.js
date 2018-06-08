@@ -19,6 +19,7 @@ const url = require('url');
 let mainWindow;
 let trackerWindow;
 let trackCapturesWindow;
+const uploadWindows = {};
 
 let obsInput;
 let obsScene;
@@ -231,7 +232,7 @@ const createWindow = () => {
   mainWindow.loadURL(startUrl);
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools({ mode: 'undocked' });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -239,6 +240,11 @@ const createWindow = () => {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+    Object.keys(uploadWindows).forEach((id) => {
+      if (uploadWindows[id]) {
+        uploadWindows[id].webContents.send('close');
+      }
+    });
     if (trackCapturesWindow) {
       trackCapturesWindow.webContents.send('close');
     }
@@ -339,17 +345,22 @@ ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
   }
 });
 
-ipcMain.on('upload-capture-folder', (event, folder, userId) => {
+ipcMain.on('upload-capture-folder', (event, folder, userId, bandwidth) => {
   const backgroundWindowURL = url.format({
     pathname: path.join(__dirname, '/src/uploadCaptureFolderBW.html'),
     protocol: 'file:',
     slashes: true,
   });
   const win = new BrowserWindow({ show: false });
+  const winId = win.id;
+  uploadWindows[winId] = win;
   win.loadURL(backgroundWindowURL);
   // win.webContents.openDevTools();
   win.webContents.on('did-finish-load', () => {
-    win.webContents.send('upload', folder, userId, 1.5);
+    win.webContents.send('upload', folder, userId, bandwidth);
+  });
+  win.on('closed', () => {
+    uploadWindows[winId] = null;
   });
 });
 

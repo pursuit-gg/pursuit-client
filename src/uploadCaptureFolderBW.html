@@ -9,6 +9,7 @@
     const PassThrough = require('stream').PassThrough;
     const proxyAgent = require('proxy-agent');
     const proxy = require('throttle-proxy');
+    const portscanner = require('portscanner');
 
     // set the default config object
     AWS.config.region = AWS_REGION;
@@ -16,20 +17,21 @@
       IdentityPoolId: AWS_IDENTITY_POOL_ID,
     });
     AWS.config.credentials = creds;
-    AWS.config.update({
-      httpOptions: { agent: proxyAgent('socks5://localhost:1080') },
-    });
 
+    let upload = null;
+    let uploadPending = false;
     let uploadTries = 0;
 
-    const createProxy = bandwidth => (
+    const createProxy = (port, bandwidth) => {
+      //convert from Mbps to Bps and take 2/3
+      const convertedBandwidth = Math.round((bandwidth * (2 / 3)) * ((1024 * 1024) / 8));
       proxy({
-        port: 1080,
-        incomingSpeed: bandwidth * ((1024 * 1024) / 8), //convert from Mbps to Bps
-        outgoingSpeed: bandwidth * ((1024 * 1024) / 8),
+        port,
+        incomingSpeed: convertedBandwidth,
+        outgoingSpeed: convertedBandwidth,
         delay: 0,
-      })
-    );
+      });
+    };
 
     const deleteFolder = (folder, userId) => {
       fs.remove(folder, (removeErr) => {
@@ -77,13 +79,14 @@
             ACL: 'private',
           };
           console.log('upload');
-          const upload = new AWS.S3.ManagedUpload({ params, queueSize: 1 });
+          upload = new AWS.S3.ManagedUpload({ params, queueSize: 1 });
           let loaded = 0;
           upload.on('httpUploadProgress', (progress) => {
             console.log(progress);
             ipc.send('capture-folder-uploading', folder, userId, (loaded / progress.total) * 100);
             loaded = progress.loaded;
           }).send((uploadErr, uploadData) => {
+            uploadPending = false;
             if (uploadErr) {
               console.error(uploadErr);
               ipc.send('capture-folder-upload-error', folder, userId, uploadErr);
@@ -98,14 +101,35 @@
               setTimeout(() => deleteFolder(folder, userId), 1000);
             }
           });
+          uploadPending = true;
         });
       });
     };
 
     ipc.on('upload', (event, folder, userId, bandwidth) => {
       console.log('upload', folder, userId);
-      createProxy(bandwidth);
-      uploadFolder(folder, userId);
+      if (bandwidth !== 0) {
+        portscanner.findAPortNotInUse(50000, 60000, (err, port) => {
+          if (err) {
+            console.error(err);
+          }
+          createProxy(err ? 1080 : port, bandwidth);
+          AWS.config.update({
+            httpOptions: { agent: proxyAgent(`socks5://localhost:${err ? 1080 : port}`) },
+          });
+          uploadFolder(folder, userId);
+        });
+      } else {
+        uploadFolder(folder, userId);
+      }
     });
+
+    ipc.on('close', () => {
+      if (uploadPending) {
+        upload.abort();
+      }
+      window.close();
+    });
+
   </script>
 </html>
