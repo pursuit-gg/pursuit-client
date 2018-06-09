@@ -218,7 +218,7 @@ const createWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 725,
+    minHeight: 625,
     icon: path.join(__dirname, 'icon.png'),
     backgroundColor: '#F5F5F5',
   });

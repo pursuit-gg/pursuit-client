@@ -3,32 +3,39 @@
   margin-left: auto;
   margin-right: auto;
   text-align: left;
-  padding-bottom: 92px;
 }
 
-.title {
-  margin-top: 10px;
-  padding-bottom: 5px;
+.buttonWrapper {
   text-align: center;
+}
+
+.subSection {
+  margin-top: 25px;
+}
+
+.subHeading {
+  width: 100%;
+  text-align: left;
+  padding-bottom: 5px;
   border-bottom: 1px solid #BBBDBF;
 }
 
 .statusIcon {
   display: inline-block;
-  height: 60px;
-  width: 60px;
+  height: 40px;
+  width: 40px;
 }
 
 .statusWrapper {
-  margin-top: 20px;
-  margin-left: 10px;
-  min-height: 70px;
+  margin-top: 10px;
+  margin-left: 20px;
+  min-height: 50px;
 }
 
 .statusText {
   display: inline-block;
   vertical-align: top;
-  margin-top: 18px;
+  margin-top: 8px;
   margin-left: 10px;
 }
 
@@ -59,7 +66,7 @@
 .toggleWrapper {
   vertical-align: top;
   float: right;
-  margin-right: 35px;
+  margin-right: 20px;
 }
 
 .capturePreviewWrapper {
@@ -71,37 +78,25 @@
   color: #61BFE1;
 }
 
-.dropdownTriangle {
-  height: 6px;
-  padding: 4px;
-  margin: 0px 4px;
-  vertical-align: top;
-}
-
-.troubleshootWrapper {
-  padding: 10px 20px;
+.discordFooter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  background-color: #7289DA;
   color: #FFFFFF;
-  background-color: #636161;
   position: fixed;
   bottom: 0px;
   right: 0px;
   left: 0px;
 }
 
-.troubleshoot {
-  margin-bottom: 5px;
-  text-align: center;
-  max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
+.discordFooter:hover {
+  text-decoration: none;
+  color: #FFFFFF;
 }
 
-.troubleshootButtons {
-  text-align: center;
-  padding-top: 5px;
-}
-
-.troubleshootButton {
-  display: inline-block;
-  padding: 0px 5px;
+.discordLogo {
+  height: 15px;
+  margin-right: 10px;
 }
