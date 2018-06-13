@@ -2,6 +2,7 @@ export const AUTH_SUCCESS = 'auth_success';
 export const AUTH_CHANGE = 'auth_change';
 export const CLEAR_USER_AUTH = 'clear_user_auth';
 export const CLEAR_USER_SUCCESS_MESSAGE = 'clear_user_success_message';
+export const UPDATE_USER_SUCCESS = 'update_user_success';
 
 export const SETTINGS_SET_UPDATE_AVAILABLE = 'set_update_available';
 export const SETTINGS_SET_MANUAL_CAPTURE_UPLOAD = 'set_manual_capture_upload';

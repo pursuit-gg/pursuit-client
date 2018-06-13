@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
+import SignupForm from 'components/SignupForm/SignupForm';
 import WhiteCard from 'components/WhiteCard/WhiteCard';
 import './SignupPage.m.css';
 
@@ -11,6 +12,7 @@ const SignupPage = () => (
   <div styleName="wrapper">
     <h1 styleName="title"> Sign Up </h1>
     <WhiteCard>
+      <SignupForm />
       <h5><Link
         to="/login"
         className="underline inlineBlock"

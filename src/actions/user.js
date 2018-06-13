@@ -7,13 +7,16 @@ import {
   CLEAR_USER_AUTH,
   CLEAR_USER_SUCCESS_MESSAGE,
   RESET_STATE_ON_LOGOUT,
+  UPDATE_USER_SUCCESS,
 } from 'actions/types';
 import {
   MP_USER_SIGNUP,
   MP_USER_LOGIN,
 } from 'actions/mixpanelTypes';
 import {
+  signUpPost,
   loginPost,
+  updateUserPost,
 } from 'requests/users';
 import { addError, removeError } from 'actions/errors';
 import { addRequest, removeRequest } from 'actions/requests';
@@ -70,6 +73,60 @@ export function authChange() {
     type: AUTH_CHANGE,
   };
 }
+
+function updateUserSuccess(json) {
+  mixpanel.identify(json.data.id);
+  mixpanel.people.set({
+    $username: json.data.username,
+    $email: json.data.email,
+  });
+  mixpanel.register({
+    username: json.data.username,
+  });
+  return {
+    type: UPDATE_USER_SUCCESS,
+    user: json.data,
+    message: 'User Updated Successfully',
+  };
+}
+
+export const updateUser = (params, continueOnboarding = false) => (
+  (dispatch, getState) => {
+    dispatch(addRequest('updateUser'));
+    dispatch(removeError('updateUser'));
+    dispatch(clearUserMessage());
+    updateUserPost(getState().user, params).then((data) => {
+      dispatch(updateUserSuccess(data));
+      dispatch(removeRequest('updateUser'));
+      if (continueOnboarding) {
+        dispatch(push('/onboarding'));
+      } else {
+        dispatch(push('/home'));
+      }
+    })
+    .catch((err) => {
+      dispatch(addError('updateUser', err));
+      dispatch(removeRequest('updateUser'));
+    });
+  }
+);
+
+export const signUp = (email, password) => (
+  (dispatch) => {
+    dispatch(addRequest('signup'));
+    dispatch(removeError('signup'));
+    signUpPost(email, password)
+      .then((data) => {
+        dispatch(authSuccess(data, true));
+        dispatch(push('/set_username'));
+        dispatch(removeRequest('signup'));
+      })
+      .catch((err) => {
+        dispatch(addError('signup', err));
+        dispatch(removeRequest('signup'));
+      });
+  }
+);
 
 export const login = (email, password, redirectToOnboarding) => (
   (dispatch) => {

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import SignupPage from 'containers/SignupPage/SignupPage';
+import SetUsernamePage from 'containers/SetUsernamePage/SetUsernamePage';
 import LoginPage from 'containers/LoginPage/LoginPage';
 import WelcomePage from 'containers/WelcomePage/WelcomePage';
 import PublicContainer from 'containers/PublicContainer/PublicContainer';
@@ -39,6 +40,7 @@ const App = () => (
         </Route>
         <Route path="onboarding" component={OnboardingPage} />
         <Route component={RequireAuthContainer} >
+          <Route path="set_username" component={SetUsernamePage} />
           <Route component={MainLayout} >
             <Route path="home" component={HomePage} />
             <Route path="settings" component={SettingsPage} />
