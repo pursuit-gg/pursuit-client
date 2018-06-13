@@ -97,6 +97,6 @@ export const logoutUser = () => (
     mixpanel.reset();
     dispatch(clearUserAuth());
     dispatch(resetStateOnLogout());
-    dispatch(push('/login'));
+    dispatch(push('/welcome'));
   }
 );

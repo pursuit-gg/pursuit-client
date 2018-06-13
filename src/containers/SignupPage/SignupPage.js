@@ -2,21 +2,19 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import LoginForm from 'components/LoginForm/LoginForm';
 import WhiteCard from 'components/WhiteCard/WhiteCard';
-import './LoginPage.m.css';
+import './SignupPage.m.css';
 
 const electron = window.require('electron');
 
-const LoginPage = () => (
+const SignupPage = () => (
   <div styleName="wrapper">
-    <h1 styleName="title"> Login </h1>
+    <h1 styleName="title"> Sign Up </h1>
     <WhiteCard>
-      <LoginForm />
       <h5><Link
-        to="/signup"
+        to="/login"
         className="underline inlineBlock"
-      > Sign up </Link></h5>
+      > Login </Link></h5>
       <h5><a
         className="underline inlineBlock"
         onClick={(e) => {
@@ -28,4 +26,4 @@ const LoginPage = () => (
   </div>
 );
 
-export default LoginPage;
+export default SignupPage;

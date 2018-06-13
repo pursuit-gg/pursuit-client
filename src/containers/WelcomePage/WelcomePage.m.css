@@ -1,0 +1,23 @@
+.wrapper {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  color: #FFF;
+  padding: 0px 20px;
+}
+
+.title {
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.description {
+  margin-bottom: 30px;
+}
+
+.header {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 120px;
+  margin-bottom: 80px;
+}

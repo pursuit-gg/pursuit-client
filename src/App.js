@@ -3,7 +3,9 @@ import { Router, Route, hashHistory, IndexRedirect } from 'react-router';
 import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 
+import SignupPage from 'containers/SignupPage/SignupPage';
 import LoginPage from 'containers/LoginPage/LoginPage';
+import WelcomePage from 'containers/WelcomePage/WelcomePage';
 import PublicContainer from 'containers/PublicContainer/PublicContainer';
 import RequireAuthContainer from 'containers/RequireAuthContainer/RequireAuthContainer';
 import MainLayout from 'containers/MainLayout/MainLayout';
@@ -30,7 +32,9 @@ const App = () => (
     <Router history={history}>
       <Route path="/" component={Root}>
         <IndexRedirect to="home" />
+        <Route path="welcome" component={WelcomePage} />
         <Route component={PublicContainer}>
+          <Route path="signup" component={SignupPage} />
           <Route path="login" component={LoginPage} />
         </Route>
         <Route path="onboarding" component={OnboardingPage} />
