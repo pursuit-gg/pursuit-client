@@ -7,7 +7,7 @@ import mixpanel from 'mixpanel-browser';
 import {
   MP_ONBOARDING_NEXT,
 } from 'actions/mixpanelTypes';
-import { setOnboardingComplete } from 'actions/settings';
+import { setOnboardingComplete, setUploadBandwidth } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import logoLarge from 'images/logo/logoLarge.png';
 import logoLargeWhite from 'images/logo/logoLargeWhite.png';
@@ -112,6 +112,7 @@ OnboardingPage.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   goToHome: () => {
+    dispatch(setUploadBandwidth(3));
     dispatch(setOnboardingComplete(true));
     dispatch(push('/home'));
   },

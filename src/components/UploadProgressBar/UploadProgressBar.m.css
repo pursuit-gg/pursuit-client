@@ -1,13 +1,13 @@
 .wrapper {
   text-align: center;
-  margin: 0px 10px;
+  margin: 0px 20px;
 }
 
 .progressBackground {
   height: 20px;
   width: 100%;
   border-radius: 4px;
-  background-color: #A6A8AB;
+  background-color: #BBBDBF;
   overflow: hidden;
   margin: 5px 0px;
 }

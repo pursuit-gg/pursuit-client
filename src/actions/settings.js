@@ -4,6 +4,7 @@ import {
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
+  SETTINGS_SET_UPLOAD_BANDWIDTH,
 } from 'actions/types';
 
 export function setUpdateAvailable(isAvailable) {
@@ -38,5 +39,12 @@ export function setExternalOBSCapture(externalOBSCapture) {
   return {
     type: SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
     externalOBSCapture,
+  };
+}
+
+export function setUploadBandwidth(uploadBandwidth) {
+  return {
+    type: SETTINGS_SET_UPLOAD_BANDWIDTH,
+    uploadBandwidth,
   };
 }
