@@ -232,7 +232,7 @@ const createWindow = () => {
   mainWindow.loadURL(startUrl);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools({ mode: 'undocked' });
+  // mainWindow.webContents.openDevTools({ mode: 'undocked' });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {

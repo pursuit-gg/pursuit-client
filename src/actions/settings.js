@@ -6,6 +6,7 @@ import {
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_COMPUTER_TYPE,
+  SETTINGS_CLOSED_TROUBLESHOOTING_TIP,
 } from 'actions/types';
 
 export function setUpdateAvailable(isAvailable) {
@@ -26,6 +27,12 @@ export function setOnboardingComplete(onboardingComplete) {
   return {
     type: SETTINGS_SET_ONBOARDING_COMPLETE,
     onboardingComplete,
+  };
+}
+
+export function closeTroubleshootingTip() {
+  return {
+    type: SETTINGS_CLOSED_TROUBLESHOOTING_TIP,
   };
 }
 

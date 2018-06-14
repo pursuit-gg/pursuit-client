@@ -6,12 +6,14 @@ import {
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_COMPUTER_TYPE,
+  SETTINGS_CLOSED_TROUBLESHOOTING_TIP,
 } from '../actions/types';
 
 const INITIAL_STATE = {
   updateAvailable: false,
   manualCaptureUpload: false,
   onboardingComplete: false,
+  troubleshootingTipClosed: false,
   launchOnStartup: true,
   externalOBSCapture: false,
   pendingExternalOBSCapture: false,
@@ -37,10 +39,14 @@ const settings = (state = INITIAL_STATE, action) => {
         onboardingComplete: action.onboardingComplete,
       };
     case SETTINGS_SET_COMPUTER_TYPE:
-      console.log("test");
       return {
         ...state,
         computerType: action.computerType,
+      };
+    case SETTINGS_CLOSED_TROUBLESHOOTING_TIP:
+      return {
+        ...state,
+        troubleshootingTipClosed: true,
       };
     case SETTINGS_SET_LAUNCH_ON_STARTUP:
       return {
