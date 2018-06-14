@@ -158,14 +158,23 @@ class HomePage extends Component {
         </div>
         {!this.props.troubleshootingTipClosed &&
           <div styleName="troubleshootingTip">
-            <h2 styleName="troubleshootingTipTitle"> {this.props.computerType === 'laptop' ? 'Laptop Support' : 'Not seeing a match?'} </h2>
+            <h2 styleName="troubleshootingTipTitle">
+              {this.props.computerType === 'laptop' ? 'Laptop Support' : 'Not seeing a match?'}
+            </h2>
             <a styleName="closeX" onClick={this.props.closeTroubleshootingTip}>
               <h1> X </h1>
             </a>
             {this.props.computerType === 'laptop' &&
               <h5>
                 If you aren&apos;t seeing matches after uploading, check the capture preview.
-                If it&apos;s black, you must relaunch the app using the instructions here.
+                If it&apos;s black, you must relaunch the app using the instructions
+                <a
+                  styleName="whiteLink"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    electron.shell.openExternal('https://docsend.com/view/am2bnwi');
+                  }}
+                > here</a>.
               </h5>
             }
             {this.props.computerType !== 'laptop' &&

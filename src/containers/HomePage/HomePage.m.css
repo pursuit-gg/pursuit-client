@@ -139,3 +139,9 @@
   left: 0px;
   width: 100%;
 }
+
+.whiteLink {
+  text-decoration: underline;
+  color: #FFF;
+}
+
