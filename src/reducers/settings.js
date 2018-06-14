@@ -5,6 +5,7 @@ import {
   SETTINGS_SET_LAUNCH_ON_STARTUP,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
+  SETTINGS_SET_COMPUTER_TYPE,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -15,6 +16,7 @@ const INITIAL_STATE = {
   externalOBSCapture: false,
   pendingExternalOBSCapture: false,
   uploadBandwidth: 0,
+  computerType: null,
 };
 
 const settings = (state = INITIAL_STATE, action) => {
@@ -33,6 +35,12 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         onboardingComplete: action.onboardingComplete,
+      };
+    case SETTINGS_SET_COMPUTER_TYPE:
+      console.log("test");
+      return {
+        ...state,
+        computerType: action.computerType,
       };
     case SETTINGS_SET_LAUNCH_ON_STARTUP:
       return {
