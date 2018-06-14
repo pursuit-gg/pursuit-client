@@ -128,7 +128,8 @@ class OnboardingPage extends Component {
             <div>
               <h1 styleName="title"> SET GRAPHICS CARD </h1>
               <div className="textLeft">
-                <h2> To use Pursuit on a laptop, you <span styleName="strongBlue"> must relaunch </span> the app using these steps. </h2>
+                <h2> To use Pursuit on a laptop, you <span styleName="strongBlue"> must </span> follow these steps. </h2>
+                <h2> - Close Pursuit </h2>
                 <h2> - Right click on the icon, select "Run with graphics processor" </h2>
                 <h2> - Select your dedicated graphics card. </h2>
               </div>
@@ -147,7 +148,7 @@ class OnboardingPage extends Component {
           }
           {this.state.step < 3 &&
             <DefaultButton
-              text="Next"
+              text={this.state.step === 1 ? 'Done' : 'Next'}
               onClick={() => this.nextStep()}
             />
           }
