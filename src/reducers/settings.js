@@ -3,6 +3,8 @@ import {
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
+  SETTINGS_SET_MINIMIZE_ON_STARTUP,
+  SETTINGS_SET_MINIMIZE_TO_TRAY,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_COMPUTER_TYPE,
@@ -15,6 +17,8 @@ const INITIAL_STATE = {
   onboardingComplete: false,
   troubleshootingTipClosed: false,
   launchOnStartup: true,
+  minimizeOnStartup: true,
+  minimizeToTray: true,
   externalOBSCapture: false,
   pendingExternalOBSCapture: false,
   uploadBandwidth: 0,
@@ -52,6 +56,16 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         launchOnStartup: action.launchOnStartup,
+      };
+    case SETTINGS_SET_MINIMIZE_ON_STARTUP:
+      return {
+        ...state,
+        minimizeOnStartup: action.minimizeOnStartup,
+      };
+    case SETTINGS_SET_MINIMIZE_TO_TRAY:
+      return {
+        ...state,
+        minimizeToTray: action.minimizeToTray,
       };
     case SETTINGS_SET_EXTERNAL_OBS_CAPTURE:
       return {

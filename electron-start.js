@@ -8,6 +8,8 @@ if (process.platform === 'win32') {
 
 const app = electron.app;
 const Menu = electron.Menu;
+const Tray = electron.Tray;
+const nativeImage = electron.nativeImage;
 const ipcMain = electron.ipcMain;
 const BrowserWindow = electron.BrowserWindow;
 
@@ -20,6 +22,7 @@ let mainWindow;
 let trackerWindow;
 let trackCapturesWindow;
 const uploadWindows = {};
+let appTray;
 
 let obsInput;
 let obsScene;
@@ -40,9 +43,22 @@ let resTrackingInterval;
 const userInfo = {
   userId: null,
   externalOBSCapture: null,
+  minimizeToTray: false,
+  isQuiting: false,
 };
 
 app.disableHardwareAcceleration();
+const isSecondInstance = app.makeSingleInstance(() => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+    mainWindow.show();
+  }
+});
+if (isSecondInstance) {
+  app.quit();
+}
 
 const updateOBSSettings = (setting, changes) => {
   const obsSettings = nodeObs.OBS_settings_getSettings(setting);
@@ -213,19 +229,22 @@ const destroyOBSCapture = () => {
   nodeObs.OBS_API_destroyOBS_API();
 };
 
-const createWindow = () => {
+const createMainWindow = () => {
+  const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+  const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
   mainWindow = new BrowserWindow({
     width: 475,
     height: 875,
     minWidth: 475,
     minHeight: 625,
-    icon: path.join(__dirname, 'icon.png'),
+    icon: nativeIcon,
     backgroundColor: '#F5F5F5',
+    show: !process.argv.includes('--hidden'),
   });
 
   // and load the index.html of the app.
   const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, '/build/index.html'),
+    pathname: path.join(__dirname, 'build/index.html'),
     protocol: 'file:',
     slashes: true,
   });
@@ -233,6 +252,66 @@ const createWindow = () => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools({ mode: 'undocked' });
+
+  appTray = new Tray(nativeIcon.resize({ width: 16, height: 16 }));
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Open',
+      click: () => {
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore();
+        }
+        mainWindow.show();
+      },
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Client Settings',
+      click: () => {
+        mainWindow.webContents.send('go-to-page', '/settings');
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore();
+        }
+        mainWindow.show();
+      },
+    },
+    {
+      label: 'Open Match History',
+      click: () => {
+        electron.shell.openExternal('https://pursuit.gg/profile');
+      },
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        userInfo.isQuiting = true;
+        if (mainWindow) {
+          mainWindow.close();
+        }
+      },
+    },
+  ]);
+  appTray.setToolTip('Pursuit');
+  appTray.setContextMenu(contextMenu);
+  appTray.on('click', () => {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+    mainWindow.show();
+  });
+
+  // Emitted when the window is about to close.
+  mainWindow.on('close', (event) => {
+    if (userInfo.minimizeToTray && !userInfo.isQuiting) {
+      event.preventDefault();
+      mainWindow.hide();
+    }
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -294,7 +373,7 @@ const createTrackerWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  createWindow();
+  createMainWindow();
   autoUpdater.checkForUpdates();
 });
 
@@ -329,10 +408,15 @@ ipcMain.on('restart', () => {
   }
 });
 
-ipcMain.on('set-launch-on-startup', (event, launchOnStartup) => {
+ipcMain.on('set-startup-settings', (event, launchOnStartup, minimizeOnStartup) => {
   app.setLoginItemSettings({
     openAtLogin: launchOnStartup,
+    args: minimizeOnStartup ? ['--hidden'] : [],
   });
+});
+
+ipcMain.on('set-minimize-to-tray', (event, minimizeToTray) => {
+  userInfo.minimizeToTray = minimizeToTray;
 });
 
 ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {

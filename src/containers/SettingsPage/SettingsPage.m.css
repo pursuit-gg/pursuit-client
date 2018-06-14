@@ -70,6 +70,10 @@
   color: #DB6955;
 }
 
+.disabledText {
+  color: #BBBDBF;
+}
+
 .checkbox {
   appearance: none;
   cursor: pointer;
@@ -101,6 +105,23 @@
 
 .checkbox:focus {
   outline: none;
+}
+
+.checkbox:disabled {
+  background-color: #E5E6E7;
+}
+
+.checkbox:disabled:checked {
+  background-color: #BBBDBF;
+  border-color: #BBBDBF;
+}
+
+.checkbox:disabled:after {
+  border-color: #E5E6E7;
+}
+
+.checkbox:disabled:checked:after {
+  border-color: #FFF;
 }
 
 .dropdownWrapper {

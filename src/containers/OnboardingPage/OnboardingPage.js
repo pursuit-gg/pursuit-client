@@ -1,3 +1,5 @@
+/* global window */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -16,6 +18,8 @@ import clientImg from 'images/onboarding/client.png';
 import setGraphicsCardImg from 'images/onboarding/setgraphicscard.png';
 import './OnboardingPage.m.css';
 
+const ipcRenderer = window.require('electron').ipcRenderer;
+
 const bandwidthLookup = {
   '1-5': 1.5,
   '6-10': 2,
@@ -30,6 +34,22 @@ class OnboardingPage extends Component {
     this.nextStep = this.nextStep.bind(this);
     this.goToHome = this.goToHome.bind(this);
     this.selectUpload = this.selectUpload.bind(this);
+  }
+
+  componentWillMount() {
+    if (this.props.computerType === 'laptop') {
+      ipcRenderer.send('set-minimize-to-tray', false);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.computerType !== nextProps.computerType && nextProps.computerType === 'laptop') {
+      ipcRenderer.send('set-minimize-to-tray', false);
+    }
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.send('set-minimize-to-tray', this.props.minimizeToTray);
   }
 
   nextStep() {
@@ -226,21 +246,25 @@ class OnboardingPage extends Component {
 }
 
 OnboardingPage.propTypes = {
-  goToHome: PropTypes.func.isRequired,
-  setComputerType: PropTypes.func.isRequired,
   computerType: PropTypes.string,
+  minimizeToTray: PropTypes.bool.isRequired,
+  setComputerType: PropTypes.func.isRequired,
+  goToHome: PropTypes.func.isRequired,
 };
 
 OnboardingPage.defaultProps = {
   computerType: null,
 };
 
-const mapStateToProps = ({ settings }) => (
-  { computerType: settings.computerType }
-);
+const mapStateToProps = ({ settings }) => ({
+  computerType: settings.computerType,
+  minimizeToTray: settings.minimizeToTray,
+});
 
 const mapDispatchToProps = dispatch => ({
-  setComputerType: computerType => dispatch(setComputerType(computerType)),
+  setComputerType: (computerType) => {
+    dispatch(setComputerType(computerType));
+  },
   goToHome: (uploadBandwidth) => {
     mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: uploadBandwidth });
     mixpanel.people.set({ upload_bandwidth: uploadBandwidth });

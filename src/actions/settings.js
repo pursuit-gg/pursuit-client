@@ -3,6 +3,8 @@ import {
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
+  SETTINGS_SET_MINIMIZE_ON_STARTUP,
+  SETTINGS_SET_MINIMIZE_TO_TRAY,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_COMPUTER_TYPE,
@@ -47,6 +49,20 @@ export function setLaunchOnStartup(launchOnStartup) {
   return {
     type: SETTINGS_SET_LAUNCH_ON_STARTUP,
     launchOnStartup,
+  };
+}
+
+export function setMinimizeOnStartup(minimizeOnStartup) {
+  return {
+    type: SETTINGS_SET_MINIMIZE_ON_STARTUP,
+    minimizeOnStartup,
+  };
+}
+
+export function setMinimizeToTray(minimizeToTray) {
+  return {
+    type: SETTINGS_SET_MINIMIZE_TO_TRAY,
+    minimizeToTray,
   };
 }
 
