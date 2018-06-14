@@ -220,8 +220,12 @@ HomePage.propTypes = {
   externalOBSCapture: PropTypes.bool.isRequired,
   captureStatus: PropTypes.object.isRequired,
   troubleshootingTipClosed: PropTypes.bool.isRequired,
-  computerType: PropTypes.string.isRequired,
+  computerType: PropTypes.string,
   closeTroubleshootingTip: PropTypes.func.isRequired,
+};
+
+HomePage.defaultProps = {
+  computerType: 'desktop',
 };
 
 const mapStateToProps = ({ settings, captureStatus }) => ({
