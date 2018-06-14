@@ -38,8 +38,8 @@ const App = () => (
           <Route path="signup" component={SignupPage} />
           <Route path="login" component={LoginPage} />
         </Route>
-        <Route path="onboarding" component={OnboardingPage} />
         <Route component={RequireAuthContainer} >
+          <Route path="onboarding" component={OnboardingPage} />
           <Route path="set_username" component={SetUsernamePage} />
           <Route component={MainLayout} >
             <Route path="home" component={HomePage} />

@@ -73,8 +73,8 @@ class OnboardingPage extends Component {
 
   renderTrackingDesc() {
     return (
-      <div styleName="title">
-        <h2>
+      <div>
+        <h2 styleName="title">
           Pursuit&apos;s tracking symbol will turn blue when the game is running.
           You should see the game in the capture preview.
         </h2>
@@ -148,7 +148,7 @@ class OnboardingPage extends Component {
           {this.state.step === 1 &&
             <div>
               <h1 styleName="title"> SET GRAPHICS CARD </h1>
-              <div className="textLeft">
+              <div className="textLeft" styleName="smallSpacing">
                 <h2> To use Pursuit on a laptop, you <span styleName="strongBlue"> must </span> follow these steps. </h2>
                 <h2> - Close Pursuit </h2>
                 <h2> - Right click on the icon, select "Run with graphics processor" </h2>
@@ -156,7 +156,7 @@ class OnboardingPage extends Component {
               </div>
               <img
                 alt="run with graphics processor"
-                styleName="imageScale"
+                styleName="imageScale smallSpacing"
                 src={setGraphicsCardImg}
               />
             </div>
@@ -198,7 +198,6 @@ class OnboardingPage extends Component {
           <DefaultButton
             text="Next"
             onClick={() => this.nextStep()}
-            styles={{ marginTop: '30px' }}
           />
         }
         {this.state.step === 2 &&

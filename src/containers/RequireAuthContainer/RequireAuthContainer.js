@@ -16,6 +16,8 @@ import {
   captureUploadErrored,
 } from 'actions/captureStatus';
 
+import './RequireAuthContainer.m.css';
+
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 class RequireAuthContainer extends Component {
@@ -102,7 +104,7 @@ class RequireAuthContainer extends Component {
 
   render() {
     return (
-      <div>
+      <div styleName="fullWidth">
         {this.props.isAuthenticated
           ? this.props.children
           : null

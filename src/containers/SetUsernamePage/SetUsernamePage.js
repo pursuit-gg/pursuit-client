@@ -8,6 +8,7 @@ import WhiteInverseInput from 'components/WhiteInverseInput/WhiteInverseInput';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import StandardError from 'components/StandardError/StandardError';
 import './SetUsernamePage.m.css';
+import logoLarge from 'images/logo/logoLarge.png';
 
 class SetUsernamePage extends Component {
   constructor(props) {
@@ -33,6 +34,7 @@ class SetUsernamePage extends Component {
   render() {
     return (
       <div styleName="wrapper">
+        <img src={logoLarge} alt="Pursuit" />
         <h1 styleName="title"> Set Up Your Account </h1>
         <WhiteCard>
           <form onSubmit={this.handleSubmit}>
