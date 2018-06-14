@@ -5,8 +5,20 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
-import { MP_OPEN_ON_STARTUP_TOGGLE, MP_OBS_MODE_TOGGLE, MP_UPLOAD_BANDWIDTH_SELECT } from 'actions/mixpanelTypes';
-import { setLaunchOnStartup, setExternalOBSCapture, setUploadBandwidth } from 'actions/settings';
+import {
+  MP_OPEN_ON_STARTUP_TOGGLE,
+  MP_MINIMIZE_ON_STARTUP_TOGGLE,
+  MP_MINIMIZE_TO_TRAY_TOGGLE,
+  MP_UPLOAD_BANDWIDTH_SELECT,
+  MP_OBS_MODE_TOGGLE,
+} from 'actions/mixpanelTypes';
+import {
+  setLaunchOnStartup,
+  setMinimizeOnStartup,
+  setMinimizeToTray,
+  setUploadBandwidth,
+  setExternalOBSCapture,
+} from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import SelectInput from 'components/SelectInput/SelectInput';
 import xIcon from 'images/genericIcons/darkGreyX.svg';
@@ -31,12 +43,16 @@ const availableUploadBandwidths = [
 
 const SettingsPage = ({
   launchOnStartup,
+  minimizeOnStartup,
+  minimizeToTray,
+  uploadBandwidth,
   externalOBSCapture,
   pendingExternalOBSCapture,
-  uploadBandwidth,
   setAutoStartup,
-  setOBSMode,
+  setStartMinimized,
+  setMinimizeOnClose,
   setBandwidth,
+  setOBSMode,
 }) => (
   <div styleName="wrapper">
     <div styleName="header">
@@ -55,7 +71,7 @@ const SettingsPage = ({
             styleName="checkbox"
             checked={launchOnStartup}
             onChange={() => {
-              ipcRenderer.send('set-launch-on-startup', !launchOnStartup);
+              ipcRenderer.send('set-startup-settings', !launchOnStartup, minimizeOnStartup);
               setAutoStartup(!launchOnStartup);
               mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, {
                 state: !launchOnStartup,
@@ -68,6 +84,52 @@ const SettingsPage = ({
         </label>
         <h5 styleName="settingText"> Launch automatically on startup </h5>
       </div>
+      <div styleName="settingWrapper">
+        <label htmlFor="minimizeOnStartup" className="flex">
+          <input
+            id="minimizeOnStartup"
+            type="checkbox"
+            styleName="checkbox"
+            checked={minimizeOnStartup}
+            disabled={!launchOnStartup}
+            onChange={() => {
+              ipcRenderer.send('set-startup-settings', launchOnStartup, !minimizeOnStartup);
+              setStartMinimized(!minimizeOnStartup);
+              mixpanel.track(MP_MINIMIZE_ON_STARTUP_TOGGLE, {
+                state: !minimizeOnStartup,
+              });
+              mixpanel.people.set({
+                minimize_on_startup: !minimizeOnStartup,
+              });
+            }}
+          />
+        </label>
+        <h5 styleName={`settingText ${launchOnStartup ? '' : 'disabledText'}`}> Start minimized </h5>
+      </div>
+    </div>
+    <div styleName="subSection">
+      <h4 styleName="subHeading"> Close </h4>
+      <div styleName="settingWrapper">
+        <label htmlFor="minimizeToTray" className="flex">
+          <input
+            id="minimizeToTray"
+            type="checkbox"
+            styleName="checkbox"
+            checked={minimizeToTray}
+            onChange={() => {
+              ipcRenderer.send('set-minimize-to-tray', !minimizeToTray);
+              setMinimizeOnClose(!minimizeToTray);
+              mixpanel.track(MP_MINIMIZE_TO_TRAY_TOGGLE, {
+                state: !minimizeToTray,
+              });
+              mixpanel.people.set({
+                minimize_to_tray: !minimizeToTray,
+              });
+            }}
+          />
+        </label>
+        <h5 styleName="settingText"> Minimize to tray when closed </h5>
+      </div>
     </div>
     <div styleName="subSection">
       <h4 styleName="subHeading"> Upload Limit </h4>
@@ -76,7 +138,11 @@ const SettingsPage = ({
         <div styleName="dropdownWrapper">
           <SelectInput
             options={availableUploadBandwidths}
-            selectOption={bandwidth => setBandwidth(bandwidth)}
+            selectOption={(bandwidth) => {
+              setBandwidth(bandwidth);
+              mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: bandwidth });
+              mixpanel.people.set({ upload_bandwidth: bandwidth });
+            }}
             selectedOption={availableUploadBandwidths.filter(bandwidth => bandwidth.val === uploadBandwidth)[0]}
           />
         </div>
@@ -142,32 +208,42 @@ const SettingsPage = ({
 
 SettingsPage.propTypes = {
   launchOnStartup: PropTypes.bool.isRequired,
+  minimizeOnStartup: PropTypes.bool.isRequired,
+  minimizeToTray: PropTypes.bool.isRequired,
+  uploadBandwidth: PropTypes.number.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   pendingExternalOBSCapture: PropTypes.bool.isRequired,
-  uploadBandwidth: PropTypes.number.isRequired,
   setAutoStartup: PropTypes.func.isRequired,
-  setOBSMode: PropTypes.func.isRequired,
+  setStartMinimized: PropTypes.func.isRequired,
+  setMinimizeOnClose: PropTypes.func.isRequired,
   setBandwidth: PropTypes.func.isRequired,
+  setOBSMode: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ settings }) => ({
   launchOnStartup: settings.launchOnStartup,
+  minimizeOnStartup: settings.minimizeOnStartup,
+  minimizeToTray: settings.minimizeToTray,
+  uploadBandwidth: settings.uploadBandwidth,
   externalOBSCapture: settings.externalOBSCapture,
   pendingExternalOBSCapture: settings.pendingExternalOBSCapture,
-  uploadBandwidth: settings.uploadBandwidth,
 });
 
 const mapDispatchToProps = dispatch => ({
   setAutoStartup: (launchOnStartup) => {
     dispatch(setLaunchOnStartup(launchOnStartup));
   },
-  setOBSMode: (externalOBSCapture) => {
-    dispatch(setExternalOBSCapture(externalOBSCapture));
+  setStartMinimized: (minimizeOnStartup) => {
+    dispatch(setMinimizeOnStartup(minimizeOnStartup));
+  },
+  setMinimizeOnClose: (minimizeToTray) => {
+    dispatch(setMinimizeToTray(minimizeToTray));
   },
   setBandwidth: (uploadBandwidth) => {
-    mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: uploadBandwidth });
-    mixpanel.people.set({ upload_bandwidth: uploadBandwidth });
     dispatch(setUploadBandwidth(uploadBandwidth));
+  },
+  setOBSMode: (externalOBSCapture) => {
+    dispatch(setExternalOBSCapture(externalOBSCapture));
   },
 });
 

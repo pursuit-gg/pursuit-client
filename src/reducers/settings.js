@@ -1,8 +1,11 @@
 import {
   SETTINGS_SET_UPDATE_AVAILABLE,
+  SETTINGS_SET_SHOW_CAPTURE_PREVIEW,
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
+  SETTINGS_SET_MINIMIZE_ON_STARTUP,
+  SETTINGS_SET_MINIMIZE_TO_TRAY,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_COMPUTER_TYPE,
@@ -11,10 +14,13 @@ import {
 
 const INITIAL_STATE = {
   updateAvailable: false,
+  showCapturePreview: true,
   manualCaptureUpload: false,
   onboardingComplete: false,
   troubleshootingTipClosed: false,
   launchOnStartup: true,
+  minimizeOnStartup: true,
+  minimizeToTray: true,
   externalOBSCapture: false,
   pendingExternalOBSCapture: false,
   uploadBandwidth: 0,
@@ -28,6 +34,11 @@ const settings = (state = INITIAL_STATE, action) => {
         ...state,
         updateAvailable: action.updateAvailable,
       };
+    case SETTINGS_SET_SHOW_CAPTURE_PREVIEW:
+      return {
+        ...state,
+        showCapturePreview: action.showCapturePreview,
+      };
     case SETTINGS_SET_MANUAL_CAPTURE_UPLOAD:
       return {
         ...state,
@@ -38,20 +49,20 @@ const settings = (state = INITIAL_STATE, action) => {
         ...state,
         onboardingComplete: action.onboardingComplete,
       };
-    case SETTINGS_SET_COMPUTER_TYPE:
-      return {
-        ...state,
-        computerType: action.computerType,
-      };
-    case SETTINGS_CLOSE_TROUBLESHOOTING_TIP:
-      return {
-        ...state,
-        troubleshootingTipClosed: true,
-      };
     case SETTINGS_SET_LAUNCH_ON_STARTUP:
       return {
         ...state,
         launchOnStartup: action.launchOnStartup,
+      };
+    case SETTINGS_SET_MINIMIZE_ON_STARTUP:
+      return {
+        ...state,
+        minimizeOnStartup: action.minimizeOnStartup,
+      };
+    case SETTINGS_SET_MINIMIZE_TO_TRAY:
+      return {
+        ...state,
+        minimizeToTray: action.minimizeToTray,
       };
     case SETTINGS_SET_EXTERNAL_OBS_CAPTURE:
       return {
@@ -62,6 +73,16 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         uploadBandwidth: action.uploadBandwidth,
+      };
+    case SETTINGS_SET_COMPUTER_TYPE:
+      return {
+        ...state,
+        computerType: action.computerType,
+      };
+    case SETTINGS_CLOSE_TROUBLESHOOTING_TIP:
+      return {
+        ...state,
+        troubleshootingTipClosed: true,
       };
     default:
       return state;

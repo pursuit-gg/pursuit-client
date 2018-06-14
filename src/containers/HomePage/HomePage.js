@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
 import { MP_CLIENT_LOAD } from 'actions/mixpanelTypes';
-import { closeTroubleshootingTip } from 'actions/settings';
+import { setShowCapturePreview, closeTroubleshootingTip } from 'actions/settings';
 import ManualCaptureUploadToggle from 'components/ManualCaptureUploadToggle/ManualCaptureUploadToggle';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import UploadButton from 'components/UploadButton/UploadButton';
@@ -24,11 +24,6 @@ import './HomePage.m.css';
 const electron = window.require('electron');
 
 class HomePage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { showPreview: false };
-  }
-
   componentDidMount() {
     mixpanel.track(MP_CLIENT_LOAD, {});
   }
@@ -81,12 +76,12 @@ class HomePage extends Component {
                 <a
                   styleName="showPreview"
                   className="inlineBlock"
-                  onClick={() => this.setState({ showPreview: !this.state.showPreview })}
+                  onClick={() => this.props.setShowCapturePreview(!this.props.showCapturePreview)}
                 >
-                  {this.state.showPreview ? 'Hide Capture Preview' : 'Show Capture Preview'}
+                  {this.props.showCapturePreview ? 'Hide Capture Preview' : 'Show Capture Preview'}
                 </a>
               </h5>
-              {this.state.showPreview && <CapturePreview />}
+              {this.props.showCapturePreview && <CapturePreview />}
             </div>
           }
           {this.props.externalOBSCapture &&
@@ -216,11 +211,13 @@ class HomePage extends Component {
 }
 
 HomePage.propTypes = {
+  showCapturePreview: PropTypes.bool.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   captureStatus: PropTypes.object.isRequired,
   troubleshootingTipClosed: PropTypes.bool.isRequired,
   computerType: PropTypes.string,
+  setShowCapturePreview: PropTypes.func.isRequired,
   closeTroubleshootingTip: PropTypes.func.isRequired,
 };
 
@@ -229,6 +226,7 @@ HomePage.defaultProps = {
 };
 
 const mapStateToProps = ({ settings, captureStatus }) => ({
+  showCapturePreview: settings.showCapturePreview,
   manualCaptureUpload: settings.manualCaptureUpload,
   externalOBSCapture: settings.externalOBSCapture,
   captureStatus,
@@ -236,4 +234,4 @@ const mapStateToProps = ({ settings, captureStatus }) => ({
   troubleshootingTipClosed: settings.troubleshootingTipClosed,
 });
 
-export default connect(mapStateToProps, { closeTroubleshootingTip })(HomePage);
+export default connect(mapStateToProps, { setShowCapturePreview, closeTroubleshootingTip })(HomePage);
