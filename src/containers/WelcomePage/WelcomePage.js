@@ -44,11 +44,10 @@ WelcomePage.propTypes = {
   goToSignUp: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => ({
   goToLogin: () => dispatch(push('/login')),
   goToSignUp: () => dispatch(push('/signup')),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(WelcomePage);
+export default connect(() => ({}), mapDispatchToProps)(WelcomePage);

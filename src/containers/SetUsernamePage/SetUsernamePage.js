@@ -21,14 +21,8 @@ class SetUsernamePage extends Component {
     this.props.clearUserMessage();
   }
 
-  handleChange(event, mode) {
-    switch (mode) {
-      case 'username':
-        this.setState({ username: event.target.value });
-        break;
-      default:
-        break;
-    }
+  handleChange(event) {
+    this.setState({ username: event.target.value });
   }
 
   handleSubmit(event) {
@@ -46,7 +40,7 @@ class SetUsernamePage extends Component {
               type="text"
               label="Username"
               value={this.state.username}
-              onChange={event => this.handleChange(event, 'username')}
+              onChange={this.handleChange}
             />
             <div className="center">
               <DefaultButton

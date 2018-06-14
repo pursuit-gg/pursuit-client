@@ -11,7 +11,7 @@ export const SETTINGS_SET_LAUNCH_ON_STARTUP = 'set_launch_on_startup';
 export const SETTINGS_SET_EXTERNAL_OBS_CAPTURE = 'set_external_obs_capture';
 export const SETTINGS_SET_UPLOAD_BANDWIDTH = 'set_upload_bandwidth';
 export const SETTINGS_SET_COMPUTER_TYPE = 'set_computer_type';
-export const SETTINGS_CLOSED_TROUBLESHOOTING_TIP = 'closed_troubleshooting_tip';
+export const SETTINGS_CLOSE_TROUBLESHOOTING_TIP = 'close_troubleshooting_tip';
 
 export const CLEAR_ERRORS = 'clear_errors';
 export const ADD_ERROR = 'add_error';

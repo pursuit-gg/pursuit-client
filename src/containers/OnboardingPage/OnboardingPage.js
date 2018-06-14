@@ -31,14 +31,11 @@ class OnboardingPage extends Component {
     this.selectUpload = this.selectUpload.bind(this);
   }
 
-  nextStep(mode=null) {
+  nextStep() {
     mixpanel.track(MP_ONBOARDING_NEXT, {
       step: this.state.step,
     });
     this.setState({ step: this.state.step + 1 });
-    if (mode !== null) {
-      this.setState({ mode });
-    }
   }
 
   goToHome() {
@@ -157,7 +154,7 @@ class OnboardingPage extends Component {
           {this.state.step === 3 &&
             <DefaultButton
               text="FINISH"
-              onClick={() => this.goToHome(false)}
+              onClick={() => this.goToHome()}
             />
           }
         </div>
@@ -182,10 +179,10 @@ class OnboardingPage extends Component {
             styles={{ marginTop: '30px' }}
           />
         }
-        {this.state.step == 2 &&
+        {this.state.step === 2 &&
           <DefaultButton
             text="FINISH"
-            onClick={() => this.goToHome(false)}
+            onClick={() => this.goToHome()}
           />
         }
       </div>

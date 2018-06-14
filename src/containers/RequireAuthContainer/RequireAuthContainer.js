@@ -139,7 +139,7 @@ const mapStateToProps = ({ user, captureStatus, settings }) => ({
 
 const mapDispatchToProps = dispatch => ({
   goWelcome: () => {
-    dispatch(push('welcome'));
+  dispatch(push('/welcome'));
   },
   captureStarted: (scaleRes) => {
     dispatch(captureStarted(scaleRes));

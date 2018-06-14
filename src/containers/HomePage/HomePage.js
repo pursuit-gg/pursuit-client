@@ -184,7 +184,7 @@ class HomePage extends Component {
             text="Troubleshooting"
             onClick={(e) => {
               e.preventDefault();
-              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshooting`);
+              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot`);
             }}
             slim
             color="Aqua"
@@ -210,7 +210,7 @@ HomePage.propTypes = {
   manualCaptureUpload: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   captureStatus: PropTypes.object.isRequired,
-  troubleshootingTipClosed: PropTypes.object.isRequired,
+  troubleshootingTipClosed: PropTypes.bool.isRequired,
   computerType: PropTypes.string.isRequired,
   closeTroubleshootingTip: PropTypes.func.isRequired,
 };

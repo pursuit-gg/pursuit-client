@@ -6,7 +6,7 @@ import {
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_COMPUTER_TYPE,
-  SETTINGS_CLOSED_TROUBLESHOOTING_TIP,
+  SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -43,7 +43,7 @@ const settings = (state = INITIAL_STATE, action) => {
         ...state,
         computerType: action.computerType,
       };
-    case SETTINGS_CLOSED_TROUBLESHOOTING_TIP:
+    case SETTINGS_CLOSE_TROUBLESHOOTING_TIP:
       return {
         ...state,
         troubleshootingTipClosed: true,
