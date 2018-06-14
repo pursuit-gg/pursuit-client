@@ -1,5 +1,6 @@
 import {
   SETTINGS_SET_UPDATE_AVAILABLE,
+  SETTINGS_SET_SHOW_CAPTURE_PREVIEW,
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
@@ -18,6 +19,13 @@ export function setUpdateAvailable(isAvailable) {
   };
 }
 
+export function setShowCapturePreview(showCapturePreview) {
+  return {
+    type: SETTINGS_SET_SHOW_CAPTURE_PREVIEW,
+    showCapturePreview,
+  };
+}
+
 export function setManualCaptureUpload(manualCaptureUpload) {
   return {
     type: SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
@@ -29,19 +37,6 @@ export function setOnboardingComplete(onboardingComplete) {
   return {
     type: SETTINGS_SET_ONBOARDING_COMPLETE,
     onboardingComplete,
-  };
-}
-
-export function closeTroubleshootingTip() {
-  return {
-    type: SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
-  };
-}
-
-export function setComputerType(computerType) {
-  return {
-    type: SETTINGS_SET_COMPUTER_TYPE,
-    computerType,
   };
 }
 
@@ -77,5 +72,18 @@ export function setUploadBandwidth(uploadBandwidth) {
   return {
     type: SETTINGS_SET_UPLOAD_BANDWIDTH,
     uploadBandwidth,
+  };
+}
+
+export function setComputerType(computerType) {
+  return {
+    type: SETTINGS_SET_COMPUTER_TYPE,
+    computerType,
+  };
+}
+
+export function closeTroubleshootingTip() {
+  return {
+    type: SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
   };
 }

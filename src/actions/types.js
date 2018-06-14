@@ -5,6 +5,7 @@ export const CLEAR_USER_SUCCESS_MESSAGE = 'clear_user_success_message';
 export const UPDATE_USER_SUCCESS = 'update_user_success';
 
 export const SETTINGS_SET_UPDATE_AVAILABLE = 'set_update_available';
+export const SETTINGS_SET_SHOW_CAPTURE_PREVIEW = 'set_show_capture_preview';
 export const SETTINGS_SET_MANUAL_CAPTURE_UPLOAD = 'set_manual_capture_upload';
 export const SETTINGS_SET_ONBOARDING_COMPLETE = 'set_onboarding_complete';
 export const SETTINGS_SET_LAUNCH_ON_STARTUP = 'set_launch_on_startup';

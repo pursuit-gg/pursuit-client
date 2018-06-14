@@ -1,5 +1,6 @@
 import {
   SETTINGS_SET_UPDATE_AVAILABLE,
+  SETTINGS_SET_SHOW_CAPTURE_PREVIEW,
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
   SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
@@ -13,6 +14,7 @@ import {
 
 const INITIAL_STATE = {
   updateAvailable: false,
+  showCapturePreview: true,
   manualCaptureUpload: false,
   onboardingComplete: false,
   troubleshootingTipClosed: false,
@@ -32,6 +34,11 @@ const settings = (state = INITIAL_STATE, action) => {
         ...state,
         updateAvailable: action.updateAvailable,
       };
+    case SETTINGS_SET_SHOW_CAPTURE_PREVIEW:
+      return {
+        ...state,
+        showCapturePreview: action.showCapturePreview,
+      };
     case SETTINGS_SET_MANUAL_CAPTURE_UPLOAD:
       return {
         ...state,
@@ -41,16 +48,6 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         onboardingComplete: action.onboardingComplete,
-      };
-    case SETTINGS_SET_COMPUTER_TYPE:
-      return {
-        ...state,
-        computerType: action.computerType,
-      };
-    case SETTINGS_CLOSE_TROUBLESHOOTING_TIP:
-      return {
-        ...state,
-        troubleshootingTipClosed: true,
       };
     case SETTINGS_SET_LAUNCH_ON_STARTUP:
       return {
@@ -76,6 +73,16 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         uploadBandwidth: action.uploadBandwidth,
+      };
+    case SETTINGS_SET_COMPUTER_TYPE:
+      return {
+        ...state,
+        computerType: action.computerType,
+      };
+    case SETTINGS_CLOSE_TROUBLESHOOTING_TIP:
+      return {
+        ...state,
+        troubleshootingTipClosed: true,
       };
     default:
       return state;

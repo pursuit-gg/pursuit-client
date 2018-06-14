@@ -61,6 +61,9 @@ if (isSecondInstance) {
 }
 
 const updateOBSSettings = (setting, changes) => {
+  if (process.platform !== 'win32') {
+    return;
+  }
   const obsSettings = nodeObs.OBS_settings_getSettings(setting);
   for (const group of obsSettings) {
     for (const obsSetting of group.parameters) {
@@ -73,6 +76,9 @@ const updateOBSSettings = (setting, changes) => {
 };
 
 const createOBSDisplay = () => {
+  if (process.platform !== 'win32') {
+    return;
+  }
   if (!obsDisplayInfo.capturing || !obsDisplayInfo.show) {
     return;
   }
@@ -85,16 +91,25 @@ const createOBSDisplay = () => {
 };
 
 const removeOBSDisplay = () => {
+  if (process.platform !== 'win32') {
+    return;
+  }
   nodeObs.OBS_content_destroyDisplay(obsDisplayInfo.name);
 };
 
 const updateOBSDisplay = (show, width, height, x, y) => {
+  if (process.platform !== 'win32') {
+    return;
+  }
   obsDisplayInfo = Object.assign(obsDisplayInfo, { show, width, height, x, y });
   nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
   nodeObs.OBS_content_moveDisplay(obsDisplayInfo.name, obsDisplayInfo.x, obsDisplayInfo.y);
 };
 
 const startCapture = () => {
+  if (process.platform !== 'win32') {
+    return;
+  }
   if (userInfo.userId === null) {
     return;
   }
