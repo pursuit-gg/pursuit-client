@@ -6,6 +6,7 @@ import mixpanel from 'mixpanel-browser';
 
 import {
   MP_ONBOARDING_NEXT,
+  MP_UPLOAD_BANDWIDTH_SELECT,
 } from 'actions/mixpanelTypes';
 import { setOnboardingComplete, setUploadBandwidth, setComputerType } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
@@ -241,6 +242,8 @@ const mapStateToProps = ({ settings }) => (
 const mapDispatchToProps = dispatch => ({
   setComputerType: computerType => dispatch(setComputerType(computerType)),
   goToHome: (uploadBandwidth) => {
+    mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: uploadBandwidth });
+    mixpanel.people.set({ upload_bandwidth: uploadBandwidth });
     dispatch(setUploadBandwidth(uploadBandwidth));
     dispatch(setOnboardingComplete(true));
     dispatch(push('/home'));
