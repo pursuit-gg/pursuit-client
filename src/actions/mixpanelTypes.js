@@ -1,4 +1,5 @@
 export const MP_USER_LOGIN = 'User - Logged In';
+export const MP_USER_SIGNUP = 'User - Signed Up';
 
 export const MP_ONBOARDING_NEXT = 'Onboarding - Next';
 

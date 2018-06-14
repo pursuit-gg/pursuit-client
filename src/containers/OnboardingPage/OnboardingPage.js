@@ -111,7 +111,7 @@ class OnboardingPage extends Component {
             <h5 className="inline"> 21+ Mbps</h5>
           </div>
         </div>
-        <h5 className="italic alignLeft">
+        <h5 className="italic textLeft">
           We set Pursuit&apos;s bandwidth limits based on your upload speed.
           If you experience latency issues you can change this in your settings.
         </h5>
@@ -130,7 +130,7 @@ class OnboardingPage extends Component {
           {this.state.step === 1 &&
             <div>
               <h1 styleName="title"> SET GRAPHICS CARD </h1>
-              <div className="alignLeft">
+              <div className="textLeft">
                 <h2> To use Pursuit on a laptop, you <span styleName="strongBlue"> must relaunch </span> the app using these steps. </h2>
                 <h2> - Right click on the icon, select "Run with graphics processor" </h2>
                 <h2> - Select your dedicated graphics card. </h2>
