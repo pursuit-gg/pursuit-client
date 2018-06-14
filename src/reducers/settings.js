@@ -5,16 +5,20 @@ import {
   SETTINGS_SET_LAUNCH_ON_STARTUP,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
+  SETTINGS_SET_COMPUTER_TYPE,
+  SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
 } from '../actions/types';
 
 const INITIAL_STATE = {
   updateAvailable: false,
   manualCaptureUpload: false,
   onboardingComplete: false,
+  troubleshootingTipClosed: false,
   launchOnStartup: true,
   externalOBSCapture: false,
   pendingExternalOBSCapture: false,
   uploadBandwidth: 0,
+  computerType: null,
 };
 
 const settings = (state = INITIAL_STATE, action) => {
@@ -33,6 +37,16 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         onboardingComplete: action.onboardingComplete,
+      };
+    case SETTINGS_SET_COMPUTER_TYPE:
+      return {
+        ...state,
+        computerType: action.computerType,
+      };
+    case SETTINGS_CLOSE_TROUBLESHOOTING_TIP:
+      return {
+        ...state,
+        troubleshootingTipClosed: true,
       };
     case SETTINGS_SET_LAUNCH_ON_STARTUP:
       return {

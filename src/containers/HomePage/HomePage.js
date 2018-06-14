@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
 import { MP_CLIENT_LOAD } from 'actions/mixpanelTypes';
+import { closeTroubleshootingTip } from 'actions/settings';
 import ManualCaptureUploadToggle from 'components/ManualCaptureUploadToggle/ManualCaptureUploadToggle';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import UploadButton from 'components/UploadButton/UploadButton';
@@ -155,6 +156,50 @@ class HomePage extends Component {
         <div styleName="tipWrapper">
           <p> Once you finish a match, it should appear in <br />your match history within 10 minutes. </p>
         </div>
+        {!this.props.troubleshootingTipClosed &&
+          <div styleName="troubleshootingTip">
+            <h2 styleName="troubleshootingTipTitle">
+              {this.props.computerType === 'laptop' ? 'Laptop Support' : 'Not seeing a match?'}
+            </h2>
+            <a styleName="closeX" onClick={this.props.closeTroubleshootingTip}>
+              <h1> X </h1>
+            </a>
+            {this.props.computerType === 'laptop' &&
+              <h5>
+                If you aren&apos;t seeing matches after uploading, check the capture preview.
+                If it&apos;s black, you must relaunch the app using the instructions
+                <a
+                  styleName="whiteLink"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    electron.shell.openExternal('https://docsend.com/view/am2bnwi');
+                  }}
+                > here</a>.
+              </h5>
+            }
+            {this.props.computerType !== 'laptop' &&
+              <div>
+                <h5> Make sure that Overwatch is running in: </h5>
+                <h5> - English </h5>
+                <h5> - 16:9 aspect ratio </h5>
+                <h5> - 1080p resolution or higher </h5>
+              </div>
+            }
+          </div>
+        }
+        <div styleName="troubleshootingFooter">
+          <p className="inline"> Pursuit not working? </p>
+          <DefaultButton
+            text="Troubleshooting"
+            onClick={(e) => {
+              e.preventDefault();
+              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot`);
+            }}
+            slim
+            color="Aqua"
+            styles={{ marginLeft: '5px' }}
+          />
+        </div>
         <a
           styleName="discordFooter"
           onClick={(e) => {
@@ -174,12 +219,21 @@ HomePage.propTypes = {
   manualCaptureUpload: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   captureStatus: PropTypes.object.isRequired,
+  troubleshootingTipClosed: PropTypes.bool.isRequired,
+  computerType: PropTypes.string,
+  closeTroubleshootingTip: PropTypes.func.isRequired,
+};
+
+HomePage.defaultProps = {
+  computerType: 'desktop',
 };
 
 const mapStateToProps = ({ settings, captureStatus }) => ({
   manualCaptureUpload: settings.manualCaptureUpload,
   externalOBSCapture: settings.externalOBSCapture,
   captureStatus,
+  computerType: settings.computerType,
+  troubleshootingTipClosed: settings.troubleshootingTipClosed,
 });
 
-export default connect(mapStateToProps, {})(HomePage);
+export default connect(mapStateToProps, { closeTroubleshootingTip })(HomePage);

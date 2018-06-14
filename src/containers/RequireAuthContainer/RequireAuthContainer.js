@@ -96,7 +96,7 @@ class RequireAuthContainer extends Component {
 
   checkAuth(props) {
     if (props.user.rehydrated && !props.isAuthenticated) {
-      this.props.goLogin();
+      this.props.goWelcome();
     }
   }
 
@@ -119,7 +119,7 @@ RequireAuthContainer.propTypes = {
   captureStatus: PropTypes.object.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
   uploadBandwidth: PropTypes.number.isRequired,
-  goLogin: PropTypes.func.isRequired,
+  goWelcome: PropTypes.func.isRequired,
   captureStarted: PropTypes.func.isRequired,
   captureStopped: PropTypes.func.isRequired,
   queueCaptureUpload: PropTypes.func.isRequired,
@@ -138,8 +138,8 @@ const mapStateToProps = ({ user, captureStatus, settings }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  goLogin: () => {
-    dispatch(push('/login'));
+  goWelcome: () => {
+  dispatch(push('/welcome'));
   },
   captureStarted: (scaleRes) => {
     dispatch(captureStarted(scaleRes));

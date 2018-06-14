@@ -3,6 +3,7 @@ import {
   AUTH_CHANGE,
   CLEAR_USER_AUTH,
   CLEAR_USER_SUCCESS_MESSAGE,
+  UPDATE_USER_SUCCESS,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -36,6 +37,16 @@ const user = (state = INITIAL_STATE, action) => {
       };
     case CLEAR_USER_AUTH:
       return { ...INITIAL_STATE, rehydrated: state.rehydrated };
+    case UPDATE_USER_SUCCESS:
+      return {
+        ...state,
+        id: action.user.id,
+        username: action.user.username,
+        avatarUrl: action.user.avatar_url,
+        email: action.user.email,
+        unconfirmedEmail: action.user.unconfirmed_email,
+        successMessage: action.message,
+      };
     case AUTH_CHANGE:
       if (state.unconfirmedEmail === null) { return state; }
       return {
