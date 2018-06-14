@@ -162,14 +162,13 @@ class HomePage extends Component {
             {this.props.computerType === 'laptop' &&
               <h5>
                 If you aren&apos;t seeing matches after uploading, check the capture preview.
-                If it&apos;s black, you must relaunch the app using the instructions
-                <a
+                If it&apos;s black, you must relaunch the app using the instructions <a
                   styleName="whiteLink"
                   onClick={(e) => {
                     e.preventDefault();
                     electron.shell.openExternal('https://docsend.com/view/am2bnwi');
                   }}
-                > here</a>.
+                >here</a>.
               </h5>
             }
             {this.props.computerType !== 'laptop' &&
