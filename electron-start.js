@@ -239,7 +239,7 @@ const createMainWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 650,
+    minHeight: 675,
     icon: nativeIcon,
     backgroundColor: '#F5F5F5',
     show: !process.argv.includes('--hidden'),
@@ -404,6 +404,7 @@ ipcMain.on('install-update', (event, arg) => {
 
 ipcMain.on('restart', () => {
   app.relaunch();
+  userInfo.isQuiting = true;
   if (mainWindow) {
     mainWindow.close();
   } else {
