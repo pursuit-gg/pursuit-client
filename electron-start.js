@@ -120,26 +120,14 @@ const startCapture = () => {
       if (width !== 0 && height !== 0) {
         let xScale = 1;
         let yScale = 1;
-        if (width / height > 2.38) { // 43:18
-          obsDisplayInfo.scaleRes = '2580x1080';
-          xScale = 2580 / width;
-          yScale = 1080 / height;
-        } else if (width / height > 2.1) { // 64:27
-          obsDisplayInfo.scaleRes = '2560x1080';
-          xScale = 2560 / width;
-          yScale = 1080 / height;
-        } else if (width / height > 1.7) { // 16:9
-          obsDisplayInfo.scaleRes = '1920x1080';
+        if (width / height < 16 / 9) {
           xScale = 1920 / width;
+          yScale = Math.round(height * xScale) / height;
+          obsDisplayInfo.scaleRes = `1920x${height * yScale}`;
+        } else {
           yScale = 1080 / height;
-        } else if (width / height > 1.5) { // 16:10
-          obsDisplayInfo.scaleRes = '1920x1200';
-          xScale = 1920 / width;
-          yScale = 1200 / height;
-        } else if (width / height > 1.2) { // 4:3
-          obsDisplayInfo.scaleRes = '1920x1440';
-          xScale = 1920 / width;
-          yScale = 1440 / height;
+          xScale = Math.round(width * yScale) / width;
+          obsDisplayInfo.scaleRes = `${width * xScale}x1080`;
         }
         const newScale = { x: xScale, y: yScale };
         if (obsSceneItem.scale !== newScale) {
