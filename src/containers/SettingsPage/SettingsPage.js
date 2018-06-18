@@ -148,8 +148,8 @@ const SettingsPage = ({
         </div>
       </div>
       <p styleName="settingSubtext" className="italic">
-        We recommend 2 Mbps for auto upload.<br />
-        Lowering the speed can help with ping issues. <br />
+        We recommend setting a limit that is 30% of your internet upload speed. <br />
+        Lowering the limit can help with ping issues. <br />
         For more info click <a
           className="blueLink"
           onClick={(e) => {
