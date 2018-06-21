@@ -58,12 +58,16 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       if (action.manualCaptureUpload || state.currentUpload !== null) {
         return {
           ...state,
-          uploadQueue: [...state.uploadQueue, action.capture],
+          uploadQueue: [...state.uploadQueue, action.capture].sort((a, b) =>
+            (a.folder > b.folder ? 1 : -1),
+          ),
         };
       }
       return {
         ...state,
-        uploadQueue: [...state.uploadQueue, action.capture].slice(1),
+        uploadQueue: [...state.uploadQueue, action.capture].slice(1).sort((a, b) =>
+          (a.folder > b.folder ? 1 : -1),
+        ),
         currentUpload: [...state.uploadQueue, action.capture][0],
       };
     case REQUEUE_CAPTURE_UPLOAD:

@@ -7,9 +7,13 @@
     const ipc = electron.ipcRenderer;
     const capturesPath = `${electron.remote.app.getPath('userData')}/Captures`;
 
-    const watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\../ });
+    let watcher = null;
 
     const startWatch = () => {
+      if (watcher) {
+        return;
+      }
+      watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\../ });
       watcher.on('add', path => {
         pathMatch = path.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
         if (pathMatch) {
@@ -26,11 +30,17 @@
     });
 
     ipc.on('sign-out', () => {
-      watcher.close();
+      if (watcher) {
+        watcher.close();
+        watcher = null;
+      }
     });
 
     ipc.on('close', () => {
-      watcher.close();
+      if (watcher) {
+        watcher.close();
+        watcher = null;
+      }
       window.close();
     });
 
