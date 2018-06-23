@@ -1,21 +1,42 @@
 import {
   SETTINGS_SET_UPDATE_AVAILABLE,
+  SETTINGS_SET_COMPUTER_TYPE,
+  SETTINGS_SET_ONBOARDING_COMPLETE,
+  SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
   SETTINGS_SET_SHOW_CAPTURE_PREVIEW,
   SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
-  SETTINGS_SET_ONBOARDING_COMPLETE,
   SETTINGS_SET_LAUNCH_ON_STARTUP,
   SETTINGS_SET_MINIMIZE_ON_STARTUP,
   SETTINGS_SET_MINIMIZE_TO_TRAY,
-  SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
-  SETTINGS_SET_COMPUTER_TYPE,
-  SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
+  SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
+  SETTINGS_SET_MANUAL_UPLOAD_NOTIFICATIONS,
 } from 'actions/types';
 
 export function setUpdateAvailable(isAvailable) {
   return {
     type: SETTINGS_SET_UPDATE_AVAILABLE,
     updateAvailable: isAvailable,
+  };
+}
+
+export function setComputerType(computerType) {
+  return {
+    type: SETTINGS_SET_COMPUTER_TYPE,
+    computerType,
+  };
+}
+
+export function setOnboardingComplete(onboardingComplete) {
+  return {
+    type: SETTINGS_SET_ONBOARDING_COMPLETE,
+    onboardingComplete,
+  };
+}
+
+export function closeTroubleshootingTip() {
+  return {
+    type: SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
   };
 }
 
@@ -30,13 +51,6 @@ export function setManualCaptureUpload(manualCaptureUpload) {
   return {
     type: SETTINGS_SET_MANUAL_CAPTURE_UPLOAD,
     manualCaptureUpload,
-  };
-}
-
-export function setOnboardingComplete(onboardingComplete) {
-  return {
-    type: SETTINGS_SET_ONBOARDING_COMPLETE,
-    onboardingComplete,
   };
 }
 
@@ -61,13 +75,6 @@ export function setMinimizeToTray(minimizeToTray) {
   };
 }
 
-export function setExternalOBSCapture(externalOBSCapture) {
-  return {
-    type: SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
-    externalOBSCapture,
-  };
-}
-
 export function setUploadBandwidth(uploadBandwidth) {
   return {
     type: SETTINGS_SET_UPLOAD_BANDWIDTH,
@@ -75,15 +82,16 @@ export function setUploadBandwidth(uploadBandwidth) {
   };
 }
 
-export function setComputerType(computerType) {
+export function setExternalOBSCapture(externalOBSCapture) {
   return {
-    type: SETTINGS_SET_COMPUTER_TYPE,
-    computerType,
+    type: SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
+    externalOBSCapture,
   };
 }
 
-export function closeTroubleshootingTip() {
+export function setManualUploadNotifications(manualUploadNotifications) {
   return {
-    type: SETTINGS_CLOSE_TROUBLESHOOTING_TIP,
+    type: SETTINGS_SET_MANUAL_UPLOAD_NOTIFICATIONS,
+    manualUploadNotifications,
   };
 }

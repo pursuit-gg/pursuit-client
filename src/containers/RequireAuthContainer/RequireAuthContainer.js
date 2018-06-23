@@ -59,6 +59,9 @@ class RequireAuthContainer extends Component {
     ipcRenderer.on('stop-capture', () => {
       this.props.captureStopped();
     });
+    ipcRenderer.on('pending-uploads-check', () => {
+      ipcRenderer.send('pending-uploads', this.props.captureStatus.uploadQueue.length, this.props.captureStatus.currentUpload, this.props.manualCaptureUpload);
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -93,6 +96,7 @@ class RequireAuthContainer extends Component {
     ipcRenderer.removeAllListeners('capture-folder-upload-error');
     ipcRenderer.removeAllListeners('start-capture');
     ipcRenderer.removeAllListeners('stop-capture');
+    ipcRenderer.removeAllListeners('pending-uploads-check');
     ipcRenderer.send('sign-out', this.props.user.id);
   }
 

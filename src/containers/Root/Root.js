@@ -18,6 +18,7 @@ class Root extends Component {
       ipcRenderer.send('set-startup-settings', this.props.launchOnStartup, this.props.minimizeOnStartup);
       ipcRenderer.send('set-minimize-to-tray', this.props.minimizeToTray);
       ipcRenderer.send('set-external-obs-capture', this.props.externalOBSCapture);
+      ipcRenderer.send('set-manual-upload-notifications', this.props.manualUploadNotifications);
     }
   }
 
@@ -26,6 +27,7 @@ class Root extends Component {
       ipcRenderer.send('set-startup-settings', nextProps.launchOnStartup, nextProps.minimizeOnStartup);
       ipcRenderer.send('set-minimize-to-tray', nextProps.minimizeToTray);
       ipcRenderer.send('set-external-obs-capture', nextProps.externalOBSCapture);
+      ipcRenderer.send('set-manual-upload-notifications', this.props.manualUploadNotifications);
     }
   }
 
@@ -49,6 +51,7 @@ Root.propTypes = {
   minimizeOnStartup: PropTypes.bool.isRequired,
   minimizeToTray: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
+  manualUploadNotifications: PropTypes.bool.isRequired,
   goToPage: PropTypes.func.isRequired,
 };
 
@@ -58,6 +61,7 @@ const mapStateToProps = ({ user, settings }) => ({
   minimizeOnStartup: settings.minimizeOnStartup,
   minimizeToTray: settings.minimizeToTray,
   externalOBSCapture: settings.externalOBSCapture,
+  manualUploadNotifications: settings.manualUploadNotifications,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -5,16 +5,37 @@
 }
 
 .header {
-  margin: 25px 0px;
+  margin-top: 25px;
   width: 100%;
   text-align: center;
-  border-bottom: 1px solid #BBBDBF;
+  border-bottom: 2px solid #BBBDBF;
 }
 
 .headerText {
   display: inline-block;
   margin-bottom: 5px;
   margin-left: 44px;
+}
+
+.navTabs {
+  display: flex;
+  width: 100%;
+  border-bottom: 2px solid #E5E6E7;
+}
+
+.navTab {
+  width: 100px;
+  border-bottom: 2px solid #E5E6E7;
+  margin-bottom: -2px;
+  padding: 5px;
+}
+
+.navTab:hover {
+  text-decoration: none;
+}
+
+.currentNavTab {
+  border-bottom: 2px solid #4FC1E9;
 }
 
 .subSection {
@@ -60,6 +81,7 @@
   text-align: left;
   margin-left: 20px;
   margin-top: 5px;
+  font-style: italic;
 }
 
 .checkboxOffset {

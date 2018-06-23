@@ -1,5 +1,5 @@
 /* global window */
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
@@ -11,6 +11,7 @@ import {
   MP_MINIMIZE_TO_TRAY_TOGGLE,
   MP_UPLOAD_BANDWIDTH_SELECT,
   MP_OBS_MODE_TOGGLE,
+  MP_MANUAL_UPLOAD_NOTIFICATIONS_TOGGLE,
 } from 'actions/mixpanelTypes';
 import {
   setLaunchOnStartup,
@@ -18,6 +19,7 @@ import {
   setMinimizeToTray,
   setUploadBandwidth,
   setExternalOBSCapture,
+  setManualUploadNotifications,
 } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import SelectInput from 'components/SelectInput/SelectInput';
@@ -41,170 +43,207 @@ const availableUploadBandwidths = [
   { title: 'unlimited', val: 0 },
 ];
 
-const SettingsPage = ({
-  launchOnStartup,
-  minimizeOnStartup,
-  minimizeToTray,
-  uploadBandwidth,
-  externalOBSCapture,
-  pendingExternalOBSCapture,
-  setAutoStartup,
-  setStartMinimized,
-  setMinimizeOnClose,
-  setBandwidth,
-  setOBSMode,
-}) => (
-  <div styleName="wrapper">
-    <div styleName="header">
-      <h1 styleName="headerText"> CLIENT SETTINGS </h1>
-      <Link to="/home" styleName="xIconWrapper">
-        <img src={xIcon} alt="close" styleName="xIcon" />
-      </Link>
-    </div>
-    <div styleName="subSection">
-      <h4 styleName="subHeading"> Startup </h4>
-      <div styleName="settingWrapper">
-        <label htmlFor="launchOnStartup" className="flex">
-          <input
-            id="launchOnStartup"
-            type="checkbox"
-            styleName="checkbox"
-            checked={launchOnStartup}
-            onChange={() => {
-              ipcRenderer.send('set-startup-settings', !launchOnStartup, minimizeOnStartup);
-              setAutoStartup(!launchOnStartup);
-              mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, {
-                state: !launchOnStartup,
-              });
-              mixpanel.people.set({
-                open_on_startup: !launchOnStartup,
-              });
+class SettingsPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'general' };
+  }
+
+  render() {
+    const {
+      launchOnStartup,
+      minimizeOnStartup,
+      minimizeToTray,
+      uploadBandwidth,
+      externalOBSCapture,
+      pendingExternalOBSCapture,
+      manualUploadNotifications,
+    } = this.props;
+    return (
+      <div styleName="wrapper">
+        <div styleName="header">
+          <h1 styleName="headerText"> CLIENT SETTINGS </h1>
+          <Link to="/home" styleName="xIconWrapper">
+            <img src={xIcon} alt="close" styleName="xIcon" />
+          </Link>
+        </div>
+        <div styleName="navTabs">
+          <a
+            styleName={this.state.tab === 'general' ? 'navTab currentNavTab' : 'navTab'}
+            onClick={() => this.setState({ tab: 'general' })}
+          >
+            <h5 className={this.state.tab === 'general' ? 'bold' : ''}> General </h5>
+          </a>
+          <a
+            styleName={this.state.tab === 'notifications' ? 'navTab currentNavTab' : 'navTab'}
+            onClick={() => this.setState({ tab: 'notifications' })}
+          >
+            <h5 className={this.state.tab === 'notifications' ? 'bold' : ''}> Notifications </h5>
+          </a>
+        </div>
+        {this.state.tab === 'general' &&
+          <div styleName="subSection">
+            <h4 styleName="subHeading"> Startup </h4>
+            <div styleName="settingWrapper">
+              <label htmlFor="launchOnStartup" className="flex">
+                <input
+                  id="launchOnStartup"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={launchOnStartup}
+                  onChange={() => {
+                    ipcRenderer.send('set-startup-settings', !launchOnStartup, minimizeOnStartup);
+                    this.props.setLaunchOnStartup(!launchOnStartup);
+                    mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, { state: !launchOnStartup });
+                    mixpanel.people.set({ open_on_startup: !launchOnStartup });
+                  }}
+                />
+              </label>
+              <h5 styleName="settingText"> Launch automatically on startup </h5>
+            </div>
+            <div styleName="settingWrapper">
+              <label htmlFor="minimizeOnStartup" className="flex">
+                <input
+                  id="minimizeOnStartup"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={minimizeOnStartup}
+                  disabled={!launchOnStartup}
+                  onChange={() => {
+                    ipcRenderer.send('set-startup-settings', launchOnStartup, !minimizeOnStartup);
+                    this.props.setMinimizeOnStartup(!minimizeOnStartup);
+                    mixpanel.track(MP_MINIMIZE_ON_STARTUP_TOGGLE, { state: !minimizeOnStartup });
+                    mixpanel.people.set({ minimize_on_startup: !minimizeOnStartup });
+                  }}
+                />
+              </label>
+              <h5 styleName={`settingText ${launchOnStartup ? '' : 'disabledText'}`}> Start minimized </h5>
+            </div>
+          </div>
+        }
+        {this.state.tab === 'general' &&
+          <div styleName="subSection">
+            <h4 styleName="subHeading"> Close </h4>
+            <div styleName="settingWrapper">
+              <label htmlFor="minimizeToTray" className="flex">
+                <input
+                  id="minimizeToTray"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={minimizeToTray}
+                  onChange={() => {
+                    ipcRenderer.send('set-minimize-to-tray', !minimizeToTray);
+                    this.props.setMinimizeToTray(!minimizeToTray);
+                    mixpanel.track(MP_MINIMIZE_TO_TRAY_TOGGLE, { state: !minimizeToTray });
+                    mixpanel.people.set({ minimize_to_tray: !minimizeToTray });
+                  }}
+                />
+              </label>
+              <h5 styleName="settingText"> Minimize to tray when closed </h5>
+            </div>
+          </div>
+        }
+        {this.state.tab === 'general' &&
+          <div styleName="subSection">
+            <h4 styleName="subHeading"> Upload Limit </h4>
+            <div styleName="settingWrapper">
+              <h5> Maximum upload rate: </h5>
+              <div styleName="dropdownWrapper">
+                <SelectInput
+                  options={availableUploadBandwidths}
+                  selectOption={(bandwidth) => {
+                    this.props.setUploadBandwidth(bandwidth);
+                    mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: bandwidth });
+                    mixpanel.people.set({ upload_bandwidth: bandwidth });
+                  }}
+                  selectedOption={availableUploadBandwidths.filter(bandwidth => bandwidth.val === uploadBandwidth)[0]}
+                />
+              </div>
+            </div>
+            <p styleName="settingSubtext">
+              We recommend setting a limit that is 30% of your internet upload speed. <br />
+              Lowering the limit can help with ping issues. <br />
+              For more info click <a
+                className="blueLink"
+                onClick={(e) => {
+                  e.preventDefault();
+                  electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/upload`);
+                }}
+              >here</a>.
+            </p>
+          </div>
+        }
+        {this.state.tab === 'general' &&
+          <div styleName="subSection">
+            <h4 styleName="subHeading"> Other </h4>
+            <div styleName="settingWrapper">
+              <label htmlFor="externalOBSCapture" className="flex">
+                <input
+                  id="externalOBSCapture"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={pendingExternalOBSCapture}
+                  onChange={() => {
+                    this.props.setExternalOBSCapture(!pendingExternalOBSCapture);
+                    mixpanel.track(MP_OBS_MODE_TOGGLE, { state: !pendingExternalOBSCapture });
+                    mixpanel.people.set({ obs_mode: !pendingExternalOBSCapture });
+                  }}
+                />
+              </label>
+              <h5 styleName="settingText"> OBS Mode </h5>
+              {pendingExternalOBSCapture !== externalOBSCapture &&
+                <p styleName="settingText restartText" className="bold"> (<a
+                  styleName="restartText"
+                  className="underline"
+                  onClick={() => ipcRenderer.send('restart')}
+                >restart</a> Pursuit to apply) </p>
+              }
+            </div>
+            <p styleName="settingSubtext checkboxOffset"> OBS plugin instructions <a
+              className="blueLink"
+              onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
+            >here</a>.</p>
+          </div>
+        }
+        {this.state.tab === 'notifications' &&
+          <div styleName="subSection">
+            <h4 styleName="subHeading"> Notifications </h4>
+            <div styleName="settingWrapper">
+              <label htmlFor="manualUploadNotifications" className="flex">
+                <input
+                  id="manualUploadNotifications"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={manualUploadNotifications}
+                  onChange={() => {
+                    ipcRenderer.send('set-manual-upload-notifications', !manualUploadNotifications);
+                    this.props.setManualUploadNotifications(!manualUploadNotifications);
+                    mixpanel.track(MP_MANUAL_UPLOAD_NOTIFICATIONS_TOGGLE, { state: !manualUploadNotifications });
+                    mixpanel.people.set({ manual_upload_notifications: !manualUploadNotifications });
+                  }}
+                />
+              </label>
+              <h5 styleName="settingText"> Reminder to Upload </h5>
+            </div>
+            <p styleName="settingSubtext checkboxOffset">
+              If in manual upload, we&apos;ll send a reminder to upload your screenshots.
+            </p>
+          </div>
+        }
+        <div styleName="buttonWrapper">
+          <DefaultButton
+            text="Account Settings"
+            onClick={(e) => {
+              e.preventDefault();
+              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/settings`);
             }}
-          />
-        </label>
-        <h5 styleName="settingText"> Launch automatically on startup </h5>
-      </div>
-      <div styleName="settingWrapper">
-        <label htmlFor="minimizeOnStartup" className="flex">
-          <input
-            id="minimizeOnStartup"
-            type="checkbox"
-            styleName="checkbox"
-            checked={minimizeOnStartup}
-            disabled={!launchOnStartup}
-            onChange={() => {
-              ipcRenderer.send('set-startup-settings', launchOnStartup, !minimizeOnStartup);
-              setStartMinimized(!minimizeOnStartup);
-              mixpanel.track(MP_MINIMIZE_ON_STARTUP_TOGGLE, {
-                state: !minimizeOnStartup,
-              });
-              mixpanel.people.set({
-                minimize_on_startup: !minimizeOnStartup,
-              });
-            }}
-          />
-        </label>
-        <h5 styleName={`settingText ${launchOnStartup ? '' : 'disabledText'}`}> Start minimized </h5>
-      </div>
-    </div>
-    <div styleName="subSection">
-      <h4 styleName="subHeading"> Close </h4>
-      <div styleName="settingWrapper">
-        <label htmlFor="minimizeToTray" className="flex">
-          <input
-            id="minimizeToTray"
-            type="checkbox"
-            styleName="checkbox"
-            checked={minimizeToTray}
-            onChange={() => {
-              ipcRenderer.send('set-minimize-to-tray', !minimizeToTray);
-              setMinimizeOnClose(!minimizeToTray);
-              mixpanel.track(MP_MINIMIZE_TO_TRAY_TOGGLE, {
-                state: !minimizeToTray,
-              });
-              mixpanel.people.set({
-                minimize_to_tray: !minimizeToTray,
-              });
-            }}
-          />
-        </label>
-        <h5 styleName="settingText"> Minimize to tray when closed </h5>
-      </div>
-    </div>
-    <div styleName="subSection">
-      <h4 styleName="subHeading"> Upload Limit </h4>
-      <div styleName="settingWrapper">
-        <h5> Maximum upload rate: </h5>
-        <div styleName="dropdownWrapper">
-          <SelectInput
-            options={availableUploadBandwidths}
-            selectOption={(bandwidth) => {
-              setBandwidth(bandwidth);
-              mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: bandwidth });
-              mixpanel.people.set({ upload_bandwidth: bandwidth });
-            }}
-            selectedOption={availableUploadBandwidths.filter(bandwidth => bandwidth.val === uploadBandwidth)[0]}
+            color="Aqua"
           />
         </div>
       </div>
-      <p styleName="settingSubtext" className="italic">
-        We recommend setting a limit that is 30% of your internet upload speed. <br />
-        Lowering the limit can help with ping issues. <br />
-        For more info click <a
-          className="blueLink"
-          onClick={(e) => {
-            e.preventDefault();
-            electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/upload`);
-          }}
-        >here</a>.
-      </p>
-    </div>
-    <div styleName="subSection">
-      <h4 styleName="subHeading"> Other </h4>
-      <div styleName="settingWrapper">
-        <label htmlFor="externalOBSCapture" className="flex">
-          <input
-            id="externalOBSCapture"
-            type="checkbox"
-            styleName="checkbox"
-            checked={pendingExternalOBSCapture}
-            onChange={() => {
-              setOBSMode(!pendingExternalOBSCapture);
-              mixpanel.track(MP_OBS_MODE_TOGGLE, {
-                state: !pendingExternalOBSCapture,
-              });
-              mixpanel.people.set({
-                obs_mode: !pendingExternalOBSCapture,
-              });
-            }}
-          />
-        </label>
-        <h5 styleName="settingText"> OBS Mode </h5>
-        {pendingExternalOBSCapture !== externalOBSCapture &&
-          <p styleName="settingText restartText" className="bold"> (<a
-            styleName="restartText"
-            className="underline"
-            onClick={() => ipcRenderer.send('restart')}
-          >restart</a> Pursuit to apply) </p>
-        }
-      </div>
-      <p styleName="settingSubtext checkboxOffset"> OBS plugin instructions <a
-        className="blueLink"
-        onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
-      >here</a>.</p>
-    </div>
-    <div styleName="buttonWrapper">
-      <DefaultButton
-        text="Account Settings"
-        onClick={(e) => {
-          e.preventDefault();
-          electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/settings`);
-        }}
-        color="Aqua"
-      />
-    </div>
-  </div>
-);
+    );
+  }
+}
 
 SettingsPage.propTypes = {
   launchOnStartup: PropTypes.bool.isRequired,
@@ -213,11 +252,13 @@ SettingsPage.propTypes = {
   uploadBandwidth: PropTypes.number.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   pendingExternalOBSCapture: PropTypes.bool.isRequired,
-  setAutoStartup: PropTypes.func.isRequired,
-  setStartMinimized: PropTypes.func.isRequired,
-  setMinimizeOnClose: PropTypes.func.isRequired,
-  setBandwidth: PropTypes.func.isRequired,
-  setOBSMode: PropTypes.func.isRequired,
+  manualUploadNotifications: PropTypes.bool.isRequired,
+  setLaunchOnStartup: PropTypes.func.isRequired,
+  setMinimizeOnStartup: PropTypes.func.isRequired,
+  setMinimizeToTray: PropTypes.func.isRequired,
+  setUploadBandwidth: PropTypes.func.isRequired,
+  setExternalOBSCapture: PropTypes.func.isRequired,
+  setManualUploadNotifications: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ settings }) => ({
@@ -227,23 +268,27 @@ const mapStateToProps = ({ settings }) => ({
   uploadBandwidth: settings.uploadBandwidth,
   externalOBSCapture: settings.externalOBSCapture,
   pendingExternalOBSCapture: settings.pendingExternalOBSCapture,
+  manualUploadNotifications: settings.manualUploadNotifications,
 });
 
 const mapDispatchToProps = dispatch => ({
-  setAutoStartup: (launchOnStartup) => {
+  setLaunchOnStartup: (launchOnStartup) => {
     dispatch(setLaunchOnStartup(launchOnStartup));
   },
-  setStartMinimized: (minimizeOnStartup) => {
+  setMinimizeOnStartup: (minimizeOnStartup) => {
     dispatch(setMinimizeOnStartup(minimizeOnStartup));
   },
-  setMinimizeOnClose: (minimizeToTray) => {
+  setMinimizeToTray: (minimizeToTray) => {
     dispatch(setMinimizeToTray(minimizeToTray));
   },
-  setBandwidth: (uploadBandwidth) => {
+  setUploadBandwidth: (uploadBandwidth) => {
     dispatch(setUploadBandwidth(uploadBandwidth));
   },
-  setOBSMode: (externalOBSCapture) => {
+  setExternalOBSCapture: (externalOBSCapture) => {
     dispatch(setExternalOBSCapture(externalOBSCapture));
+  },
+  setManualUploadNotifications: (manualUploadNotifications) => {
+    dispatch(setManualUploadNotifications(manualUploadNotifications));
   },
 });
 

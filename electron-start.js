@@ -9,6 +9,7 @@ if (process.platform === 'win32') {
 const app = electron.app;
 const Menu = electron.Menu;
 const Tray = electron.Tray;
+const Notification = electron.Notification;
 const nativeImage = electron.nativeImage;
 const ipcMain = electron.ipcMain;
 const BrowserWindow = electron.BrowserWindow;
@@ -23,6 +24,8 @@ let trackerWindow;
 let trackCapturesWindow;
 const uploadWindows = {};
 let appTray;
+
+let manualUploadNotificationTimeout = null;
 
 let obsInput;
 let obsScene;
@@ -42,11 +45,14 @@ let obsDisplayInfo = {
 let resTrackingInterval;
 const userInfo = {
   userId: null,
-  externalOBSCapture: null,
   minimizeToTray: false,
+  externalOBSCapture: null,
+  manualUploadNotifications: false,
   isQuiting: false,
 };
 
+app.setAppUserModelId('com.revlo.pursuit');
+app.setAsDefaultProtocolClient('pursuit://');
 app.disableHardwareAcceleration();
 const isSecondInstance = app.makeSingleInstance(() => {
   if (mainWindow) {
@@ -113,6 +119,14 @@ const startCapture = () => {
   if (userInfo.userId === null) {
     return;
   }
+  if (manualUploadNotificationTimeout) {
+    clearTimeout(manualUploadNotificationTimeout);
+    manualUploadNotificationTimeout = null;
+  }
+  if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
+    obsDisplayInfo.capturing = true;
+    return;
+  }
   if (!resTrackingInterval) {
     resTrackingInterval = setInterval(() => {
       const width = obsInput.width;
@@ -161,6 +175,18 @@ const startCapture = () => {
 
 const stopCapture = () => {
   if (process.platform !== 'win32') {
+    return;
+  }
+  if (obsDisplayInfo.capturing) {
+    manualUploadNotificationTimeout = setTimeout(() => {
+      if (mainWindow) {
+        mainWindow.webContents.send('pending-uploads-check');
+      }
+      manualUploadNotificationTimeout = null;
+    }, 60000);
+  }
+  if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
+    obsDisplayInfo.capturing = false;
     return;
   }
   if (resTrackingInterval) {
@@ -239,7 +265,7 @@ const createMainWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 675,
+    minHeight: 700,
     icon: nativeIcon,
     backgroundColor: '#F5F5F5',
     show: !process.argv.includes('--hidden'),
@@ -261,10 +287,12 @@ const createMainWindow = () => {
     {
       label: 'Open',
       click: () => {
-        if (mainWindow.isMinimized()) {
-          mainWindow.restore();
+        if (mainWindow) {
+          if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+          }
+          mainWindow.show();
         }
-        mainWindow.show();
       },
     },
     {
@@ -273,11 +301,13 @@ const createMainWindow = () => {
     {
       label: 'Client Settings',
       click: () => {
-        mainWindow.webContents.send('go-to-page', '/settings');
-        if (mainWindow.isMinimized()) {
-          mainWindow.restore();
+        if (mainWindow) {
+          mainWindow.webContents.send('go-to-page', '/settings');
+          if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+          }
+          mainWindow.show();
         }
-        mainWindow.show();
       },
     },
     {
@@ -302,10 +332,12 @@ const createMainWindow = () => {
   appTray.setToolTip('Pursuit');
   appTray.setContextMenu(contextMenu);
   appTray.on('click', () => {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.show();
     }
-    mainWindow.show();
   });
 
   // Emitted when the window is about to close.
@@ -330,10 +362,10 @@ const createMainWindow = () => {
     if (trackCapturesWindow) {
       trackCapturesWindow.webContents.send('close');
     }
+    if (trackerWindow) {
+      trackerWindow.webContents.send('close');
+    }
     if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
-      if (trackerWindow) {
-        trackerWindow.webContents.send('close');
-      }
       destroyOBSCapture();
     }
   });
@@ -372,11 +404,75 @@ const createTrackerWindow = () => {
   });
 };
 
+const createUploaderWindow = (folder, userId, bandwidth) => {
+  const backgroundWindowURL = url.format({
+    pathname: path.join(__dirname, '/src/uploadCaptureFolderBW.html'),
+    protocol: 'file:',
+    slashes: true,
+  });
+  const win = new BrowserWindow({ show: false });
+  const winId = win.id;
+  uploadWindows[winId] = win;
+  win.loadURL(backgroundWindowURL);
+  // win.webContents.openDevTools();
+  win.webContents.on('did-finish-load', () => {
+    win.webContents.send('upload', folder, userId, bandwidth);
+  });
+  win.on('closed', () => {
+    uploadWindows[winId] = null;
+  });
+};
+
+const createClientUpdateNotification = () => {
+  const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+  const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+  const newUpdateNotif = new Notification({
+    title: 'New Update!',
+    body: 'Open and click the lightbulb to get the shiny, new Pursuit build now!',
+    silent: true,
+    icon: nativeIcon,
+  });
+  newUpdateNotif.on('click', () => {
+    newUpdateNotif.close();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.show();
+    }
+  });
+  newUpdateNotif.show();
+  setTimeout(() => newUpdateNotif.close(), 5000);
+};
+
+const createManualUploadNotification = () => {
+  const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+  const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+  const uploadNotif = new Notification({
+    title: 'Good Work!',
+    body: 'Practice makes perfect. Don\'t forget to upload your matches to Pursuit!',
+    silent: true,
+    icon: nativeIcon,
+  });
+  uploadNotif.on('click', () => {
+    uploadNotif.close();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.show();
+    }
+  });
+  uploadNotif.show();
+  setTimeout(() => uploadNotif.close(), 5000);
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createMainWindow();
+  createTrackerWindow();
   autoUpdater.checkForUpdates();
 });
 
@@ -392,6 +488,7 @@ autoUpdater.on('update-downloaded', (event, info) => {
   // In your application, you don't need to wait 5 seconds.
   // You could call autoUpdater.quitAndInstall(); immediately
   mainWindow.webContents.send('update-downloaded', info);
+  createClientUpdateNotification();
 });
 
 autoUpdater.on('update-not-available', (event, info) => {
@@ -427,29 +524,24 @@ ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
   if (userInfo.externalOBSCapture === null) {
     if (!externalOBSCapture) {
       setupOBSCapture();
-      createTrackerWindow();
     }
     userInfo.externalOBSCapture = externalOBSCapture;
   }
 });
 
+ipcMain.on('set-manual-upload-notifications', (event, manualUploadNotifications) => {
+  userInfo.manualUploadNotifications = manualUploadNotifications;
+});
+
+ipcMain.on('pending-uploads', (event, pendingUploadsCount, currentUpload, manualUpload) => {
+  if (userInfo.userId && userInfo.manualUploadNotifications && manualUpload &&
+      pendingUploadsCount >= 5 && currentUpload === null) {
+    createManualUploadNotification();
+  }
+});
+
 ipcMain.on('upload-capture-folder', (event, folder, userId, bandwidth) => {
-  const backgroundWindowURL = url.format({
-    pathname: path.join(__dirname, '/src/uploadCaptureFolderBW.html'),
-    protocol: 'file:',
-    slashes: true,
-  });
-  const win = new BrowserWindow({ show: false });
-  const winId = win.id;
-  uploadWindows[winId] = win;
-  win.loadURL(backgroundWindowURL);
-  // win.webContents.openDevTools();
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.send('upload', folder, userId, bandwidth);
-  });
-  win.on('closed', () => {
-    uploadWindows[winId] = null;
-  });
+  createUploaderWindow(folder, userId, bandwidth);
 });
 
 ipcMain.on('queue-capture-folder-upload', (event, folder) => {
@@ -487,14 +579,10 @@ ipcMain.on('sign-in', (event, userId) => {
 
 ipcMain.on('sign-out', (event, userId) => {
   userInfo.userId = null;
-
   if (trackCapturesWindow) {
     trackCapturesWindow.webContents.send('sign-out');
   }
-
-  if (userInfo.externalOBSCapture !== null && !userInfo.externalOBSCapture) {
-    stopCapture();
-  }
+  stopCapture();
 });
 
 ipcMain.on('start-capture', () => {
