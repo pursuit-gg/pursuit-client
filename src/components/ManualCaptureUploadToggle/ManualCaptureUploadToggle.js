@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
 import { MP_AUTO_UPLOAD_MODE_TOGGLE } from 'actions/mixpanelTypes';
+import { startCaptureUpload } from 'actions/captureStatus';
 import { setManualCaptureUpload } from 'actions/settings';
 import './ManualCaptureUploadToggle.m.css';
 
@@ -16,8 +17,12 @@ class ManualCaptureUploadToggle extends Component {
 
   toggle() {
     this.props.setManualCaptureUpload(!this.props.manualCaptureUpload);
+    if (this.props.manualCaptureUpload && this.props.captureStatus.currentUpload === null &&
+        this.props.captureStatus.uploadQueue.length !== 0) {
+      this.props.startCaptureUpload();
+    }
     mixpanel.track(MP_AUTO_UPLOAD_MODE_TOGGLE, {
-      state: this.props.manualCaptureUpload,
+      state: !this.props.manualCaptureUpload,
     });
     mixpanel.people.set({
       auto_upload: !this.props.manualCaptureUpload,
@@ -50,11 +55,14 @@ class ManualCaptureUploadToggle extends Component {
 
 ManualCaptureUploadToggle.propTypes = {
   manualCaptureUpload: PropTypes.bool.isRequired,
+  captureStatus: PropTypes.object,
   setManualCaptureUpload: PropTypes.func.isRequired,
+  startCaptureUpload: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ settings }) => ({
+const mapStateToProps = ({ settings, captureStatus }) => ({
   manualCaptureUpload: settings.manualCaptureUpload,
+  captureStatus,
 });
 
-export default connect(mapStateToProps, { setManualCaptureUpload })(ManualCaptureUploadToggle);
+export default connect(mapStateToProps, { setManualCaptureUpload, startCaptureUpload })(ManualCaptureUploadToggle);
