@@ -24,6 +24,6 @@ export default function configureStore(history) {
       ),
     ),
   );
-  persistStore(store, { blacklist: ['errors', 'requests'] });
+  persistStore(store, { blacklist: ['notifications', 'errors', 'requests'] });
   return store;
 }

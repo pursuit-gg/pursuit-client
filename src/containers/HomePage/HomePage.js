@@ -7,6 +7,7 @@ import mixpanel from 'mixpanel-browser';
 
 import { MP_CLIENT_LOAD } from 'actions/mixpanelTypes';
 import { setShowCapturePreview, closeTroubleshootingTip } from 'actions/settings';
+import { numNewMatches } from 'helpers/notifications';
 import ManualCaptureUploadToggle from 'components/ManualCaptureUploadToggle/ManualCaptureUploadToggle';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import UploadButton from 'components/UploadButton/UploadButton';
@@ -34,6 +35,7 @@ class HomePage extends Component {
         <div styleName="buttonWrapper">
           <DefaultButton
             text="Open Match History"
+            badge={numNewMatches(this.props.matchNotifications)}
             onClick={(e) => {
               e.preventDefault();
               electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/profile`);
@@ -214,6 +216,7 @@ HomePage.propTypes = {
   manualCaptureUpload: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   captureStatus: PropTypes.object.isRequired,
+  matchNotifications: PropTypes.object.isRequired,
   troubleshootingTipClosed: PropTypes.bool.isRequired,
   computerType: PropTypes.string,
   setShowCapturePreview: PropTypes.func.isRequired,
@@ -224,13 +227,14 @@ HomePage.defaultProps = {
   computerType: 'desktop',
 };
 
-const mapStateToProps = ({ settings, captureStatus }) => ({
+const mapStateToProps = ({ settings, captureStatus, notifications }) => ({
   showCapturePreview: settings.showCapturePreview,
   manualCaptureUpload: settings.manualCaptureUpload,
   externalOBSCapture: settings.externalOBSCapture,
   captureStatus,
-  computerType: settings.computerType,
+  matchNotifications: notifications.matches,
   troubleshootingTipClosed: settings.troubleshootingTipClosed,
+  computerType: settings.computerType,
 });
 
 export default connect(mapStateToProps, { setShowCapturePreview, closeTroubleshootingTip })(HomePage);

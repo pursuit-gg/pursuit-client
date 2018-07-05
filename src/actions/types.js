@@ -15,6 +15,8 @@ export const SETTINGS_SET_MINIMIZE_ON_STARTUP = 'set_minimize_on_startup';
 export const SETTINGS_SET_MINIMIZE_TO_TRAY = 'set_minimize_to_tray';
 export const SETTINGS_SET_UPLOAD_BANDWIDTH = 'set_upload_bandwidth';
 export const SETTINGS_SET_EXTERNAL_OBS_CAPTURE = 'set_external_obs_capture';
+export const SETTINGS_SET_MATCH_PROCESSED_SOUND = 'set_match_processed_sound';
+export const SETTINGS_SET_NOTIFICATIONS_BADGE = 'set_notifications_badge';
 export const SETTINGS_SET_MANUAL_UPLOAD_NOTIFICATIONS = 'set_manual_upload_notifications';
 
 export const CLEAR_ERRORS = 'clear_errors';
@@ -37,3 +39,5 @@ export const START_CAPTURE_UPLOAD = 'start_capture_upload';
 export const CAPTURE_UPLOADING = 'capture_uploading';
 export const CAPTURE_UPLOAD_FINISHED = 'capture_upload_finished';
 export const CAPTURE_UPLOAD_ERRORED = 'capture_upload_errored';
+
+export const MATCH_NOTIFICATIONS_LOADED = 'match_notifications_loaded';

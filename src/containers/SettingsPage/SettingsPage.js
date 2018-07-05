@@ -11,6 +11,8 @@ import {
   MP_MINIMIZE_TO_TRAY_TOGGLE,
   MP_UPLOAD_BANDWIDTH_SELECT,
   MP_OBS_MODE_TOGGLE,
+  MP_MATCH_PROCESSED_SOUND_TOGGLE,
+  MP_NOTIFICATIONS_BADGE_TOGGLE,
   MP_MANUAL_UPLOAD_NOTIFICATIONS_TOGGLE,
 } from 'actions/mixpanelTypes';
 import {
@@ -19,6 +21,8 @@ import {
   setMinimizeToTray,
   setUploadBandwidth,
   setExternalOBSCapture,
+  setMatchProcessedSound,
+  setNotificationsBadge,
   setManualUploadNotifications,
 } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
@@ -57,6 +61,8 @@ class SettingsPage extends Component {
       uploadBandwidth,
       externalOBSCapture,
       pendingExternalOBSCapture,
+      matchProcessedSound,
+      notificationsBadge,
       manualUploadNotifications,
     } = this.props;
     return (
@@ -209,6 +215,45 @@ class SettingsPage extends Component {
           <div styleName="subSection">
             <h4 styleName="subHeading"> Notifications </h4>
             <div styleName="settingWrapper">
+              <label htmlFor="matchProcessedSound" className="flex">
+                <input
+                  id="matchProcessedSound"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={matchProcessedSound}
+                  onChange={() => {
+                    this.props.setMatchProcessedSound(!matchProcessedSound);
+                    mixpanel.track(MP_MATCH_PROCESSED_SOUND_TOGGLE, { state: !matchProcessedSound });
+                    mixpanel.people.set({ match_processed_sound: !matchProcessedSound });
+                  }}
+                />
+              </label>
+              <h5 styleName="settingText"> Sound notifications for new matches </h5>
+            </div>
+            <p styleName="settingSubtext checkboxOffset">
+              Play a sound when a new match is processed.
+            </p>
+            <div styleName="settingWrapper">
+              <label htmlFor="notificationsBadge" className="flex">
+                <input
+                  id="notificationsBadge"
+                  type="checkbox"
+                  styleName="checkbox"
+                  checked={notificationsBadge}
+                  onChange={() => {
+                    ipcRenderer.send('set-notifications-badge', !notificationsBadge);
+                    this.props.setNotificationsBadge(!notificationsBadge);
+                    mixpanel.track(MP_NOTIFICATIONS_BADGE_TOGGLE, { state: !notificationsBadge });
+                    mixpanel.people.set({ notifications_badge: !notificationsBadge });
+                  }}
+                />
+              </label>
+              <h5 styleName="settingText"> Enable badge </h5>
+            </div>
+            <p styleName="settingSubtext checkboxOffset">
+              Show a red badge on the app icon when you have new matches.
+            </p>
+            <div styleName="settingWrapper">
               <label htmlFor="manualUploadNotifications" className="flex">
                 <input
                   id="manualUploadNotifications"
@@ -252,12 +297,16 @@ SettingsPage.propTypes = {
   uploadBandwidth: PropTypes.number.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
   pendingExternalOBSCapture: PropTypes.bool.isRequired,
+  matchProcessedSound: PropTypes.bool.isRequired,
+  notificationsBadge: PropTypes.bool.isRequired,
   manualUploadNotifications: PropTypes.bool.isRequired,
   setLaunchOnStartup: PropTypes.func.isRequired,
   setMinimizeOnStartup: PropTypes.func.isRequired,
   setMinimizeToTray: PropTypes.func.isRequired,
   setUploadBandwidth: PropTypes.func.isRequired,
   setExternalOBSCapture: PropTypes.func.isRequired,
+  setMatchProcessedSound: PropTypes.func.isRequired,
+  setNotificationsBadge: PropTypes.func.isRequired,
   setManualUploadNotifications: PropTypes.func.isRequired,
 };
 
@@ -268,6 +317,8 @@ const mapStateToProps = ({ settings }) => ({
   uploadBandwidth: settings.uploadBandwidth,
   externalOBSCapture: settings.externalOBSCapture,
   pendingExternalOBSCapture: settings.pendingExternalOBSCapture,
+  matchProcessedSound: settings.matchProcessedSound,
+  notificationsBadge: settings.notificationsBadge,
   manualUploadNotifications: settings.manualUploadNotifications,
 });
 
@@ -286,6 +337,12 @@ const mapDispatchToProps = dispatch => ({
   },
   setExternalOBSCapture: (externalOBSCapture) => {
     dispatch(setExternalOBSCapture(externalOBSCapture));
+  },
+  setMatchProcessedSound: (matchProcessedSound) => {
+    dispatch(setMatchProcessedSound(matchProcessedSound));
+  },
+  setNotificationsBadge: (notificationsBadge) => {
+    dispatch(setNotificationsBadge(notificationsBadge));
   },
   setManualUploadNotifications: (manualUploadNotifications) => {
     dispatch(setManualUploadNotifications(manualUploadNotifications));

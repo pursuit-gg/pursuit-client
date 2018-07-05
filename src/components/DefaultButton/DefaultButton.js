@@ -15,6 +15,7 @@ const getStyles = (outline, slim, color, stateDisable, spacedHz) => {
 const DefaultButton = ({
   type,
   text,
+  badge,
   onClick,
   disabled,
   outline,
@@ -32,7 +33,12 @@ const DefaultButton = ({
     disabled={disabled || stateDisable}
     style={{ ...styles }}
   >
-    <span styleName={`${isFetching ? 'transparent' : ''}`}> {text} </span>
+    <span styleName={`${isFetching ? 'transparent' : ''}`}>
+      {text}
+    </span>
+    {badge > 0 &&
+      <span styleName="badge"> {badge} </span>
+    }
     {isFetching &&
       <div styleName={`${slim ? 'spinnerWrapperSlim' : 'spinnerWrapper'}`}>
         <i className="fa fa-spinner fa-spin" />
@@ -43,6 +49,8 @@ const DefaultButton = ({
 
 DefaultButton.defaultProps = {
   type: 'button',
+  badge: 0,
+  onClick: () => {},
   disabled: false,
   outline: false,
   slim: false,
@@ -54,9 +62,10 @@ DefaultButton.defaultProps = {
 };
 
 DefaultButton.propTypes = {
-  text: PropTypes.string.isRequired,
-  onClick: PropTypes.func,
   type: PropTypes.string,
+  text: PropTypes.string.isRequired,
+  badge: PropTypes.number,
+  onClick: PropTypes.func,
   disabled: PropTypes.bool,
   outline: PropTypes.bool,
   slim: PropTypes.bool,
