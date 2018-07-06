@@ -326,6 +326,18 @@ const setAppTrayImage = () => {
   }
 };
 
+const setMainWindowOverlayIcon = () => {
+  if (mainWindow && process.platform === 'win32') {
+    if (userInfo.notificationsBadge && userInfo.newMatchNotifications > 0) {
+      const iconPath = 'build/taskbarBadge.png';
+      const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+      mainWindow.setOverlayIcon(nativeIcon, 'New Match Processed');
+    } else {
+      mainWindow.setOverlayIcon(null, '');
+    }
+  }
+};
+
 const createMainWindow = () => {
   const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
   const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
@@ -553,6 +565,7 @@ ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
 
 ipcMain.on('set-notifications-badge', (event, notificationsBadge) => {
   userInfo.notificationsBadge = notificationsBadge;
+  setMainWindowOverlayIcon();
   setAppTrayImage();
 });
 
@@ -569,6 +582,7 @@ ipcMain.on('pending-uploads', (event, pendingUploadsCount, currentUpload, manual
 
 ipcMain.on('new-match-notifications', (event, newMatchNotifications) => {
   userInfo.newMatchNotifications = newMatchNotifications;
+  setMainWindowOverlayIcon();
   setAppTrayImage();
   setAppTrayContextMenu();
 });
