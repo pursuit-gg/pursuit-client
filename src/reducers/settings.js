@@ -10,6 +10,8 @@ import {
   SETTINGS_SET_MINIMIZE_TO_TRAY,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
+  SETTINGS_SET_MATCH_PROCESSED_SOUND,
+  SETTINGS_SET_NOTIFICATIONS_BADGE,
   SETTINGS_SET_MANUAL_UPLOAD_NOTIFICATIONS,
 } from '../actions/types';
 
@@ -26,6 +28,8 @@ const INITIAL_STATE = {
   uploadBandwidth: 0,
   externalOBSCapture: false,
   pendingExternalOBSCapture: false,
+  matchProcessedSound: true,
+  notificationsBadge: true,
   manualUploadNotifications: true,
 };
 
@@ -85,6 +89,16 @@ const settings = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         pendingExternalOBSCapture: action.externalOBSCapture,
+      };
+    case SETTINGS_SET_MATCH_PROCESSED_SOUND:
+      return {
+        ...state,
+        matchProcessedSound: action.matchProcessedSound,
+      };
+    case SETTINGS_SET_NOTIFICATIONS_BADGE:
+      return {
+        ...state,
+        notificationsBadge: action.notificationsBadge,
       };
     case SETTINGS_SET_MANUAL_UPLOAD_NOTIFICATIONS:
       return {

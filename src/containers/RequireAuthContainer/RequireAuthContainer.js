@@ -1,9 +1,10 @@
-/* global window */
+/* global window, Audio */
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
+import ReactTimeout from 'react-timeout';
 import mixpanel from 'mixpanel-browser';
 
 import {
@@ -15,12 +16,20 @@ import {
   captureUploadFinished,
   captureUploadErrored,
 } from 'actions/captureStatus';
+import { loadMatchNotifications } from 'actions/notifications';
+import { newMatchCheck, numNewMatches } from 'helpers/notifications';
+import notificationSound from 'sounds/notification.mp3';
 
 import './RequireAuthContainer.m.css';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 class RequireAuthContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.notifSound = new Audio(notificationSound);
+  }
+
   componentWillMount() {
     this.checkAuth(this.props);
     if (this.props.isAuthenticated) {
@@ -34,6 +43,10 @@ class RequireAuthContainer extends Component {
         username: this.props.user.username,
         user_id: this.props.user.id,
       });
+      this.props.loadMatchNotifications();
+      this.fetchInterval = this.props.setInterval(() => {
+        this.props.loadMatchNotifications();
+      }, 15000);
     }
     if (this.props.captureStatus.currentUpload !== null) {
       this.props.requeueCaptureUpload();
@@ -77,6 +90,10 @@ class RequireAuthContainer extends Component {
         username: nextProps.user.username,
         user_id: nextProps.user.id,
       });
+      this.props.loadMatchNotifications();
+      this.fetchInterval = this.props.setInterval(() => {
+        this.props.loadMatchNotifications();
+      }, 15000);
     }
     if (nextProps.captureStatus.currentUpload !== null && (this.props.captureStatus.currentUpload === null ||
         this.props.captureStatus.currentUpload.folder !== nextProps.captureStatus.currentUpload.folder)) {
@@ -86,6 +103,13 @@ class RequireAuthContainer extends Component {
         nextProps.captureStatus.currentUpload.userId,
         nextProps.uploadBandwidth,
       );
+    }
+    if (this.props.matchProcessedSound && newMatchCheck(this.props.matchNotifications, nextProps.matchNotifications)) {
+      this.notifSound.currentTime = 0;
+      this.notifSound.play();
+    }
+    if (numNewMatches(nextProps.matchNotifications) !== numNewMatches(this.props.matchNotifications)) {
+      ipcRenderer.send('new-match-notifications', numNewMatches(nextProps.matchNotifications));
     }
   }
 
@@ -97,7 +121,9 @@ class RequireAuthContainer extends Component {
     ipcRenderer.removeAllListeners('start-capture');
     ipcRenderer.removeAllListeners('stop-capture');
     ipcRenderer.removeAllListeners('pending-uploads-check');
+    ipcRenderer.send('new-match-notifications', 0);
     ipcRenderer.send('sign-out', this.props.user.id);
+    this.props.clearInterval(this.fetchInterval);
   }
 
   checkAuth(props) {
@@ -125,6 +151,8 @@ RequireAuthContainer.propTypes = {
   captureStatus: PropTypes.object.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
   uploadBandwidth: PropTypes.number.isRequired,
+  matchProcessedSound: PropTypes.bool.isRequired,
+  matchNotifications: PropTypes.object.isRequired,
   goWelcome: PropTypes.func.isRequired,
   captureStarted: PropTypes.func.isRequired,
   captureStopped: PropTypes.func.isRequired,
@@ -133,14 +161,19 @@ RequireAuthContainer.propTypes = {
   captureUploading: PropTypes.func.isRequired,
   captureUploadFinished: PropTypes.func.isRequired,
   captureUploadErrored: PropTypes.func.isRequired,
+  loadMatchNotifications: PropTypes.func.isRequired,
+  setInterval: PropTypes.func.isRequired,
+  clearInterval: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ user, captureStatus, settings }) => ({
+const mapStateToProps = ({ user, captureStatus, settings, notifications }) => ({
   isAuthenticated: user.client != null && user.accessToken != null,
   user,
   captureStatus,
   manualCaptureUpload: settings.manualCaptureUpload,
   uploadBandwidth: settings.uploadBandwidth,
+  matchProcessedSound: settings.matchProcessedSound,
+  matchNotifications: notifications.matches,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -168,6 +201,9 @@ const mapDispatchToProps = dispatch => ({
   captureUploadErrored: (folder, userId, error) => {
     dispatch(captureUploadErrored(folder, userId, error));
   },
+  loadMatchNotifications: () => {
+    dispatch(loadMatchNotifications());
+  },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RequireAuthContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(ReactTimeout(RequireAuthContainer));

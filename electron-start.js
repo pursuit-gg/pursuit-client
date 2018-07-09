@@ -45,8 +45,10 @@ let obsDisplayInfo = {
 let resTrackingInterval;
 const userInfo = {
   userId: null,
+  newMatchNotifications: 0,
   minimizeToTray: false,
   externalOBSCapture: null,
+  notificationsBadge: false,
   manualUploadNotifications: false,
   isQuiting: false,
 };
@@ -258,6 +260,84 @@ const destroyOBSCapture = () => {
   nodeObs.OBS_API_destroyOBS_API();
 };
 
+const setAppTrayContextMenu = () => {
+  if (appTray) {
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Open',
+        click: () => {
+          if (mainWindow) {
+            if (mainWindow.isMinimized()) {
+              mainWindow.restore();
+            }
+            mainWindow.show();
+          }
+        },
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Client Settings',
+        click: () => {
+          if (mainWindow) {
+            mainWindow.webContents.send('go-to-page', '/settings');
+            if (mainWindow.isMinimized()) {
+              mainWindow.restore();
+            }
+            mainWindow.show();
+          }
+        },
+      },
+      {
+        label: `Open Match History${userInfo.newMatchNotifications > 0 ? ` (${userInfo.newMatchNotifications})` : ''}`,
+        click: () => {
+          electron.shell.openExternal('https://pursuit.gg/profile');
+        },
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Quit',
+        click: () => {
+          userInfo.isQuiting = true;
+          if (mainWindow) {
+            mainWindow.close();
+          }
+        },
+      },
+    ]);
+    appTray.setContextMenu(contextMenu);
+  }
+};
+
+const setAppTrayImage = () => {
+  if (appTray) {
+    if (userInfo.notificationsBadge && userInfo.newMatchNotifications > 0) {
+      const iconPath = process.platform === 'win32' ? 'build/iconWithBadge.ico' : 'build/iconWithBadge.png';
+      const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+      appTray.setImage(nativeIcon.resize({ width: 16, height: 16 }));
+    } else {
+      const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+      const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+      appTray.setImage(nativeIcon.resize({ width: 16, height: 16 }));
+    }
+  }
+};
+
+const setMainWindowOverlayIcon = () => {
+  if (mainWindow && process.platform === 'win32') {
+    if (userInfo.notificationsBadge && userInfo.newMatchNotifications > 0) {
+      const iconPath = 'build/taskbarBadge.png';
+      const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+      mainWindow.setOverlayIcon(nativeIcon, 'New Match Processed');
+    } else {
+      mainWindow.setOverlayIcon(null, '');
+    }
+  }
+};
+
 const createMainWindow = () => {
   const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
   const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
@@ -283,54 +363,8 @@ const createMainWindow = () => {
   // mainWindow.webContents.openDevTools({ mode: 'undocked' });
 
   appTray = new Tray(nativeIcon.resize({ width: 16, height: 16 }));
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Open',
-      click: () => {
-        if (mainWindow) {
-          if (mainWindow.isMinimized()) {
-            mainWindow.restore();
-          }
-          mainWindow.show();
-        }
-      },
-    },
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Client Settings',
-      click: () => {
-        if (mainWindow) {
-          mainWindow.webContents.send('go-to-page', '/settings');
-          if (mainWindow.isMinimized()) {
-            mainWindow.restore();
-          }
-          mainWindow.show();
-        }
-      },
-    },
-    {
-      label: 'Open Match History',
-      click: () => {
-        electron.shell.openExternal('https://pursuit.gg/profile');
-      },
-    },
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Quit',
-      click: () => {
-        userInfo.isQuiting = true;
-        if (mainWindow) {
-          mainWindow.close();
-        }
-      },
-    },
-  ]);
   appTray.setToolTip('Pursuit');
-  appTray.setContextMenu(contextMenu);
+  setAppTrayContextMenu();
   appTray.on('click', () => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) {
@@ -529,6 +563,12 @@ ipcMain.on('set-external-obs-capture', (event, externalOBSCapture) => {
   }
 });
 
+ipcMain.on('set-notifications-badge', (event, notificationsBadge) => {
+  userInfo.notificationsBadge = notificationsBadge;
+  setMainWindowOverlayIcon();
+  setAppTrayImage();
+});
+
 ipcMain.on('set-manual-upload-notifications', (event, manualUploadNotifications) => {
   userInfo.manualUploadNotifications = manualUploadNotifications;
 });
@@ -538,6 +578,13 @@ ipcMain.on('pending-uploads', (event, pendingUploadsCount, currentUpload, manual
       pendingUploadsCount >= 5 && currentUpload === null) {
     createManualUploadNotification();
   }
+});
+
+ipcMain.on('new-match-notifications', (event, newMatchNotifications) => {
+  userInfo.newMatchNotifications = newMatchNotifications;
+  setMainWindowOverlayIcon();
+  setAppTrayImage();
+  setAppTrayContextMenu();
 });
 
 ipcMain.on('upload-capture-folder', (event, folder, userId, bandwidth) => {

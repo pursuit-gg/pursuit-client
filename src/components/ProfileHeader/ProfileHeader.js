@@ -7,6 +7,7 @@ import mixpanel from 'mixpanel-browser';
 
 import { logoutUser } from 'actions/user';
 import { setUpdateAvailable } from 'actions/settings';
+import { numNewMatches } from 'helpers/notifications';
 import logo from 'images/logo/logoSmall.png';
 import lightBulb from 'images/genericIcons/whiteLightBulb.png';
 import './ProfileHeader.m.css';
@@ -47,6 +48,7 @@ class ProfileHeader extends Component {
 
   render() {
     const { user, logout, updateIsAvailable } = this.props;
+    const newMatches = numNewMatches(this.props.matchNotifications);
     return (
       <div styleName="header">
         <img styleName="logo" src={logo} alt="pursuit" />
@@ -64,7 +66,7 @@ class ProfileHeader extends Component {
                 e.preventDefault();
                 electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/profile`);
               }}
-            >Match History</a></h5>
+            >Match History {newMatches > 0 ? `(${newMatches})` : ''}</a></h5>
             <h5><Link to="/settings"> Settings </Link></h5>
             <h5><a
               onClick={(e) => {
@@ -93,17 +95,19 @@ class ProfileHeader extends Component {
 
 ProfileHeader.propTypes = {
   user: PropTypes.object,
+  matchNotifications: PropTypes.object.isRequired,
+  updateIsAvailable: PropTypes.bool.isRequired,
   logout: PropTypes.func.isRequired,
   setUpdateAvailable: PropTypes.func.isRequired,
-  updateIsAvailable: PropTypes.bool.isRequired,
 };
 
 ProfileHeader.defaultProps = {
   user: {},
 };
 
-const mapStateToProps = ({ user, settings }) => ({
+const mapStateToProps = ({ user, settings, notifications }) => ({
   user,
+  matchNotifications: notifications.matches,
   updateIsAvailable: settings.updateAvailable,
 });
 

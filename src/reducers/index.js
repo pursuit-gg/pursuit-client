@@ -5,6 +5,7 @@ import { routerReducer } from 'react-router-redux';
 import user from './user';
 import settings from './settings';
 import captureStatus from './captureStatus';
+import notifications from './notifications';
 import errors from './errors';
 import requests from './requests';
 
@@ -12,6 +13,7 @@ const combinedReducer = combineReducers({
   user,
   settings,
   captureStatus,
+  notifications,
   errors,
   requests,
   routing: routerReducer,

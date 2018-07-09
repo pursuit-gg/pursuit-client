@@ -24,6 +24,13 @@
   margin-left: 5px;
 }
 
+.badge {
+  background-color: #ED5565;
+  border-radius: 6px;
+  margin-left: 5px;
+  padding: 0px 6px 0px 4px;
+}
+
 .transparent {
   color: transparent;
 }

@@ -10,6 +10,8 @@ import {
   SETTINGS_SET_MINIMIZE_TO_TRAY,
   SETTINGS_SET_UPLOAD_BANDWIDTH,
   SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
+  SETTINGS_SET_MATCH_PROCESSED_SOUND,
+  SETTINGS_SET_NOTIFICATIONS_BADGE,
   SETTINGS_SET_MANUAL_UPLOAD_NOTIFICATIONS,
 } from 'actions/types';
 
@@ -86,6 +88,20 @@ export function setExternalOBSCapture(externalOBSCapture) {
   return {
     type: SETTINGS_SET_EXTERNAL_OBS_CAPTURE,
     externalOBSCapture,
+  };
+}
+
+export function setMatchProcessedSound(matchProcessedSound) {
+  return {
+    type: SETTINGS_SET_MATCH_PROCESSED_SOUND,
+    matchProcessedSound,
+  };
+}
+
+export function setNotificationsBadge(notificationsBadge) {
+  return {
+    type: SETTINGS_SET_NOTIFICATIONS_BADGE,
+    notificationsBadge,
   };
 }
 

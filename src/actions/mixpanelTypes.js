@@ -11,4 +11,6 @@ export const MP_MINIMIZE_ON_STARTUP_TOGGLE = 'Minimize on Startup Toggle';
 export const MP_MINIMIZE_TO_TRAY_TOGGLE = 'Minimize to Tray Toggle';
 export const MP_UPLOAD_BANDWIDTH_SELECT = 'Upload Bandwidth Select';
 export const MP_OBS_MODE_TOGGLE = 'OBS Mode Toggle';
+export const MP_MATCH_PROCESSED_SOUND_TOGGLE = 'Match Processed Sound Toggle';
+export const MP_NOTIFICATIONS_BADGE_TOGGLE = 'Notifications Badge Toggle';
 export const MP_MANUAL_UPLOAD_NOTIFICATIONS_TOGGLE = 'Manual Upload Notifications Toggle';
