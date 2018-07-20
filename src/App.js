@@ -1,3 +1,5 @@
+/* global window */
+
 import React from 'react';
 import { Router, Route, hashHistory, IndexRedirect } from 'react-router';
 import { Provider } from 'react-redux';
@@ -24,6 +26,8 @@ import './styles/textBase.css';
 import './styles/helpers.css';
 import './styles/tooltip.css';
 
+const Sentry = window.require('@sentry/electron');
+Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 const store = configureStore(hashHistory);
 const history = syncHistoryWithStore(hashHistory, store);
 sendStoreToRequestUtils(store);

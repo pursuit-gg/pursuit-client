@@ -1,9 +1,14 @@
 <html>
   <p> Track Overwatch </p>
   <script type="text/javascript">
+    const path = require('path');
+    require('dotenv').config({ path: path.join(__dirname, '../.env') });
     const electron = require('electron');
     const tasklist = require('tasklist');
     const os = require('os');
+    const Sentry = require('@sentry/electron');
+
+    Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 
     const platform = os.platform();
     const ipc = electron.ipcRenderer;
@@ -26,7 +31,10 @@
             console.log('stop');
             ipc.send('stop-capture');
           }
-        }).catch(err => console.log(err));
+        }).catch(err => {
+          console.log(err);
+          Sentry.captureException(err);
+        });
       }, checkFrequency);
     }
 

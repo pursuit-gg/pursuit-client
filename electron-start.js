@@ -1,10 +1,16 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const electron = require('electron');
 const { autoUpdater } = require('electron-updater');
+const url = require('url');
+const Sentry = require('@sentry/electron');
 
 let nodeObs;
 if (process.platform === 'win32') {
   nodeObs = require('@streamlabs/obs-studio-node').NodeObs;
 }
+
+const buildFolder = process.env.NODE_ENV === 'production' ? 'build' : 'public';
 
 const app = electron.app;
 const Menu = electron.Menu;
@@ -13,9 +19,6 @@ const Notification = electron.Notification;
 const nativeImage = electron.nativeImage;
 const ipcMain = electron.ipcMain;
 const BrowserWindow = electron.BrowserWindow;
-
-const path = require('path');
-const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -52,6 +55,20 @@ const userInfo = {
   manualUploadNotifications: false,
   isQuiting: false,
 };
+
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_DSN,
+  onFatalError: () => {
+    electron.dialog.showErrorBox(
+      'Unexpected Error',
+      'Sorry! Something went wrong, but we are looking into it.\n' +
+      'Please restart Pursuit.',
+    );
+    userInfo.isQuiting = true;
+    app.quit();
+  },
+});
+Sentry.captureException(new Error('Testing 3'));
 
 app.setAppUserModelId('com.revlo.pursuit');
 app.setAsDefaultProtocolClient('pursuit://');
@@ -292,7 +309,7 @@ const setAppTrayContextMenu = () => {
       {
         label: `Open Match History${userInfo.newMatchNotifications > 0 ? ` (${userInfo.newMatchNotifications})` : ''}`,
         click: () => {
-          electron.shell.openExternal('https://pursuit.gg/profile');
+          electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/profile`);
         },
       },
       {
@@ -304,6 +321,8 @@ const setAppTrayContextMenu = () => {
           userInfo.isQuiting = true;
           if (mainWindow) {
             mainWindow.close();
+          } else {
+            app.quit();
           }
         },
       },
@@ -315,11 +334,11 @@ const setAppTrayContextMenu = () => {
 const setAppTrayImage = () => {
   if (appTray) {
     if (userInfo.notificationsBadge && userInfo.newMatchNotifications > 0) {
-      const iconPath = process.platform === 'win32' ? 'build/iconWithBadge.ico' : 'build/iconWithBadge.png';
+      const iconPath = process.platform === 'win32' ? `${buildFolder}/iconWithBadge.ico` : `${buildFolder}/iconWithBadge.png`;
       const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
       appTray.setImage(nativeIcon.resize({ width: 16, height: 16 }));
     } else {
-      const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+      const iconPath = process.platform === 'win32' ? `${buildFolder}/icon.ico` : `${buildFolder}/icon.png`;
       const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
       appTray.setImage(nativeIcon.resize({ width: 16, height: 16 }));
     }
@@ -329,7 +348,7 @@ const setAppTrayImage = () => {
 const setMainWindowOverlayIcon = () => {
   if (mainWindow && process.platform === 'win32') {
     if (userInfo.notificationsBadge && userInfo.newMatchNotifications > 0) {
-      const iconPath = 'build/taskbarBadge.png';
+      const iconPath = `${buildFolder}/taskbarBadge.png`;
       const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
       mainWindow.setOverlayIcon(nativeIcon, 'New Match Processed');
     } else {
@@ -339,7 +358,7 @@ const setMainWindowOverlayIcon = () => {
 };
 
 const createMainWindow = () => {
-  const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+  const iconPath = process.platform === 'win32' ? `${buildFolder}/icon.ico` : `${buildFolder}/icon.png`;
   const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
   mainWindow = new BrowserWindow({
     width: 475,
@@ -353,7 +372,7 @@ const createMainWindow = () => {
 
   // and load the index.html of the app.
   const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, 'build/index.html'),
+    pathname: path.join(__dirname, `${buildFolder}/index.html`),
     protocol: 'file:',
     slashes: true,
   });
@@ -403,15 +422,11 @@ const createMainWindow = () => {
       destroyOBSCapture();
     }
   });
-
-  if (process.platform === 'darwin') {
-    require('./osx-menu');
-  }
 };
 
 const createTrackCapturesWindow = () => {
   const trackCapturesWindowURL = url.format({
-    pathname: path.join(__dirname, '/src/trackCapturesBW.html'),
+    pathname: path.join(__dirname, `${buildFolder}/trackCapturesBW.html`),
     protocol: 'file:',
     slashes: true,
   });
@@ -425,7 +440,7 @@ const createTrackCapturesWindow = () => {
 
 const createTrackerWindow = () => {
   const trackerWindowURL = url.format({
-    pathname: path.join(__dirname, '/src/overwatchTrackerBW.html'),
+    pathname: path.join(__dirname, `${buildFolder}/overwatchTrackerBW.html`),
     protocol: 'file:',
     slashes: true,
   });
@@ -440,7 +455,7 @@ const createTrackerWindow = () => {
 
 const createUploaderWindow = (folder, userId, bandwidth) => {
   const backgroundWindowURL = url.format({
-    pathname: path.join(__dirname, '/src/uploadCaptureFolderBW.html'),
+    pathname: path.join(__dirname, `${buildFolder}/uploadCaptureFolderBW.html`),
     protocol: 'file:',
     slashes: true,
   });
@@ -458,7 +473,7 @@ const createUploaderWindow = (folder, userId, bandwidth) => {
 };
 
 const createClientUpdateNotification = () => {
-  const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+  const iconPath = process.platform === 'win32' ? `${buildFolder}/icon.ico` : `${buildFolder}/icon.png`;
   const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
   const newUpdateNotif = new Notification({
     title: 'New Update!',
@@ -480,7 +495,7 @@ const createClientUpdateNotification = () => {
 };
 
 const createManualUploadNotification = () => {
-  const iconPath = process.platform === 'win32' ? 'build/icon.ico' : 'build/icon.png';
+  const iconPath = process.platform === 'win32' ? `${buildFolder}/icon.ico` : `${buildFolder}/icon.png`;
   const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
   const uploadNotif = new Notification({
     title: 'Good Work!',
@@ -512,6 +527,7 @@ app.on('ready', () => {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
+  userInfo.isQuiting = true;
   app.quit();
 });
 
@@ -530,6 +546,7 @@ autoUpdater.on('update-not-available', (event, info) => {
 });
 
 ipcMain.on('install-update', (event, arg) => {
+  userInfo.isQuiting = true;
   autoUpdater.quitAndInstall();
 });
 
@@ -617,6 +634,7 @@ ipcMain.on('capture-folder-upload-error', (event, folder, userId, uploadErr) => 
 
 ipcMain.on('sign-in', (event, userId) => {
   userInfo.userId = userId;
+  Sentry.setUserContext({ id: userId });
   if (trackCapturesWindow) {
     trackCapturesWindow.webContents.send('sign-in');
   } else {
@@ -626,6 +644,7 @@ ipcMain.on('sign-in', (event, userId) => {
 
 ipcMain.on('sign-out', (event, userId) => {
   userInfo.userId = null;
+  Sentry.setUserContext();
   if (trackCapturesWindow) {
     trackCapturesWindow.webContents.send('sign-out');
   }

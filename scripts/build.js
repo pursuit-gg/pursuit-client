@@ -9,6 +9,8 @@ process.env.NODE_ENV = 'production';
 // https://github.com/motdotla/dotenv
 require('dotenv').config({silent: true});
 
+var sh = require('shelljs');
+var path = require('path');
 var chalk = require('chalk');
 var fs = require('fs-extra');
 var path = require('path');
@@ -35,11 +37,11 @@ measureFileSizesBeforeBuild(paths.appBuild).then(previousFileSizes => {
   // if you're in it, you don't end up in Trash
   fs.emptyDirSync(paths.appBuild);
 
-  // Start the webpack build
-  build(previousFileSizes);
-
   // Merge with the public folder
   copyPublicFolder();
+
+  // Start the webpack build
+  build(previousFileSizes);
 });
 
 // Print out errors
@@ -147,6 +149,7 @@ function build(previousFileSizes) {
       console.log(`  ${chalk.cyan('serve')} -s build`);
       console.log();
     }
+    uploadSourceMapsToSentry();
   });
 }
 
@@ -155,4 +158,23 @@ function copyPublicFolder() {
     dereference: true,
     filter: file => file !== paths.appHtml
   });
+}
+
+function execSentryCmd(cmd) {
+  var sentryCliPath = path.join('node_modules', '.bin', 'sentry-cli');
+  var result = sh.exec(`${sentryCliPath} ${cmd}`);
+  if (result.code !== 0) {
+    console.log(chalk.red(`ERROR: Sentry Command Failed >>> ${cmd}`));
+  }
+}
+
+function uploadSourceMapsToSentry() {
+  console.log('Creating a release and uploading source maps to Sentry...');
+  var appPackage = require(paths.appPackageJson);
+  var releaseVersion = `${appPackage.name}@${appPackage.version}`;
+  var relativeBuildPath = path.relative(process.cwd(), paths.appBuild);
+  execSentryCmd(`releases new ${releaseVersion}`);
+  execSentryCmd(`releases files ${releaseVersion} delete --all`);
+  execSentryCmd(`releases files ${releaseVersion} upload-sourcemaps --ext .js --ext .map --ext .html ${relativeBuildPath} --url-prefix '~/${relativeBuildPath}'`);
+  execSentryCmd(`releases files ${releaseVersion} upload-sourcemaps electron-start.js`);
 }
