@@ -48,6 +48,7 @@ let obsDisplayInfo = {
 let resTrackingInterval;
 const userInfo = {
   userId: null,
+  spectator: false,
   newMatchNotifications: 0,
   minimizeToTray: false,
   externalOBSCapture: null,
@@ -453,7 +454,7 @@ const createTrackerWindow = () => {
   });
 };
 
-const createUploaderWindow = (folder, userId, bandwidth) => {
+const createUploaderWindow = (folder, userId, spectator, bandwidth) => {
   const backgroundWindowURL = url.format({
     pathname: path.join(__dirname, `${buildFolder}/uploadCaptureFolderBW.html`),
     protocol: 'file:',
@@ -465,7 +466,7 @@ const createUploaderWindow = (folder, userId, bandwidth) => {
   win.loadURL(backgroundWindowURL);
   // win.webContents.openDevTools();
   win.webContents.on('did-finish-load', () => {
-    win.webContents.send('upload', folder, userId, bandwidth);
+    win.webContents.send('upload', folder, userId, spectator, bandwidth);
   });
   win.on('closed', () => {
     uploadWindows[winId] = null;
@@ -604,32 +605,36 @@ ipcMain.on('new-match-notifications', (event, newMatchNotifications) => {
   setAppTrayContextMenu();
 });
 
-ipcMain.on('upload-capture-folder', (event, folder, userId, bandwidth) => {
-  createUploaderWindow(folder, userId, bandwidth);
+ipcMain.on('upload-capture-folder', (event, folder, userId, spectator, bandwidth) => {
+  createUploaderWindow(folder, userId, spectator, bandwidth);
 });
 
 ipcMain.on('queue-capture-folder-upload', (event, folder) => {
   if (mainWindow && userInfo.userId) {
-    mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId);
+    mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId, userInfo.spectator);
   }
 });
 
-ipcMain.on('capture-folder-upload-finished', (event, folder, userId) => {
+ipcMain.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
   if (mainWindow) {
-    mainWindow.webContents.send('capture-folder-upload-finished', folder, userId);
+    mainWindow.webContents.send('capture-folder-upload-finished', folder, userId, spectator);
   }
 });
 
-ipcMain.on('capture-folder-uploading', (event, folder, userId, progress) => {
+ipcMain.on('capture-folder-uploading', (event, folder, userId, spectator, progress) => {
   if (mainWindow) {
-    mainWindow.webContents.send('capture-folder-uploading', folder, userId, progress);
+    mainWindow.webContents.send('capture-folder-uploading', folder, userId, spectator, progress);
   }
 });
 
-ipcMain.on('capture-folder-upload-error', (event, folder, userId, uploadErr) => {
+ipcMain.on('capture-folder-upload-error', (event, folder, userId, spectator, uploadErr) => {
   if (mainWindow) {
-    mainWindow.webContents.send('capture-folder-upload-error', folder, userId, uploadErr);
+    mainWindow.webContents.send('capture-folder-upload-error', folder, userId, spectator, uploadErr);
   }
+});
+
+ipcMain.on('set-spectator-mode', (event, spectator) => {
+  userInfo.spectator = spectator;
 });
 
 ipcMain.on('sign-in', (event, userId) => {

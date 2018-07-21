@@ -41,3 +41,4 @@ export const CAPTURE_UPLOAD_FINISHED = 'capture_upload_finished';
 export const CAPTURE_UPLOAD_ERRORED = 'capture_upload_errored';
 
 export const MATCH_NOTIFICATIONS_LOADED = 'match_notifications_loaded';
+export const TEAM_LOADED = 'team_loaded';

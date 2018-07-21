@@ -22,12 +22,13 @@ export function captureStopped() {
   };
 }
 
-export function queueCaptureUpload(folder, userId, manualCaptureUpload) {
+export function queueCaptureUpload(folder, userId, spectator, manualCaptureUpload) {
   return {
     type: QUEUE_CAPTURE_UPLOAD,
     capture: {
       folder,
       userId,
+      spectator,
       progress: 0,
       error: null,
     },
@@ -47,36 +48,39 @@ export function startCaptureUpload() {
   };
 }
 
-export function captureUploading(folder, userId, progress) {
+export function captureUploading(folder, userId, spectator, progress) {
   return {
     type: CAPTURE_UPLOADING,
     capture: {
       folder,
       userId,
+      spectator,
       progress,
       error: null,
     },
   };
 }
 
-export function captureUploadFinished(folder, userId) {
+export function captureUploadFinished(folder, userId, spectator) {
   return {
     type: CAPTURE_UPLOAD_FINISHED,
     capture: {
       folder,
       userId,
+      spectator,
       progress: 100,
       error: null,
     },
   };
 }
 
-export function captureUploadErrored(folder, userId, error) {
+export function captureUploadErrored(folder, userId, spectator, error) {
   return {
     type: CAPTURE_UPLOAD_ERRORED,
     capture: {
       folder,
       userId,
+      spectator,
       progress: 0,
       error,
     },

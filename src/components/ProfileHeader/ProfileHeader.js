@@ -88,6 +88,9 @@ class ProfileHeader extends Component {
             </div>
           </div>
         }
+        {this.props.spectator &&
+          <h5 styleName="spectator" className=""> Team Mode </h5>
+        }
       </div>
     );
   }
@@ -95,6 +98,7 @@ class ProfileHeader extends Component {
 
 ProfileHeader.propTypes = {
   user: PropTypes.object,
+  spectator: PropTypes.bool.isRequired,
   matchNotifications: PropTypes.object.isRequired,
   updateIsAvailable: PropTypes.bool.isRequired,
   logout: PropTypes.func.isRequired,
@@ -105,8 +109,9 @@ ProfileHeader.defaultProps = {
   user: {},
 };
 
-const mapStateToProps = ({ user, settings, notifications }) => ({
+const mapStateToProps = ({ user, team, settings, notifications }) => ({
   user,
+  spectator: user.hasTeamAccess && team.name !== null,
   matchNotifications: notifications.matches,
   updateIsAvailable: settings.updateAvailable,
 });
