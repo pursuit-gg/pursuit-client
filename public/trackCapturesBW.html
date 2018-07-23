@@ -1,8 +1,13 @@
 <html>
   <p> Track Captures </p>
   <script type="text/javascript">
+    const path = require('path');
+    require('dotenv').config({ path: path.join(__dirname, '../.env') });
     const electron = require('electron');
     const chokidar = require('chokidar');
+    const Sentry = require('@sentry/electron');
+
+    Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 
     const ipc = electron.ipcRenderer;
     const capturesPath = `${electron.remote.app.getPath('userData')}/Captures`;
@@ -15,13 +20,14 @@
       }
       watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\../ });
       watcher.on('add', path => {
-        pathMatch = path.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
+        const pathMatch = path.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
         if (pathMatch) {
           console.log(pathMatch[1]);
           ipc.send('queue-capture-folder-upload', pathMatch[1]);
         }
       }).on('error', err => {
         console.log(err);
+        Sentry.captureException(err);
       });
     };
 

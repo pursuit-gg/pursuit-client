@@ -11,13 +11,15 @@
 /build
 /releases
 /dist
+/.electron-symbols
 
 # misc
 .DS_Store
 .env
+.env.*
+sentry.properties
 *.mov
 *.mp4
-awsSettings.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

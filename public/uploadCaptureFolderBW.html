@@ -1,7 +1,8 @@
 <html>
   <p> Upload Captures </p>
-  <script type="text/javascript" src="../awsSettings.js"></script>
   <script type="text/javascript">
+    const path = require('path');
+    require('dotenv').config({ path: path.join(__dirname, '../.env') });
     const AWS = require('aws-sdk');
     const ipc = require('electron').ipcRenderer;
     const fs = require('fs-extra');
@@ -10,11 +11,14 @@
     const proxyAgent = require('proxy-agent');
     const proxy = require('throttle-proxy');
     const portscanner = require('portscanner');
+    const Sentry = require('@sentry/electron');
+
+    Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 
     // set the default config object
-    AWS.config.region = AWS_REGION;
+    AWS.config.region = process.env.AWS_REGION;
     const creds = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: AWS_IDENTITY_POOL_ID,
+      IdentityPoolId: process.env.AWS_IDENTITY_POOL_ID,
     });
     AWS.config.credentials = creds;
 
@@ -37,6 +41,7 @@
       fs.remove(folder, (removeErr) => {
         if (removeErr) {
           console.error(removeErr);
+          Sentry.captureException(removeErr);
         }
         ipc.send('capture-folder-upload-finished', folder, userId);
         window.close();
@@ -49,6 +54,7 @@
       fs.pathExists(folder, (err, exists) => {
         if (err) {
           console.error(err);
+          Sentry.captureException(err);
           ipc.send('capture-folder-upload-error', folder, userId, err);
           if (uploadTries < 5) {
             setTimeout(() => uploadFolder(folder, userId), 3000);
@@ -72,7 +78,7 @@
         passThrough.on('end', () => {
           const buf = Buffer.concat(bufs);
           const params = {
-            Bucket: AWS_S3_CAPTURE_BUCKET,
+            Bucket: process.env.AWS_S3_CAPTURE_BUCKET,
             Key: uploadKey,
             ContentType: 'application/x-compressed-tar',
             Body: buf,
@@ -89,6 +95,7 @@
             uploadPending = false;
             if (uploadErr) {
               console.error(uploadErr);
+              Sentry.captureException(uploadErr);
               ipc.send('capture-folder-upload-error', folder, userId, uploadErr);
               if (uploadTries < 40) {
                 setTimeout(() => uploadFolder(folder, userId), 3000);
@@ -112,6 +119,7 @@
         portscanner.findAPortNotInUse(50000, 60000, (err, port) => {
           if (err) {
             console.error(err);
+            Sentry.captureException(err);
           }
           createProxy(err ? 1080 : port, bandwidth);
           AWS.config.update({

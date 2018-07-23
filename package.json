@@ -17,6 +17,12 @@
     "directories": {
       "buildResources": "buildResources"
     },
+    "files": [
+      "build",
+      "node_modules",
+      ".env",
+      "electron-start.js"
+    ],
     "extraFiles": [
       "LICENSE"
     ],
@@ -50,11 +56,13 @@
     "dist": "npm run dist:win"
   },
   "dependencies": {
+    "@sentry/electron": "^0.5.5",
     "@streamlabs/obs-studio-node": "https://github.com/stream-labs/obs-studio-node/releases/download/v0.0.35/iojs-v2.0.1-signed.tar.gz",
     "aws-sdk": "^2.212.1",
     "babel-plugin-react-css-modules": "^2.7.1",
     "chokidar": "^2.0.3",
     "datejs": "^1.0.0-rc3",
+    "dotenv": "^2.0.0",
     "electron-updater": "^2.21.10",
     "fs-extra": "^4.0.0",
     "mixpanel-browser": "^2.11.1",
@@ -84,6 +92,8 @@
   },
   "devDependencies": {
     "7zip-bin": "^2.2.7",
+    "@sentry/cli": "^1.34.0",
+    "@sentry/webpack-plugin": "^1.5.2",
     "autoprefixer": "6.7.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "7.2.3",
@@ -99,9 +109,9 @@
     "cross-spawn": "4.0.2",
     "css-loader": "0.26.1",
     "detect-port": "1.1.0",
-    "dotenv": "2.0.0",
     "electron": "2.0.1",
     "electron-builder": "20.13.4",
+    "electron-download": "^4.1.0",
     "electron-publisher-s3": "^19.6.0",
     "electron-react-devtools": "^0.4.0",
     "eslint": "3.19.0",

@@ -10,16 +10,16 @@ Pursuit.gg Desktop Client
 ## Environment variables
 These should be placed in a .env file in the pursuit-client folder:
 
-  - ```REACT_APP_MITHRIL_ROOT_URL``` - root url for pursuit.gg api endpoints
-  - ```REACT_APP_TAVERN_ROOT_URL``` - root url for pursuit.gg website
-  - ```REACT_APP_MIXPANEL_TOKEN``` - mixpanel token
-  - ```CSC_NAME``` - developer id name for the code signing cert
-
-These should be placed in an awsSettings.js file in the pursuit-client folder:
-
+  - ```NODE_ENV``` - environment for app
   - ```AWS_REGION``` - region of s3 bucket to upload capture to
   - ```AWS_S3_CAPTURE_BUCKET``` - name of s3 bucket to upload captures to
   - ```AWS_IDENTITY_POOL_ID``` - aws identity pool id to authorize uploads to the s3 bucket
+  - ```REACT_APP_MITHRIL_ROOT_URL``` - root url for pursuit.gg api endpoints
+  - ```REACT_APP_TAVERN_ROOT_URL``` - root url for pursuit.gg website
+  - ```REACT_APP_MIXPANEL_TOKEN``` - mixpanel token
+  - ```REACT_APP_SENTRY_DSN``` - dsn for sentry
+  - ```SENTRY_PROPERTIES``` - location of your sentry.properties file
+  - ```CSC_NAME``` - developer id name for the code signing cert
 
 ## Running in Dev
 This will start an electron client running the react app with hot reloading for development purposes:
