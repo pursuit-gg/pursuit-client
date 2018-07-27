@@ -37,38 +37,38 @@
       });
     };
 
-    const deleteFolder = (folder, userId) => {
+    const deleteFolder = (folder, userId, spectator) => {
       fs.remove(folder, (removeErr) => {
         if (removeErr) {
           console.error(removeErr);
           Sentry.captureException(removeErr);
         }
-        ipc.send('capture-folder-upload-finished', folder, userId);
+        ipc.send('capture-folder-upload-finished', folder, userId, spectator);
         window.close();
       });
     };
 
-    const uploadFolder = (folder, userId) => {
+    const uploadFolder = (folder, userId, spectator) => {
       console.log(folder);
       uploadTries += 1;
       fs.pathExists(folder, (err, exists) => {
         if (err) {
           console.error(err);
           Sentry.captureException(err);
-          ipc.send('capture-folder-upload-error', folder, userId, err);
+          ipc.send('capture-folder-upload-error', folder, userId, spectator, err);
           if (uploadTries < 5) {
-            setTimeout(() => uploadFolder(folder, userId), 3000);
+            setTimeout(() => uploadFolder(folder, userId, spectator), 3000);
           } else {
-            deleteFolder(folder, userId);
+            deleteFolder(folder, userId, spectator);
           }
           return;
         } else if (!exists) {
-          ipc.send('capture-folder-upload-finished', folder, userId);
+          ipc.send('capture-folder-upload-finished', folder, userId, spectator);
           window.close();
           return;
         }
         const folderName = folder.match(/[\\/]([^\\/]+)$/)[1];
-        const uploadKey = `packed/${userId}/${folderName}.tar.gz`;
+        const uploadKey = `${spectator ? 'spectator/' : ''}packed/${userId}/${folderName}.tar.gz`;
         console.log('pre zip');
         const passThrough = new PassThrough();
         tar.create({ gzip: true }, [folder]).pipe(passThrough);
@@ -89,23 +89,23 @@
           let loaded = 0;
           upload.on('httpUploadProgress', (progress) => {
             console.log(progress);
-            ipc.send('capture-folder-uploading', folder, userId, (loaded / progress.total) * 100);
+            ipc.send('capture-folder-uploading', folder, userId, spectator, (loaded / progress.total) * 100);
             loaded = progress.loaded;
           }).send((uploadErr, uploadData) => {
             uploadPending = false;
             if (uploadErr) {
               console.error(uploadErr);
               Sentry.captureException(uploadErr);
-              ipc.send('capture-folder-upload-error', folder, userId, uploadErr);
+              ipc.send('capture-folder-upload-error', folder, userId, spectator, uploadErr);
               if (uploadTries < 40) {
-                setTimeout(() => uploadFolder(folder, userId), 3000);
+                setTimeout(() => uploadFolder(folder, userId, spectator), 3000);
               } else {
-                setTimeout(() => deleteFolder(folder, userId), 500);
+                setTimeout(() => deleteFolder(folder, userId, spectator), 500);
               }
             } else {
               console.log(uploadData);
-              ipc.send('capture-folder-uploading', folder, userId, 100);
-              setTimeout(() => deleteFolder(folder, userId), 1000);
+              ipc.send('capture-folder-uploading', folder, userId, spectator, 100);
+              setTimeout(() => deleteFolder(folder, userId, spectator), 1000);
             }
           });
           uploadPending = true;
@@ -113,8 +113,8 @@
       });
     };
 
-    ipc.on('upload', (event, folder, userId, bandwidth) => {
-      console.log('upload', folder, userId);
+    ipc.on('upload', (event, folder, userId, spectator, bandwidth) => {
+      console.log('upload', folder, userId, spectator, bandwidth);
       if (bandwidth !== 0) {
         portscanner.findAPortNotInUse(50000, 60000, (err, port) => {
           if (err) {
@@ -125,10 +125,10 @@
           AWS.config.update({
             httpOptions: { agent: proxyAgent(`socks5://localhost:${err ? 1080 : port}`) },
           });
-          uploadFolder(folder, userId);
+          uploadFolder(folder, userId, spectator);
         });
       } else {
-        uploadFolder(folder, userId);
+        uploadFolder(folder, userId, spectator);
       }
     });
 

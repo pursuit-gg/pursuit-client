@@ -59,10 +59,12 @@ class CapturePreview extends Component {
 
 CapturePreview.propTypes = {
   scaleRes: PropTypes.string.isRequired,
+  spectator: PropTypes.bool.isRequired, //used to trigger the componentDidUpdate to update the preview
 };
 
-const mapStateToProps = ({ captureStatus }) => ({
+const mapStateToProps = ({ user, team, captureStatus }) => ({
   scaleRes: captureStatus.scaleRes,
+  spectator: user.hasTeamAccess && team.name !== null,
 });
 
 export default connect(mapStateToProps, {})(CapturePreview);

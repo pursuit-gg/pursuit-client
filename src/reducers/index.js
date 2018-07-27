@@ -3,6 +3,7 @@ import { REHYDRATE } from 'redux-persist/constants';
 import { routerReducer } from 'react-router-redux';
 
 import user from './user';
+import team from './team';
 import settings from './settings';
 import captureStatus from './captureStatus';
 import notifications from './notifications';
@@ -11,6 +12,7 @@ import requests from './requests';
 
 const combinedReducer = combineReducers({
   user,
+  team,
   settings,
   captureStatus,
   notifications,
