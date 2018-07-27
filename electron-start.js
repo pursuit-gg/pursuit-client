@@ -69,7 +69,6 @@ Sentry.init({
     app.quit();
   },
 });
-Sentry.captureException(new Error('Testing 3'));
 
 app.setAppUserModelId('com.revlo.pursuit');
 app.setAsDefaultProtocolClient('pursuit://');
