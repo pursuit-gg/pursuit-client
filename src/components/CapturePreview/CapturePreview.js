@@ -24,11 +24,20 @@ class CapturePreview extends Component {
   }
 
   componentDidMount() {
-    const { top, left, width, height } = this.preview.getBoundingClientRect();
-    ipcRenderer.send('update-obs-display', true, width, height, left, top);
+    const { x, y, width, height } = this.preview.getBoundingClientRect();
+    const scaleFactor = window.devicePixelRatio;
+    ipcRenderer.send(
+      'update-obs-display',
+      true,
+      Math.round(width * scaleFactor),
+      Math.round(height * scaleFactor),
+      Math.round(x * scaleFactor),
+      Math.round(y * scaleFactor),
+    );
     ipcRenderer.send('create-obs-display');
     window.addEventListener('resize', this.updatePreview);
     window.addEventListener('scroll', this.updatePreview);
+    window.addEventListener('move', this.updatePreview);
   }
 
   componentDidUpdate() {
@@ -36,22 +45,41 @@ class CapturePreview extends Component {
   }
 
   componentWillUnmount() {
-    const { top, left, width, height } = this.preview.getBoundingClientRect();
-    ipcRenderer.send('update-obs-display', false, width, height, left, top);
+    const { x, y, width, height } = this.preview.getBoundingClientRect();
+    const scaleFactor = window.devicePixelRatio;
+    ipcRenderer.send(
+      'update-obs-display',
+      false,
+      Math.round(width * scaleFactor),
+      Math.round(height * scaleFactor),
+      Math.round(x * scaleFactor),
+      Math.round(y * scaleFactor),
+    );
     ipcRenderer.send('remove-obs-display');
     window.removeEventListener('resize', this.updatePreview);
     window.removeEventListener('scroll', this.updatePreview);
+    window.removeEventListener('move', this.updatePreview);
   }
 
   updatePreview() {
-    const { top, left, width, height } = this.preview.getBoundingClientRect();
-    ipcRenderer.send('update-obs-display', true, width, height, left, top);
+    const { x, y, width, height } = this.preview.getBoundingClientRect();
+    const scaleFactor = window.devicePixelRatio;
+    ipcRenderer.send(
+      'update-obs-display',
+      true,
+      Math.round(width * scaleFactor),
+      Math.round(height * scaleFactor),
+      Math.round(x * scaleFactor),
+      Math.round(y * scaleFactor),
+    );
   }
 
   render() {
     return (
       <div styleName="wrapper" style={getDimensions(this.props.scaleRes)} ref={(c) => { this.preview = c; }}>
-        <h5> Not Tracking </h5>
+        {!this.props.capturing &&
+          <h5> Not Tracking </h5>
+        }
       </div>
     );
   }
@@ -59,11 +87,13 @@ class CapturePreview extends Component {
 
 CapturePreview.propTypes = {
   scaleRes: PropTypes.string.isRequired,
+  capturing: PropTypes.bool.isRequired,
   spectator: PropTypes.bool.isRequired, //used to trigger the componentDidUpdate to update the preview
 };
 
 const mapStateToProps = ({ user, team, captureStatus }) => ({
   scaleRes: captureStatus.scaleRes,
+  capturing: captureStatus.capturing,
   spectator: user.hasTeamAccess && team.name !== null,
 });
 
