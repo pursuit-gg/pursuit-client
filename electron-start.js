@@ -217,7 +217,9 @@ const stopCapture = () => {
   }
   removeOBSDisplay();
   obsDisplayInfo.capturing = false;
-  obsOutput.stop();
+  if (obsOutput) {
+    obsOutput.stop();
+  }
 };
 
 const setupOBSCapture = () => {
@@ -269,11 +271,19 @@ const destroyOBSCapture = () => {
     return;
   }
   stopCapture();
-  obsOutput.release();
+  if (obsOutput) {
+    obsOutput.release();
+  }
   nodeObs.Global.setOutputSource(0, null);
-  obsSceneItem.remove();
-  obsInput.release();
-  obsScene.source.release();
+  if (obsSceneItem) {
+    obsSceneItem.remove();
+  }
+  if (obsInput) {
+    obsInput.release();
+  }
+  if (obsScene) {
+    obsScene.source.release();
+  }
   nodeObs.OBS_API_destroyOBS_API();
 };
 
