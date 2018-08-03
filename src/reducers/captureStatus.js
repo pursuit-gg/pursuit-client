@@ -89,7 +89,7 @@ const captureStatus = (state = INITIAL_STATE, action) => {
         currentUpload: (state.uploadQueue[0] || null),
       };
     case CAPTURE_UPLOADING:
-      if (state.currentUpload.folder !== action.capture.folder) {
+      if (state.currentUpload === null || state.currentUpload.folder !== action.capture.folder) {
         return state;
       }
       return {
@@ -97,7 +97,7 @@ const captureStatus = (state = INITIAL_STATE, action) => {
         currentUpload: action.capture,
       };
     case CAPTURE_UPLOAD_FINISHED:
-      if (state.currentUpload.folder !== action.capture.folder) {
+      if (state.currentUpload === null || state.currentUpload.folder !== action.capture.folder) {
         return state;
       }
       return {
@@ -107,7 +107,7 @@ const captureStatus = (state = INITIAL_STATE, action) => {
         latestUploadAt: state.uploadQueue.length === 0 ? new Date().toISOString() : state.latestUploadAt,
       };
     case CAPTURE_UPLOAD_ERRORED:
-      if (state.currentUpload.folder !== action.capture.folder) {
+      if (state.currentUpload === null || state.currentUpload.folder !== action.capture.folder) {
         return state;
       }
       return {
