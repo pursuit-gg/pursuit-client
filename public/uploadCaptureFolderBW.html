@@ -27,7 +27,7 @@
     let uploadTries = 0;
 
     const createProxy = (port, bandwidth) => {
-      //convert from Mbps to Bps and take 2/3
+      //convert from Mbps to Bps and take 0.70 to handle initial bandwidth spike.
       const convertedBandwidth = Math.round((bandwidth * (0.70)) * ((1024 * 1024) / 8));
       proxy({
         port,
