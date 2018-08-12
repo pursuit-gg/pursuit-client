@@ -6,16 +6,6 @@ import IndeterminateProgressBar from 'components/IndeterminateProgressBar/Indete
 
 import './UploadProgressBar.m.css';
 
-const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  bar: {
-    backgroundColor: '#4FC1E9',
-    borderRadius: 2,
-  },
-};
-
 const uploadTimeDisplay = (seconds) => {
   let time = '';
   if (seconds >= 3600) {
