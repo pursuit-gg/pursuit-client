@@ -56,6 +56,7 @@
     "dist": "npm run dist:win"
   },
   "dependencies": {
+    "@material-ui/core": "^1.5.0",
     "@sentry/electron": "^0.5.5",
     "@streamlabs/obs-studio-node": "https://github.com/stream-labs/obs-studio-node/releases/download/v0.0.35/iojs-v2.0.1-signed.tar.gz",
     "aws-sdk": "^2.212.1",

@@ -24,3 +24,10 @@
   background-color: #ED5565;
   overflow: hidden;
 }
+
+.animatedProgressWrapper {
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}

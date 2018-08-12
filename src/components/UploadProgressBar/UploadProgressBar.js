@@ -2,8 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Tooltip from 'rc-tooltip';
+import IndeterminateProgressBar from 'components/IndeterminateProgressBar/IndeterminateProgressBar';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { withStyles } from '@material-ui/core/styles';
 
 import './UploadProgressBar.m.css';
+
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+  bar: {
+    backgroundColor: '#4FC1E9',
+    borderRadius: 2,
+  },
+};
 
 const uploadTimeDisplay = (seconds) => {
   let time = '';
@@ -22,7 +35,7 @@ const uploadTimeDisplay = (seconds) => {
 };
 
 const UploadProgressBar = ({ captureStatus }) => {
-  if (!captureStatus.currentUpload) {
+  if (!captureStatus.currentUpload && captureStatus.uploadQueue.length === 0) {
     return null;
   }
   return (
@@ -37,6 +50,9 @@ const UploadProgressBar = ({ captureStatus }) => {
           overlay="Pursuit takes screenshots every 2s while Overwatch is open. We upload these screenshots to analyze and process your stats"
         ><i className="fa fa-info-circle" /></Tooltip>
       </h5>
+      <div styleName="animatedProgressWrapper">
+        <IndeterminateProgressBar />
+      </div>
     </div>
   );
 };
