@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Tooltip from 'rc-tooltip';
 import IndeterminateProgressBar from 'components/IndeterminateProgressBar/IndeterminateProgressBar';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { withStyles } from '@material-ui/core/styles';
 
 import './UploadProgressBar.m.css';
 
