@@ -22,7 +22,7 @@ const uploadTimeDisplay = (seconds) => {
   return time;
 };
 
-const UploadProgressBar = ({ captureStatus }) => {
+const UploadProgressBar = ({ captureStatus, manualCaptureUpload }) => {
   if (!captureStatus.currentUpload && captureStatus.uploadQueue.length === 0) {
     return null;
   }
@@ -38,19 +38,23 @@ const UploadProgressBar = ({ captureStatus }) => {
           overlay="Pursuit takes screenshots every 2s while Overwatch is open. We upload these screenshots to analyze and process your stats"
         ><i className="fa fa-info-circle" /></Tooltip>
       </h5>
-      <div styleName="animatedProgressWrapper">
-        <IndeterminateProgressBar />
-      </div>
+      {!manualCaptureUpload &&
+        <div styleName="animatedProgressWrapper">
+          <IndeterminateProgressBar />
+        </div>
+      }
     </div>
   );
 };
 
 UploadProgressBar.propTypes = {
   captureStatus: PropTypes.object.isRequired,
+  manualCaptureUpload: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = ({ captureStatus }) => ({
+const mapStateToProps = ({ captureStatus, settings }) => ({
   captureStatus,
+  manualCaptureUpload: settings.manualCaptureUpload,
 });
 
 export default connect(mapStateToProps, {})(UploadProgressBar);
