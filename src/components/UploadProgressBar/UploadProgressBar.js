@@ -5,6 +5,22 @@ import Tooltip from 'rc-tooltip';
 
 import './UploadProgressBar.m.css';
 
+const uploadTimeDisplay = (seconds) => {
+  let time = '';
+  if (seconds >= 3600) {
+    time += String(Math.floor(Math.abs(seconds) / 3600));
+    time += ' hours ';
+  }
+  if (seconds >= 60) {
+    time += Math.floor((Math.abs(seconds) % 3600) / 60);
+    time += ' minutes ';
+  }
+  if (seconds < 60) {
+    return String(seconds) + ' seconds';
+  }
+  return time;
+};
+
 const UploadProgressBar = ({ captureStatus }) => {
   if (!captureStatus.currentUpload) {
     return null;
@@ -12,21 +28,15 @@ const UploadProgressBar = ({ captureStatus }) => {
   return (
     <div styleName="wrapper">
       <h5 className="bold">
-        {captureStatus.uploadQueue.length} Pending Upload{captureStatus.uploadQueue.length !== 1 ? 's ' : ' '}
-        <Tooltip
+        {uploadTimeDisplay((captureStatus.uploadQueue.length + 1) * 30)}
+      </h5>
+      <h5>
+        of gameplay left to upload <Tooltip
           placement="top"
           mouseLeaveDelay={0}
-          overlay="An upload is 2 minutes of gameplay. Pending uploads may go up if Overwatch is running."
+          overlay="Pursuit takes screenshots every 2s while Overwatch is open. We upload these screenshots to analyze and process your stats"
         ><i className="fa fa-info-circle" /></Tooltip>
       </h5>
-      { captureStatus.currentUpload.error ?
-        <div styleName="progressError" />
-        :
-        <div styleName="progressBackground">
-          <div styleName="progressBar" style={{ width: `${captureStatus.currentUpload.progress}%` }} />
-        </div>
-      }
-      <p> {Math.round(captureStatus.currentUpload.progress)}% Complete </p>
     </div>
   );
 };

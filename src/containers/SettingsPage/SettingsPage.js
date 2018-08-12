@@ -167,15 +167,8 @@ class SettingsPage extends Component {
               </div>
             </div>
             <p styleName="settingSubtext">
-              We recommend setting a limit that is 30% of your internet upload speed. <br />
-              Lowering the limit can help with ping issues. <br />
-              For more info click <a
-                className="blueLink"
-                onClick={(e) => {
-                  e.preventDefault();
-                  electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/upload`);
-                }}
-              >here</a>.
+              Pursuit operates best with at least 3 Mbps. <br />
+              If you experience latency spikes in game try a lower value. <br />
             </p>
           </div>
         }
