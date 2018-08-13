@@ -35,7 +35,7 @@ const UploadProgressBar = ({ captureStatus, manualCaptureUpload }) => {
         of gameplay left to upload <Tooltip
           placement="top"
           mouseLeaveDelay={0}
-          overlay="Pursuit takes screenshots every 2s while Overwatch is open. We upload these screenshots to analyze and process your stats"
+          overlay="Pursuit takes screenshots every 2s while Overwatch is open. We upload these screenshots to analyze and process your stats."
         ><i className="fa fa-info-circle" /></Tooltip>
       </h5>
       {!manualCaptureUpload &&
