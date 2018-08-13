@@ -45,6 +45,13 @@
   margin-left: auto;
   margin-right: auto;
 }
+.uploadBadwidthStepWrapper {
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 320px;
+  margin-bottom: 30px;
+}
 
 .smallSpacing {
   margin-top: 20px;

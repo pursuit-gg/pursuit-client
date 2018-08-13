@@ -20,17 +20,10 @@ import './OnboardingPage.m.css';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
-const bandwidthLookup = {
-  '1-5': 1.5,
-  '6-10': 2,
-  '11-20': 3,
-  '21+': 5,
-};
-
 class OnboardingPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { step: 1, selectedUpload: '6-10' };
+    this.state = { step: 1, selectedUpload: '3' };
     this.nextStep = this.nextStep.bind(this);
     this.goToHome = this.goToHome.bind(this);
     this.selectUpload = this.selectUpload.bind(this);
@@ -63,8 +56,7 @@ class OnboardingPage extends Component {
     mixpanel.track(MP_ONBOARDING_NEXT, {
       step: this.state.step,
     });
-    const uploadBandwidth = bandwidthLookup[this.state.selectedUpload];
-    this.props.goToHome(uploadBandwidth);
+    this.props.goToHome(parseFloat(this.state.selectedUpload));
   }
 
   selectUpload(event) {
@@ -89,49 +81,48 @@ class OnboardingPage extends Component {
 
   renderUploadSelection() {
     return (
-      <div styleName="title">
-        <h2> Choose your internet <br /> <span styleName="orangeUnderline"> upload</span> speed. </h2>
+      <div styleName="uploadBadwidthStepWrapper">
+        <h2> Pick a bandwidth limit for uploading: </h2>
         <div styleName="radioWrapper">
           <div styleName="radio">
             <input
               type="radio"
-              value="1-5"
-              checked={this.state.selectedUpload === '1-5'}
+              value="1.5"
+              checked={this.state.selectedUpload === "1.5"}
               onChange={this.selectUpload}
             />
-            <h5 className="inline"> 1-5 Mbps </h5>
+            <h5 className="inline"> 1.5 Mbps </h5>
           </div>
           <div styleName="radio">
             <input
               type="radio"
-              value="6-10"
-              checked={this.state.selectedUpload === '6-10'}
+              value="2"
+              checked={this.state.selectedUpload === "2"}
               onChange={this.selectUpload}
             />
-            <h5 className="inline"> 6-10 Mbps </h5>
+            <h5 className="inline"> 2 Mbps </h5>
           </div>
           <div styleName="radio">
             <input
               type="radio"
-              value="11-20"
-              checked={this.state.selectedUpload === '11-20'}
+              value="3"
+              checked={this.state.selectedUpload === "3"}
               onChange={this.selectUpload}
             />
-            <h5 className="inline"> 11-20 Mbps </h5>
+            <h5 className="inline"> 3 Mbps (Recommended)</h5>
           </div>
           <div styleName="radio">
             <input
               type="radio"
-              value="21+"
-              checked={this.state.selectedUpload === '21+'}
+              value="5"
+              checked={this.state.selectedUpload === "5"}
               onChange={this.selectUpload}
             />
-            <h5 className="inline"> 21+ Mbps</h5>
+            <h5 className="inline"> 5 Mbps</h5>
           </div>
         </div>
         <h5 className="italic textLeft">
-          We set Pursuit&apos;s bandwidth limits based on your upload speed.
-          If you experience latency issues you can change this in your settings.
+          Pursuit operates best with at least 3 Mbps. <br /> If you experience latency spikes in game try a lower value in your settings.
         </h5>
       </div>
     );
