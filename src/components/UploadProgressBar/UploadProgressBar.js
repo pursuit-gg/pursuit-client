@@ -26,10 +26,12 @@ const UploadProgressBar = ({ captureStatus, manualCaptureUpload }) => {
   if (!captureStatus.currentUpload && captureStatus.uploadQueue.length === 0) {
     return null;
   }
+  let uploadCount = captureStatus.currentUpload ? 1 : 0;
+  uploadCount += captureStatus.uploadQueue.length;
   return (
     <div styleName="wrapper">
       <h5 className="bold">
-        {uploadTimeDisplay((captureStatus.uploadQueue.length + 1) * 30)}
+        {uploadTimeDisplay(uploadCount * 30)}
       </h5>
       <h5>
         of gameplay left to upload <Tooltip
