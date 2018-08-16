@@ -24,14 +24,13 @@ class ProfileHeader extends Component {
   }
 
   componentDidMount() {
-    ipcRenderer.on('update-downloaded', (event, info) => {
+    ipcRenderer.on('update-downloaded', () => {
       this.props.setUpdateAvailable(true);
       mixpanel.track('Update - Downloaded', {
         current_version: appVersion,
-        update_version: info.version,
       });
     });
-    ipcRenderer.on('update-not-available', (event, info) => {
+    ipcRenderer.on('update-not-available', () => {
       this.props.setUpdateAvailable(false);
     });
   }

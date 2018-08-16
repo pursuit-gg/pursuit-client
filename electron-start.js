@@ -543,16 +543,16 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-autoUpdater.on('update-downloaded', (event, info) => {
+autoUpdater.on('update-downloaded', () => {
   // Wait 5 seconds, then quit and install
   // In your application, you don't need to wait 5 seconds.
   // You could call autoUpdater.quitAndInstall(); immediately
-  mainWindow.webContents.send('update-downloaded', info);
+  mainWindow.webContents.send('update-downloaded');
   createClientUpdateNotification();
 });
 
-autoUpdater.on('update-not-available', (event, info) => {
-  mainWindow.webContents.send('update-not-available', info);
+autoUpdater.on('update-not-available', () => {
+  mainWindow.webContents.send('update-not-available');
 });
 
 ipcMain.on('install-update', (event, arg) => {
