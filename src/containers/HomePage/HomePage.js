@@ -17,6 +17,8 @@ import tracking from 'images/captureStatusIcons/tracking.png';
 import notTracking from 'images/captureStatusIcons/notTracking.png';
 import obsMode from 'images/captureStatusIcons/obsMode.png';
 import upToDate from 'images/captureStatusIcons/upToDate.png';
+import pending from 'images/captureStatusIcons/pending.png';
+import paused from 'images/captureStatusIcons/paused.png';
 import uploading from 'images/captureStatusIcons/uploading.png';
 import error from 'images/captureStatusIcons/error.png';
 import discord from 'images/genericIcons/discordLogo.png';
@@ -25,8 +27,74 @@ import './HomePage.m.css';
 const electron = window.require('electron');
 
 class HomePage extends Component {
+  constructor(props) {
+    super(props);
+    this.renderUploadStatus = this.renderUploadStatus.bind(this);
+  }
+
   componentDidMount() {
     mixpanel.track(MP_CLIENT_LOAD, {});
+  }
+
+  renderUploadStatus() {
+    if (this.props.captureStatus.uploadPaused) {
+      return (
+        <div styleName="statusWrapper">
+          <img src={paused} alt="paused" styleName="statusIcon" />
+          <h2 styleName="statusText">
+            Upload {this.props.captureStatus.currentUpload === null ? 'Paused' : 'Pausing...'}
+          </h2>
+          <div styleName="toggleWrapper">
+            <ManualCaptureUploadToggle />
+          </div>
+        </div>
+      );
+    }
+    if (this.props.captureStatus.currentUpload === null) {
+      if (this.props.captureStatus.uploadQueue.length === 0) {
+        return (
+          <div styleName="statusWrapper">
+            <img src={upToDate} alt="up to date" styleName="statusIcon" />
+            <h2 styleName="statusText"> Up To Date </h2>
+            <div styleName="toggleWrapper">
+              <ManualCaptureUploadToggle />
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div styleName="statusWrapper">
+          <img src={pending} alt="pending" styleName="statusIcon" />
+          <h2 styleName="statusText"> Pending Uploads </h2>
+          <div styleName="toggleWrapper">
+            <ManualCaptureUploadToggle />
+          </div>
+        </div>
+      );
+    }
+    if (this.props.captureStatus.currentUpload.error) {
+      return (
+        <div styleName="statusWrapper">
+          <img src={error} alt="error" styleName="statusIcon" />
+          <h2 styleName="statusText">
+            Upload Error
+            <p className="italic"> We&apos;ll keep trying to upload </p>
+          </h2>
+          <div styleName="toggleWrapper">
+            <ManualCaptureUploadToggle />
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div styleName="statusWrapper">
+        <img src={uploading} alt="uploading" styleName="statusIcon" />
+        <h2 styleName="statusText"> Uploading </h2>
+        <div styleName="toggleWrapper">
+          <ManualCaptureUploadToggle />
+        </div>
+      </div>
+    );
   }
 
   render() {
@@ -108,50 +176,12 @@ class HomePage extends Component {
         </div>
         <div styleName="subSection">
           <h4 styleName="subHeading"> Uploading </h4>
-          {!this.props.manualCaptureUpload && this.props.captureStatus.currentUpload === null &&
-            <div styleName="statusWrapper">
-              <img src={upToDate} alt="up to date" styleName="statusIcon" />
-              <h2 styleName="statusText"> Up To Date </h2>
-              <div styleName="toggleWrapper">
-                <ManualCaptureUploadToggle />
-              </div>
-            </div>
-          }
-          {!this.props.manualCaptureUpload && this.props.captureStatus.currentUpload !== null &&
-            this.props.captureStatus.currentUpload.error === null &&
-            <div styleName="statusWrapper">
-              <img src={uploading} alt="uploading" styleName="statusIcon" />
-              <h2 styleName="statusText"> Uploading </h2>
-              <div styleName="toggleWrapper">
-                <ManualCaptureUploadToggle />
-              </div>
-            </div>
-          }
-          {!this.props.manualCaptureUpload && this.props.captureStatus.currentUpload !== null &&
-            this.props.captureStatus.currentUpload.error !== null &&
-            <div styleName="statusWrapper">
-              <img src={error} alt="error" styleName="statusIcon" />
-              <h2 styleName="statusText">
-                Upload Error
-                <p className="italic"> We&apos;ll keep trying to upload </p>
-              </h2>
-              <div styleName="toggleWrapper">
-                <ManualCaptureUploadToggle />
-              </div>
-            </div>
-          }
-          {this.props.manualCaptureUpload &&
-            <div styleName="statusWrapper">
-              <UploadButton />
-              <div styleName="toggleWrapper">
-                <ManualCaptureUploadToggle />
-              </div>
-            </div>
-          }
+          {this.renderUploadStatus()}
+          <UploadButton />
           <UploadProgressBar />
         </div>
         <div styleName="tipWrapper">
-          <p> Once you finish a match, it should appear in <br />your match history within 10 minutes. </p>
+          <p> Once you finish a match, it should appear in <br />your match history within a few minutes. </p>
         </div>
         {!this.props.troubleshootingTipClosed &&
           <div styleName="troubleshootingTip">

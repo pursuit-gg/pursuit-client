@@ -4,13 +4,16 @@ import {
   QUEUE_CAPTURE_UPLOAD,
   REQUEUE_CAPTURE_UPLOAD,
   START_CAPTURE_UPLOAD,
+  PAUSE_CAPTURE_UPLOAD,
   CAPTURE_UPLOADING,
   CAPTURE_UPLOAD_FINISHED,
+  CAPTURE_UPLOAD_CANCELLED,
   CAPTURE_UPLOAD_ERRORED,
 } from '../actions/types';
 
 const INITIAL_STATE = {
   capturing: false,
+  uploadPaused: false,
   scaleRes: '1920x1080',
   uploadQueue: [],
   currentUpload: null,
@@ -55,7 +58,7 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       if (alreadyQueued(state.uploadQueue, state.currentUpload, action.capture)) {
         return state;
       }
-      if (action.manualCaptureUpload || state.currentUpload !== null) {
+      if (action.manualCaptureUpload || state.uploadPaused || state.currentUpload !== null) {
         return {
           ...state,
           uploadQueue: [...state.uploadQueue, action.capture].sort((a, b) =>
@@ -65,10 +68,12 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       }
       return {
         ...state,
-        uploadQueue: [...state.uploadQueue, action.capture].slice(1).sort((a, b) =>
+        uploadQueue: [...state.uploadQueue, action.capture].sort((a, b) =>
           (a.folder > b.folder ? 1 : -1),
-        ),
-        currentUpload: [...state.uploadQueue, action.capture][0],
+        ).slice(1),
+        currentUpload: [...state.uploadQueue, action.capture].sort((a, b) =>
+          (a.folder > b.folder ? 1 : -1),
+        )[0],
       };
     case REQUEUE_CAPTURE_UPLOAD:
       if (state.currentUpload === null) {
@@ -85,8 +90,14 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       }
       return {
         ...state,
+        uploadPaused: false,
         uploadQueue: state.uploadQueue.slice(1),
         currentUpload: (state.uploadQueue[0] || null),
+      };
+    case PAUSE_CAPTURE_UPLOAD:
+      return {
+        ...state,
+        uploadPaused: true,
       };
     case CAPTURE_UPLOADING:
       if (state.currentUpload === null || state.currentUpload.folder !== action.capture.folder) {
@@ -102,9 +113,22 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       }
       return {
         ...state,
-        uploadQueue: state.uploadQueue.slice(1),
-        currentUpload: (state.uploadQueue[0] || null),
+        uploadQueue: state.uploadPaused ? state.uploadQueue : state.uploadQueue.slice(1),
+        currentUpload: state.uploadPaused ? null : (state.uploadQueue[0] || null),
         latestUploadAt: state.uploadQueue.length === 0 ? new Date().toISOString() : state.latestUploadAt,
+      };
+    case CAPTURE_UPLOAD_CANCELLED:
+      if (alreadyQueued(state.uploadQueue, null, action.capture)) {
+        return state;
+      }
+      return {
+        ...state,
+        uploadQueue: [...state.uploadQueue, action.capture].sort((a, b) =>
+          (a.folder > b.folder ? 1 : -1),
+        ),
+        currentUpload:
+          state.currentUpload === null || state.currentUpload.folder !== action.capture.folder ?
+          state.currentUpload : null,
       };
     case CAPTURE_UPLOAD_ERRORED:
       if (state.currentUpload === null || state.currentUpload.folder !== action.capture.folder) {

@@ -618,6 +618,14 @@ ipcMain.on('upload-capture-folder', (event, folder, userId, spectator, bandwidth
   createUploaderWindow(folder, userId, spectator, bandwidth);
 });
 
+ipcMain.on('cancel-capture-folder-uploads', () => {
+  Object.keys(uploadWindows).forEach((id) => {
+    if (uploadWindows[id]) {
+      uploadWindows[id].webContents.send('cancel');
+    }
+  });
+});
+
 ipcMain.on('queue-capture-folder-upload', (event, folder) => {
   if (mainWindow && userInfo.userId) {
     mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId, userInfo.spectator);
@@ -627,6 +635,12 @@ ipcMain.on('queue-capture-folder-upload', (event, folder) => {
 ipcMain.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
   if (mainWindow) {
     mainWindow.webContents.send('capture-folder-upload-finished', folder, userId, spectator);
+  }
+});
+
+ipcMain.on('capture-folder-upload-cancelled', (event, folder, userId, spectator) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('capture-folder-upload-cancelled', folder, userId, spectator);
   }
 });
 

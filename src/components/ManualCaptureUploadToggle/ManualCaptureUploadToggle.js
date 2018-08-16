@@ -17,7 +17,8 @@ class ManualCaptureUploadToggle extends Component {
 
   toggle() {
     this.props.setManualCaptureUpload(!this.props.manualCaptureUpload);
-    if (this.props.manualCaptureUpload && this.props.captureStatus.currentUpload === null &&
+    if (this.props.manualCaptureUpload && !this.props.captureStatus.uploadPaused &&
+        this.props.captureStatus.currentUpload === null &&
         this.props.captureStatus.uploadQueue.length !== 0) {
       this.props.startCaptureUpload();
     }
@@ -55,7 +56,7 @@ class ManualCaptureUploadToggle extends Component {
 
 ManualCaptureUploadToggle.propTypes = {
   manualCaptureUpload: PropTypes.bool.isRequired,
-  captureStatus: PropTypes.object,
+  captureStatus: PropTypes.object.isRequired,
   setManualCaptureUpload: PropTypes.func.isRequired,
   startCaptureUpload: PropTypes.func.isRequired,
 };

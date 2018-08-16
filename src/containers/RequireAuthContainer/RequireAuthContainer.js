@@ -12,8 +12,10 @@ import {
   captureStopped,
   queueCaptureUpload,
   requeueCaptureUpload,
+  startCaptureUpload,
   captureUploading,
   captureUploadFinished,
+  captureUploadCancelled,
   captureUploadErrored,
 } from 'actions/captureStatus';
 import { loadTeam } from 'actions/team';
@@ -24,6 +26,29 @@ import notificationSound from 'sounds/notification.mp3';
 import './RequireAuthContainer.m.css';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
+
+const handleUploadRestarting = (props) => {
+  if (props.captureStatus.currentUpload !== null) {
+    if (props.isAuthenticated &&
+        !props.manualCaptureUpload &&
+        !props.captureStatus.uploadPaused) {
+      ipcRenderer.send(
+        'upload-capture-folder',
+        props.captureStatus.currentUpload.folder,
+        props.captureStatus.currentUpload.userId,
+        props.captureStatus.currentUpload.spectator,
+        props.uploadBandwidth,
+      );
+    } else {
+      props.requeueCaptureUpload();
+    }
+  } else if (props.captureStatus.uploadQueue.length !== 0 &&
+             props.isAuthenticated &&
+             !props.manualCaptureUpload &&
+             !props.captureStatus.uploadPaused) {
+    props.startCaptureUpload();
+  }
+};
 
 class RequireAuthContainer extends Component {
   constructor(props) {
@@ -53,9 +78,7 @@ class RequireAuthContainer extends Component {
         this.props.loadMatchNotifications();
       }, 15000);
     }
-    if (this.props.captureStatus.currentUpload !== null) {
-      this.props.requeueCaptureUpload();
-    }
+    handleUploadRestarting(this.props);
   }
 
   componentDidMount() {
@@ -64,6 +87,9 @@ class RequireAuthContainer extends Component {
     });
     ipcRenderer.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
       this.props.captureUploadFinished(folder, userId, spectator);
+    });
+    ipcRenderer.on('capture-folder-upload-cancelled', (event, folder, userId, spectator) => {
+      this.props.captureUploadCancelled(folder, userId, spectator);
     });
     ipcRenderer.on('capture-folder-uploading', (event, folder, userId, spectator, progress) => {
       this.props.captureUploading(folder, userId, spectator, progress);
@@ -84,38 +110,46 @@ class RequireAuthContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.checkAuth(nextProps);
-    if (!this.props.user.rehydrated && nextProps.user.rehydrated && nextProps.isAuthenticated) {
-      ipcRenderer.send('set-spectator-mode', nextProps.spectator);
-      ipcRenderer.send('sign-in', nextProps.user.id);
-      mixpanel.identify(nextProps.user.id);
-      mixpanel.people.set({
-        $username: nextProps.user.username,
-        $email: nextProps.user.email,
-      });
-      mixpanel.register({
-        username: nextProps.user.username,
-        user_id: nextProps.user.id,
-      });
-      if (nextProps.user.hasTeamAccess) {
-        this.props.loadTeam();
-      }
-      this.props.loadMatchNotifications();
-      this.fetchInterval = this.props.setInterval(() => {
+    if (!this.props.user.rehydrated && nextProps.user.rehydrated) {
+      if (nextProps.isAuthenticated) {
+        ipcRenderer.send('set-spectator-mode', nextProps.spectator);
+        ipcRenderer.send('sign-in', nextProps.user.id);
+        mixpanel.identify(nextProps.user.id);
+        mixpanel.people.set({
+          $username: nextProps.user.username,
+          $email: nextProps.user.email,
+        });
+        mixpanel.register({
+          username: nextProps.user.username,
+          user_id: nextProps.user.id,
+        });
+        if (nextProps.user.hasTeamAccess) {
+          this.props.loadTeam();
+        }
         this.props.loadMatchNotifications();
-      }, 15000);
+        this.fetchInterval = this.props.setInterval(() => {
+          this.props.loadMatchNotifications();
+        }, 15000);
+      }
+      handleUploadRestarting(nextProps);
+    } else {
+      if (nextProps.captureStatus.currentUpload !== null &&
+          (this.props.captureStatus.currentUpload === null ||
+          this.props.captureStatus.currentUpload.folder !== nextProps.captureStatus.currentUpload.folder)) {
+        ipcRenderer.send(
+          'upload-capture-folder',
+          nextProps.captureStatus.currentUpload.folder,
+          nextProps.captureStatus.currentUpload.userId,
+          nextProps.captureStatus.currentUpload.spectator,
+          nextProps.uploadBandwidth,
+        );
+      }
+      if (!this.props.captureStatus.uploadPaused && nextProps.captureStatus.uploadPaused) {
+        ipcRenderer.send('cancel-capture-folder-uploads');
+      }
     }
     if (this.props.spectator !== nextProps.spectator) {
       ipcRenderer.send('set-spectator-mode', nextProps.spectator);
-    }
-    if (nextProps.captureStatus.currentUpload !== null && (this.props.captureStatus.currentUpload === null ||
-        this.props.captureStatus.currentUpload.folder !== nextProps.captureStatus.currentUpload.folder)) {
-      ipcRenderer.send(
-        'upload-capture-folder',
-        nextProps.captureStatus.currentUpload.folder,
-        nextProps.captureStatus.currentUpload.userId,
-        nextProps.captureStatus.currentUpload.spectator,
-        nextProps.uploadBandwidth,
-      );
     }
     if (this.props.matchProcessedSound && newMatchCheck(this.props.matchNotifications, nextProps.matchNotifications)) {
       this.notifSound.currentTime = 0;
@@ -129,12 +163,14 @@ class RequireAuthContainer extends Component {
   componentWillUnmount() {
     ipcRenderer.removeAllListeners('queue-capture-folder-upload');
     ipcRenderer.removeAllListeners('capture-folder-upload-finished');
+    ipcRenderer.removeAllListeners('capture-folder-upload-cancelled');
     ipcRenderer.removeAllListeners('capture-folder-uploading');
     ipcRenderer.removeAllListeners('capture-folder-upload-error');
     ipcRenderer.removeAllListeners('start-capture');
     ipcRenderer.removeAllListeners('stop-capture');
     ipcRenderer.removeAllListeners('pending-uploads-check');
     ipcRenderer.send('new-match-notifications', 0);
+    ipcRenderer.send('cancel-capture-folder-uploads');
     ipcRenderer.send('sign-out', this.props.user.id);
     this.props.clearInterval(this.fetchInterval);
   }
@@ -172,8 +208,10 @@ RequireAuthContainer.propTypes = {
   captureStopped: PropTypes.func.isRequired,
   queueCaptureUpload: PropTypes.func.isRequired,
   requeueCaptureUpload: PropTypes.func.isRequired,
+  startCaptureUpload: PropTypes.func.isRequired,
   captureUploading: PropTypes.func.isRequired,
   captureUploadFinished: PropTypes.func.isRequired,
+  captureUploadCancelled: PropTypes.func.isRequired,
   captureUploadErrored: PropTypes.func.isRequired,
   loadTeam: PropTypes.func.isRequired,
   loadMatchNotifications: PropTypes.func.isRequired,
@@ -208,11 +246,17 @@ const mapDispatchToProps = dispatch => ({
   requeueCaptureUpload: () => {
     dispatch(requeueCaptureUpload());
   },
+  startCaptureUpload: () => {
+    dispatch(startCaptureUpload());
+  },
   captureUploading: (folder, userId, spectator, progress) => {
     dispatch(captureUploading(folder, userId, spectator, progress));
   },
   captureUploadFinished: (folder, userId, spectator) => {
     dispatch(captureUploadFinished(folder, userId, spectator));
+  },
+  captureUploadCancelled: (folder, userId, spectator) => {
+    dispatch(captureUploadCancelled(folder, userId, spectator));
   },
   captureUploadErrored: (folder, userId, spectator, error) => {
     dispatch(captureUploadErrored(folder, userId, spectator, error));

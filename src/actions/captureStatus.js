@@ -4,8 +4,10 @@ import {
   QUEUE_CAPTURE_UPLOAD,
   REQUEUE_CAPTURE_UPLOAD,
   START_CAPTURE_UPLOAD,
+  PAUSE_CAPTURE_UPLOAD,
   CAPTURE_UPLOADING,
   CAPTURE_UPLOAD_FINISHED,
+  CAPTURE_UPLOAD_CANCELLED,
   CAPTURE_UPLOAD_ERRORED,
 } from 'actions/types';
 
@@ -48,6 +50,12 @@ export function startCaptureUpload() {
   };
 }
 
+export function pauseCaptureUpload() {
+  return {
+    type: PAUSE_CAPTURE_UPLOAD,
+  };
+}
+
 export function captureUploading(folder, userId, spectator, progress) {
   return {
     type: CAPTURE_UPLOADING,
@@ -69,6 +77,19 @@ export function captureUploadFinished(folder, userId, spectator) {
       userId,
       spectator,
       progress: 100,
+      error: null,
+    },
+  };
+}
+
+export function captureUploadCancelled(folder, userId, spectator) {
+  return {
+    type: CAPTURE_UPLOAD_CANCELLED,
+    capture: {
+      folder,
+      userId,
+      spectator,
+      progress: 0,
       error: null,
     },
   };

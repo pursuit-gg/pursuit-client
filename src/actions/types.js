@@ -36,8 +36,10 @@ export const CAPTURE_STOPPED = 'capture_stopped';
 export const QUEUE_CAPTURE_UPLOAD = 'queue_capture_upload';
 export const REQUEUE_CAPTURE_UPLOAD = 'requeue_capture_upload';
 export const START_CAPTURE_UPLOAD = 'start_capture_upload';
+export const PAUSE_CAPTURE_UPLOAD = 'pause_capture_upload';
 export const CAPTURE_UPLOADING = 'capture_uploading';
 export const CAPTURE_UPLOAD_FINISHED = 'capture_upload_finished';
+export const CAPTURE_UPLOAD_CANCELLED = 'capture_upload_cancelled';
 export const CAPTURE_UPLOAD_ERRORED = 'capture_upload_errored';
 
 export const MATCH_NOTIFICATIONS_LOADED = 'match_notifications_loaded';
