@@ -26,6 +26,8 @@ let mainWindow;
 let trackerWindow;
 let trackCapturesWindow;
 const uploadWindows = {};
+let pendingUploadWindows = 0;
+let pendingUploadCancels = 0;
 let appTray;
 
 let manualUploadNotificationTimeout = null;
@@ -475,7 +477,12 @@ const createUploaderWindow = (folder, userId, spectator, bandwidth) => {
   win.loadURL(backgroundWindowURL);
   // win.webContents.openDevTools();
   win.webContents.on('did-finish-load', () => {
+    pendingUploadWindows -= 1;
     win.webContents.send('upload', folder, userId, spectator, bandwidth);
+    if (pendingUploadCancels > 0) {
+      win.webContents.send('cancel');
+      pendingUploadCancels -= 1;
+    }
   });
   win.on('closed', () => {
     uploadWindows[winId] = null;
@@ -615,10 +622,12 @@ ipcMain.on('new-match-notifications', (event, newMatchNotifications) => {
 });
 
 ipcMain.on('upload-capture-folder', (event, folder, userId, spectator, bandwidth) => {
+  pendingUploadWindows += 1;
   createUploaderWindow(folder, userId, spectator, bandwidth);
 });
 
 ipcMain.on('cancel-capture-folder-uploads', () => {
+  pendingUploadCancels += pendingUploadWindows;
   Object.keys(uploadWindows).forEach((id) => {
     if (uploadWindows[id]) {
       uploadWindows[id].webContents.send('cancel');

@@ -25,9 +25,9 @@
     let upload = null;
     let uploadPending = false;
     let uploadTries = 0;
-    let folder;
-    let userId;
-    let spectator;
+    let folder = null;
+    let userId = null;
+    let spectator = null;
 
     const createProxy = (port, bandwidth) => {
       //convert from Mbps to Bps and take 0.70 to handle initial bandwidth spike.
@@ -116,6 +116,18 @@
       });
     };
 
+    const cancelUpload = () => {
+      if (folder !== null && userId !== null && spectator !== null) {
+        if (uploadPending) {
+          upload.abort();
+        }
+        ipc.send('capture-folder-upload-cancelled', folder, userId, spectator);
+        window.close();
+      } else {
+        setTimeout(cancelUpload, 500);
+      }
+    };
+
     ipc.on('upload', (event, folderPath, uId, spectatorMode, bandwidth) => {
       folder = folderPath;
       userId = uId;
@@ -139,11 +151,7 @@
     });
 
     ipc.on('cancel', () => {
-      if (uploadPending) {
-        upload.abort();
-      }
-      ipc.send('capture-folder-upload-cancelled', folder, userId, spectator);
-      window.close();
+      cancelUpload();
     });
 
     ipc.on('close', () => {
