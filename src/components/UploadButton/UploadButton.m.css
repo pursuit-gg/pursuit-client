@@ -1,15 +1,10 @@
 .wrapper {
-  display: inline-block;
-}
-
-.statusText {
-  vertical-align: top;
-  margin-bottom: 5px;
+  margin-left: 70px;
 }
 
 .slim {
   height: 34px;
-  width: 110px;
+  width: 140px;
   font-size: 20px;
   line-height: 34px;
   font-weight: 400;
@@ -21,43 +16,24 @@
   color: #FFF;
 }
 
-.iconWrapper {
-  top: 0px;
-  text-align: center;
-  width: 100%;
-  left: 0px;
-  position: absolute;
+.buttonIcon {
+  height: 14px;
+  vertical-align: top;
 }
 
-.errorText {
-  color: #ED5565;
-}
-
-.synced {
-  background-color: #48CFAD;
-}
-
-.uploading {
-  background-color: #D8D8D8;
-}
-
-.error {
-  background-color: #ED5565;
-}
-
-.pending {
+.aqua {
   background-color: #4FC1E9;
 }
 
-.pending:hover {
+.aqua:hover {
   background-color: #61BFE1;
 }
 
-.pending:active {
+.aqua:active {
   box-shadow: inset 0 2px 1px 0 rgba(0,0,0,0.10); 
   background-color: #61BFE1;
 }
 
-.pending:focus {
+.aqua:focus {
   outline:0;
 }

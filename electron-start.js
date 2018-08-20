@@ -26,6 +26,8 @@ let mainWindow;
 let trackerWindow;
 let trackCapturesWindow;
 const uploadWindows = {};
+let pendingUploadWindows = 0;
+let pendingUploadCancels = 0;
 let appTray;
 
 let manualUploadNotificationTimeout = null;
@@ -475,7 +477,12 @@ const createUploaderWindow = (folder, userId, spectator, bandwidth) => {
   win.loadURL(backgroundWindowURL);
   // win.webContents.openDevTools();
   win.webContents.on('did-finish-load', () => {
+    pendingUploadWindows -= 1;
     win.webContents.send('upload', folder, userId, spectator, bandwidth);
+    if (pendingUploadCancels > 0) {
+      win.webContents.send('cancel');
+      pendingUploadCancels -= 1;
+    }
   });
   win.on('closed', () => {
     uploadWindows[winId] = null;
@@ -543,16 +550,16 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-autoUpdater.on('update-downloaded', (event, info) => {
+autoUpdater.on('update-downloaded', () => {
   // Wait 5 seconds, then quit and install
   // In your application, you don't need to wait 5 seconds.
   // You could call autoUpdater.quitAndInstall(); immediately
-  mainWindow.webContents.send('update-downloaded', info);
+  mainWindow.webContents.send('update-downloaded');
   createClientUpdateNotification();
 });
 
-autoUpdater.on('update-not-available', (event, info) => {
-  mainWindow.webContents.send('update-not-available', info);
+autoUpdater.on('update-not-available', () => {
+  mainWindow.webContents.send('update-not-available');
 });
 
 ipcMain.on('install-update', (event, arg) => {
@@ -615,7 +622,17 @@ ipcMain.on('new-match-notifications', (event, newMatchNotifications) => {
 });
 
 ipcMain.on('upload-capture-folder', (event, folder, userId, spectator, bandwidth) => {
+  pendingUploadWindows += 1;
   createUploaderWindow(folder, userId, spectator, bandwidth);
+});
+
+ipcMain.on('cancel-capture-folder-uploads', () => {
+  pendingUploadCancels += pendingUploadWindows;
+  Object.keys(uploadWindows).forEach((id) => {
+    if (uploadWindows[id]) {
+      uploadWindows[id].webContents.send('cancel');
+    }
+  });
 });
 
 ipcMain.on('queue-capture-folder-upload', (event, folder) => {
@@ -627,6 +644,12 @@ ipcMain.on('queue-capture-folder-upload', (event, folder) => {
 ipcMain.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
   if (mainWindow) {
     mainWindow.webContents.send('capture-folder-upload-finished', folder, userId, spectator);
+  }
+});
+
+ipcMain.on('capture-folder-upload-cancelled', (event, folder, userId, spectator) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('capture-folder-upload-cancelled', folder, userId, spectator);
   }
 });
 

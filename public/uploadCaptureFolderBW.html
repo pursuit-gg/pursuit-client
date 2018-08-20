@@ -25,6 +25,9 @@
     let upload = null;
     let uploadPending = false;
     let uploadTries = 0;
+    let folder = null;
+    let userId = null;
+    let spectator = null;
 
     const createProxy = (port, bandwidth) => {
       //convert from Mbps to Bps and take 0.70 to handle initial bandwidth spike.
@@ -37,7 +40,7 @@
       });
     };
 
-    const deleteFolder = (folder, userId, spectator) => {
+    const deleteFolder = () => {
       fs.remove(folder, (removeErr) => {
         if (removeErr) {
           console.error(removeErr);
@@ -48,7 +51,7 @@
       });
     };
 
-    const uploadFolder = (folder, userId, spectator) => {
+    const uploadFolder = () => {
       console.log(folder);
       uploadTries += 1;
       fs.pathExists(folder, (err, exists) => {
@@ -57,9 +60,9 @@
           Sentry.captureException(err);
           ipc.send('capture-folder-upload-error', folder, userId, spectator, err);
           if (uploadTries < 5) {
-            setTimeout(() => uploadFolder(folder, userId, spectator), 3000);
+            setTimeout(uploadFolder, 3000);
           } else {
-            deleteFolder(folder, userId, spectator);
+            deleteFolder();
           }
           return;
         } else if (!exists) {
@@ -98,14 +101,14 @@
               Sentry.captureException(uploadErr);
               ipc.send('capture-folder-upload-error', folder, userId, spectator, uploadErr);
               if (uploadTries < 40) {
-                setTimeout(() => uploadFolder(folder, userId, spectator), 3000);
+                setTimeout(uploadFolder, 3000);
               } else {
-                setTimeout(() => deleteFolder(folder, userId, spectator), 500);
+                deleteFolder();
               }
             } else {
               console.log(uploadData);
               ipc.send('capture-folder-uploading', folder, userId, spectator, 100);
-              setTimeout(() => deleteFolder(folder, userId, spectator), 1000);
+              deleteFolder();
             }
           });
           uploadPending = true;
@@ -113,7 +116,22 @@
       });
     };
 
-    ipc.on('upload', (event, folder, userId, spectator, bandwidth) => {
+    const cancelUpload = () => {
+      if (folder !== null && userId !== null && spectator !== null) {
+        if (uploadPending) {
+          upload.abort();
+        }
+        ipc.send('capture-folder-upload-cancelled', folder, userId, spectator);
+        window.close();
+      } else {
+        setTimeout(cancelUpload, 500);
+      }
+    };
+
+    ipc.on('upload', (event, folderPath, uId, spectatorMode, bandwidth) => {
+      folder = folderPath;
+      userId = uId;
+      spectator = spectatorMode;
       console.log('upload', folder, userId, spectator, bandwidth);
       if (bandwidth !== 0) {
         portscanner.findAPortNotInUse(50000, 60000, (err, port) => {
@@ -130,6 +148,10 @@
       } else {
         uploadFolder(folder, userId, spectator);
       }
+    });
+
+    ipc.on('cancel', () => {
+      cancelUpload();
     });
 
     ipc.on('close', () => {

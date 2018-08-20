@@ -2,79 +2,70 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { startCaptureUpload } from 'actions/captureStatus';
+import { startCaptureUpload, pauseCaptureUpload } from 'actions/captureStatus';
+import pauseImg from 'images/captureStatusIcons/whitePause.png';
+
 import './UploadButton.m.css';
 
 class UploadButton extends Component {
   constructor(props) {
     super(props);
     this.getUploadState = this.getUploadState.bind(this);
-    this.getStateText = this.getStateText.bind(this);
   }
 
   getUploadState() {
+    if (this.props.captureStatus.uploadPaused) {
+      if (this.props.captureStatus.currentUpload === null) {
+        return 'paused';
+      }
+      return 'pausing';
+    }
     if (this.props.captureStatus.currentUpload === null) {
       if (this.props.captureStatus.uploadQueue.length === 0) {
         return 'synced';
       }
       return 'pending';
     }
-    if (this.props.captureStatus.currentUpload !== null &&
-        this.props.captureStatus.currentUpload.error !== null) {
+    if (this.props.captureStatus.currentUpload.error) {
       return 'error';
     }
     return 'uploading';
   }
 
-  getStateText() {
-    switch (this.getUploadState()) {
-      case 'synced':
-        return 'Up To Date';
-      case 'pending':
-        return 'Ready For Upload';
-      case 'error':
-        return 'Upload Error';
-      case 'uploading':
-        return 'Uploading';
-      default:
-        return '';
+  handleButtonClick(uploadState) {
+    if (uploadState === 'pending' || uploadState === 'paused') {
+      this.props.startCaptureUpload();
+    } else if (uploadState === 'uploading' || uploadState === 'error') {
+      this.props.pauseCaptureUpload();
     }
   }
 
   render() {
     const uploadState = this.getUploadState();
-    const stateText = this.getStateText();
+    if (uploadState === 'synced') {
+      return null;
+    }
     return (
       <div styleName="wrapper">
-        <h2 styleName="statusText"> {stateText} </h2>
         <button
           type="button"
-          onClick={this.props.startCaptureUpload}
-          styleName={`slim ${uploadState}`}
-          disabled={uploadState !== 'pending'}
+          onClick={() => this.handleButtonClick(uploadState)}
+          styleName="slim aqua"
+          disabled={uploadState === 'pausing'}
         >
-          {uploadState === 'synced' &&
-            <div styleName="iconWrapper">
-              <i className="fa fa-check" />
-            </div>
-          }
           {uploadState === 'pending' &&
             <h5> upload </h5>
           }
-          {uploadState === 'error' &&
-            <div styleName="iconWrapper">
-              <i className="fa fa-times" />
-            </div>
+          {(uploadState === 'uploading' || uploadState === 'error') &&
+            <h5> <img styleName="buttonIcon" src={pauseImg} alt="pause" /> pause upload </h5>
           }
-          {uploadState === 'uploading' &&
-            <div styleName="iconWrapper">
-              <i className="fa fa-spinner fa-spin" />
-            </div>
+          {uploadState === 'paused' &&
+            <h5> resume upload </h5>
+          }
+          {uploadState === 'pausing' &&
+            <h5> pausing... </h5>
           }
         </button>
-        {uploadState === 'error' &&
-          <p styleName="errorText" className="italic"> We&apos;ll keep trying to upload </p>
-        }
       </div>
     );
   }
@@ -83,19 +74,21 @@ class UploadButton extends Component {
 UploadButton.propTypes = {
   captureStatus: PropTypes.object.isRequired,
   startCaptureUpload: PropTypes.func.isRequired,
+  pauseCaptureUpload: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ captureStatus }) => ({
   captureStatus,
 });
 
-const mapDispatchToProps = dispatch => (
-  {
-    startCaptureUpload: () => {
-      dispatch(startCaptureUpload());
-    },
-  }
-);
+const mapDispatchToProps = dispatch => ({
+  startCaptureUpload: () => {
+    dispatch(startCaptureUpload());
+  },
+  pauseCaptureUpload: () => {
+    dispatch(pauseCaptureUpload());
+  },
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);
 
