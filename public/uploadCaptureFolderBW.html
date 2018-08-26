@@ -19,6 +19,9 @@
     AWS.config.region = process.env.AWS_REGION;
     const creds = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: process.env.AWS_IDENTITY_POOL_ID,
+    }, {
+      region: process.env.AWS_REGION,
+      httpOptions: AWS.config.httpOptions,
     });
     AWS.config.credentials = creds;
 
@@ -79,39 +82,53 @@
         const bufs = [];
         passThrough.on('data', data => bufs.push(data));
         passThrough.on('end', () => {
-          const buf = Buffer.concat(bufs);
-          const params = {
-            Bucket: process.env.AWS_S3_CAPTURE_BUCKET,
-            Key: uploadKey,
-            ContentType: 'application/x-compressed-tar',
-            Body: buf,
-            ACL: 'private',
-          };
-          console.log('upload');
-          upload = new AWS.S3.ManagedUpload({ params, queueSize: 1 });
-          let loaded = 0;
-          upload.on('httpUploadProgress', (progress) => {
-            console.log(progress);
-            ipc.send('capture-folder-uploading', folder, userId, spectator, (loaded / progress.total) * 100);
-            loaded = progress.loaded;
-          }).send((uploadErr, uploadData) => {
-            uploadPending = false;
-            if (uploadErr) {
-              console.error(uploadErr);
-              Sentry.captureException(uploadErr);
-              ipc.send('capture-folder-upload-error', folder, userId, spectator, uploadErr);
+          console.log('get credentials');
+          AWS.config.credentials.get((credErr) => {
+            if (credErr) {
+              console.error(credErr);
+              Sentry.captureException(credErr);
+              ipc.send('capture-folder-upload-error', folder, userId, spectator, credErr);
               if (uploadTries < 40) {
                 setTimeout(uploadFolder, 3000);
               } else {
                 deleteFolder();
               }
-            } else {
-              console.log(uploadData);
-              ipc.send('capture-folder-uploading', folder, userId, spectator, 100);
-              deleteFolder();
+              return;
             }
+            const buf = Buffer.concat(bufs);
+            const params = {
+              Bucket: process.env.AWS_S3_CAPTURE_BUCKET,
+              Key: uploadKey,
+              ContentType: 'application/x-compressed-tar',
+              Body: buf,
+              ACL: 'private',
+            };
+            console.log('upload');
+            upload = new AWS.S3.ManagedUpload({ params, queueSize: 1 });
+            let loaded = 0;
+            upload.on('httpUploadProgress', (progress) => {
+              console.log(progress);
+              ipc.send('capture-folder-uploading', folder, userId, spectator, (loaded / progress.total) * 100);
+              loaded = progress.loaded;
+            }).send((uploadErr, uploadData) => {
+              uploadPending = false;
+              if (uploadErr) {
+                console.error(uploadErr);
+                Sentry.captureException(uploadErr);
+                ipc.send('capture-folder-upload-error', folder, userId, spectator, uploadErr);
+                if (uploadTries < 40) {
+                  setTimeout(uploadFolder, 3000);
+                } else {
+                  deleteFolder();
+                }
+              } else {
+                console.log(uploadData);
+                ipc.send('capture-folder-uploading', folder, userId, spectator, 100);
+                deleteFolder();
+              }
+            });
+            uploadPending = true;
           });
-          uploadPending = true;
         });
       });
     };

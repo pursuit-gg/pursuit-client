@@ -158,11 +158,11 @@ const startCapture = () => {
         if (width / height < 16 / 9) {
           xScale = 1920 / width;
           yScale = Math.round(height * xScale) / height;
-          obsDisplayInfo.scaleRes = `1920x${height * yScale}`;
+          obsDisplayInfo.scaleRes = `1920x${Math.round(height * yScale)}`;
         } else {
           yScale = 1080 / height;
           xScale = Math.round(width * yScale) / width;
-          obsDisplayInfo.scaleRes = `${width * xScale}x1080`;
+          obsDisplayInfo.scaleRes = `${Math.round(width * xScale)}x1080`;
         }
         const newScale = { x: xScale, y: yScale };
         if (obsSceneItem.scale !== newScale) {

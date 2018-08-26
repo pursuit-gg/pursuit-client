@@ -18,14 +18,14 @@
       if (watcher) {
         return;
       }
-      watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\../ });
-      watcher.on('add', path => {
-        const pathMatch = path.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
+      watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\..|\.jpeg$/ });
+      watcher.on('add', (filePath) => {
+        const pathMatch = filePath.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
         if (pathMatch) {
           console.log(pathMatch[1]);
           ipc.send('queue-capture-folder-upload', pathMatch[1]);
         }
-      }).on('error', err => {
+      }).on('error', (err) => {
         console.log(err);
         Sentry.captureException(err);
       });

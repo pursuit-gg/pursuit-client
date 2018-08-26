@@ -153,7 +153,14 @@ class RequireAuthContainer extends Component {
     }
     if (this.props.matchProcessedSound && newMatchCheck(this.props.matchNotifications, nextProps.matchNotifications)) {
       this.notifSound.currentTime = 0;
-      this.notifSound.play();
+      // catch error from play promise and discard if play interrupted
+      // error due to unmounting before async play occurs
+      const playPromise = this.notifSound.play();
+      playPromise.catch((err) => {
+        if (err.name !== 'AbortError') {
+          throw err;
+        }
+      });
     }
     if (numNewMatches(nextProps.matchNotifications) !== numNewMatches(this.props.matchNotifications)) {
       ipcRenderer.send('new-match-notifications', numNewMatches(nextProps.matchNotifications));

@@ -14,31 +14,40 @@
     const ipc = electron.ipcRenderer;
     const checkFrequency = 15000;
     let checkInterval = null;
+    let errorNum = 0;
 
     if (platform === 'win32') {
       checkInterval = setInterval(() => {
         tasklist({ filter: ['imagename eq Overwatch.exe'] }).then((tasks) => {
           // console.log(tasks);
-          let running = false;
-          tasks.forEach((task) => {
-            if (task) {
-              running = true;
-              console.log('start');
-              ipc.send('start-capture');
-            }
-          });
-          if (!running) {
+          errorNum = 0;
+          const running = tasks.length > 0;
+          if (running) {
+            console.log('start');
+            ipc.send('start-capture');
+          } else {
             console.log('stop');
             ipc.send('stop-capture');
           }
-        }).catch(err => {
-          console.log(err);
-          Sentry.captureException(err);
+        }).catch((err) => {
+          errorNum += 1;
+          if (err.name === 'TypeError' && err.message === 'Cannot read property \'replace\' of undefined') {
+            console.log('stop due to: ', err.message);
+            ipc.send('stop-capture');
+          } else {
+            if (errorNum > 8) {
+              console.log('stop due to: ', err);
+              ipc.send('stop-capture');
+            } else {
+              console.log(err);
+            }
+            Sentry.captureException(err);
+          }
         });
       }, checkFrequency);
     }
 
-    ipc.on('close', (event) => {
+    ipc.on('close', () => {
       clearInterval(checkInterval);
       window.close();
     });
