@@ -33,9 +33,7 @@ let appTray;
 let manualUploadNotificationTimeout = null;
 
 let obsInput;
-let obsScene;
-let obsSceneItem;
-let obsOutput;
+let obsFilter;
 let obsDisplayInfo = {
   name: 'Overwatch Display',
   show: false,
@@ -45,7 +43,6 @@ let obsDisplayInfo = {
   x: 0,
   y: 0,
   scaleRes: '1920x1080',
-  changingRes: false,
 };
 let resTrackingInterval;
 const userInfo = {
@@ -109,8 +106,9 @@ const createOBSDisplay = () => {
   if (!obsDisplayInfo.capturing || !obsDisplayInfo.show) {
     return;
   }
-  nodeObs.OBS_content_createDisplay(
+  nodeObs.OBS_content_createSourcePreviewDisplay(
     mainWindow.getNativeWindowHandle(),
+    'Overwatch Capture',
     obsDisplayInfo.name,
   );
   nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
@@ -155,33 +153,23 @@ const startCapture = () => {
       if (width !== 0 && height !== 0) {
         let xScale = 1;
         let yScale = 1;
+        let scaleRes = '1920x1080';
         if (width / height < 16 / 9) {
           xScale = 1920 / width;
           yScale = Math.round(height * xScale) / height;
-          obsDisplayInfo.scaleRes = `1920x${Math.round(height * yScale)}`;
+          scaleRes = `1920x${Math.round(height * yScale)}`;
         } else {
           yScale = 1080 / height;
           xScale = Math.round(width * yScale) / width;
-          obsDisplayInfo.scaleRes = `${Math.round(width * xScale)}x1080`;
+          scaleRes = `${Math.round(width * xScale)}x1080`;
         }
-        const newScale = { x: xScale, y: yScale };
-        if (obsSceneItem.scale !== newScale) {
-          obsSceneItem.scale = newScale;
-        }
-        if (`${obsScene.source.width}x${obsScene.source.height}` !== obsDisplayInfo.scaleRes && !obsDisplayInfo.changingRes) {
-          obsDisplayInfo.changingRes = true;
-          obsOutput.stop();
-          updateOBSSettings('Video', {
-            Base: obsDisplayInfo.scaleRes,
-            Output: obsDisplayInfo.scaleRes,
-          });
+        if (scaleRes !== obsDisplayInfo.scaleRes) {
+          obsDisplayInfo.scaleRes = scaleRes;
           if (resTrackingInterval) {
             if (mainWindow) {
               mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
             }
-            obsOutput.start();
           }
-          obsDisplayInfo.changingRes = false;
         }
       }
     }, 500);
@@ -190,8 +178,15 @@ const startCapture = () => {
     mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
   }
   obsDisplayInfo.capturing = true;
-  obsOutput.start();
-  createOBSDisplay();
+  if (!obsFilter) {
+    obsFilter = nodeObs.Filter.create(
+      'pursuit_frame_capture_filter',
+      'Pursuit Frame Capture Filter',
+      {},
+    );
+    obsInput.addFilter(obsFilter);
+    createOBSDisplay();
+  }
 };
 
 const stopCapture = () => {
@@ -217,10 +212,12 @@ const stopCapture = () => {
   if (mainWindow) {
     mainWindow.webContents.send('stop-capture');
   }
-  removeOBSDisplay();
   obsDisplayInfo.capturing = false;
-  if (obsOutput) {
-    obsOutput.stop();
+  if (obsFilter) {
+    removeOBSDisplay();
+    obsInput.removeFilter(obsFilter);
+    obsFilter.release();
+    obsFilter = null;
   }
 };
 
@@ -249,7 +246,6 @@ const setupOBSCapture = () => {
   });
   nodeObs.OBS_service_resetVideoContext();
 
-  obsScene = nodeObs.Scene.create('Overwatch Capture Scene');
   const settings = {
     capture_mode: 'window',
     window: 'Overwatch:TankWindowClass:Overwatch.exe',
@@ -259,13 +255,7 @@ const setupOBSCapture = () => {
     scale_res: '0x0',
   };
   obsInput = nodeObs.Input.create('game_capture', 'Overwatch Capture', settings);
-  obsSceneItem = obsScene.add(obsInput);
-  nodeObs.Global.setOutputSource(0, obsScene.source);
-  obsOutput = nodeObs.Output.create(
-    'pursuit_frame_output',
-    'Pursuit Frame Output',
-    {},
-  );
+  nodeObs.Global.setOutputSource(0, obsInput);
 };
 
 const destroyOBSCapture = () => {
@@ -273,18 +263,9 @@ const destroyOBSCapture = () => {
     return;
   }
   stopCapture();
-  if (obsOutput) {
-    obsOutput.release();
-  }
   nodeObs.Global.setOutputSource(0, null);
-  if (obsSceneItem) {
-    obsSceneItem.remove();
-  }
   if (obsInput) {
     obsInput.release();
-  }
-  if (obsScene) {
-    obsScene.source.release();
   }
   nodeObs.OBS_API_destroyOBS_API();
 };
