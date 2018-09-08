@@ -33,6 +33,7 @@ export const RESET_STATE_ON_LOGOUT = 'reset_state';
 
 export const CAPTURE_STARTED = 'capture_started';
 export const CAPTURE_STOPPED = 'capture_stopped';
+export const CAPTURE_ERRORED = 'capture_errored';
 export const QUEUE_CAPTURE_UPLOAD = 'queue_capture_upload';
 export const REQUEUE_CAPTURE_UPLOAD = 'requeue_capture_upload';
 export const START_CAPTURE_UPLOAD = 'start_capture_upload';

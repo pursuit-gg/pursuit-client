@@ -34,7 +34,6 @@ let manualUploadNotificationTimeout = null;
 
 let obsInput;
 let obsFilter;
-let obsStopCaptureCount = 0;
 let obsDisplayInfo = {
   name: 'Overwatch Display',
   show: false,
@@ -46,6 +45,11 @@ let obsDisplayInfo = {
   scaleRes: '1920x1080',
 };
 let overwatchTrackingInterval;
+const obsCaptureCounts = {
+  stops: 0,
+  startsNoCaptures: 0,
+  runningNotTracking: 0,
+};
 const userInfo = {
   userId: null,
   spectator: false,
@@ -149,6 +153,9 @@ const startCapture = () => {
   }
   if (mainWindow) {
     mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
+    if (obsCaptureCounts.startsNoCaptures > 60) {
+      mainWindow.webContents.send('capture-error', 'no_captures');
+    }
   }
   obsDisplayInfo.capturing = true;
   if (!obsFilter) {
@@ -180,6 +187,9 @@ const stopCapture = () => {
   }
   if (mainWindow) {
     mainWindow.webContents.send('stop-capture');
+    if (obsCaptureCounts.runningNotTracking > 1) {
+      mainWindow.webContents.send('capture-error', 'not_tracking');
+    }
   }
   obsDisplayInfo.capturing = false;
   if (obsFilter) {
@@ -238,12 +248,16 @@ const setupOBSCapture = () => {
         const xScale = Math.round(width * yScale) / width;
         obsDisplayInfo.scaleRes = `${Math.round(width * xScale)}x1080`;
       }
-      obsStopCaptureCount = 0;
+      if (obsCaptureCounts.startsNoCaptures < 300) {
+        obsCaptureCounts.startsNoCaptures += 1;
+      }
+      obsCaptureCounts.stops = 0;
+      obsCaptureCounts.runningNotTracking = 0;
       startCapture();
-    } else if (obsStopCaptureCount >= 5) {
+    } else if (obsCaptureCounts.stops >= 5) {
       stopCapture();
     } else {
-      obsStopCaptureCount += 1;
+      obsCaptureCounts.stops += 1;
     }
   }, 1000);
 };
@@ -351,7 +365,7 @@ const createMainWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 700,
+    minHeight: 725,
     icon: nativeIcon,
     backgroundColor: '#F5F5F5',
     show: !process.argv.includes('--hidden'),
@@ -614,6 +628,7 @@ ipcMain.on('queue-capture-folder-upload', (event, folder) => {
   if (mainWindow && userInfo.userId) {
     mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId, userInfo.spectator);
   }
+  obsCaptureCounts.startsNoCaptures = 0;
 });
 
 ipcMain.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
@@ -666,6 +681,10 @@ ipcMain.on('sign-out', (event, userId) => {
 ipcMain.on('overwatch-running', () => {
   if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
     startCapture();
+    return;
+  }
+  if (obsCaptureCounts.runningNotTracking < 10) {
+    obsCaptureCounts.runningNotTracking += 1;
   }
 });
 
