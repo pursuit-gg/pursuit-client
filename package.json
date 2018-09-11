@@ -1,6 +1,6 @@
 {
   "name": "Pursuit",
-  "version": "0.5.14",
+  "version": "0.6.0-beta",
   "author": {
     "name": "Revlo Inc."
   },
@@ -14,6 +14,7 @@
       "category": "public.app-category.games"
     },
     "forceCodeSigning": true,
+    "generateUpdatesFilesForAllChannels": true,
     "directories": {
       "buildResources": "buildResources"
     },
