@@ -78,7 +78,13 @@ class HomePage extends Component {
           <img src={error} alt="error" styleName="statusIcon" />
           <h2 styleName="statusText">
             Upload Error
-            <p className="italic"> We&apos;ll keep trying to upload </p>
+            <p styleName="errorText" className="italic">
+              {this.props.captureStatus.currentUpload.error.message === 'The difference between the request time and the current time is too large.' ?
+                'Check that your system clock and timezone are set to automatic.'
+                :
+                'Check your internet connection and try changing your upload speed to unlimited.'
+              }
+            </p>
           </h2>
           <div styleName="toggleWrapper">
             <ManualCaptureUploadToggle />
@@ -173,6 +179,37 @@ class HomePage extends Component {
               onClick={() => electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/obs`)}
             >here</a>.</h5>
           }
+          {this.props.captureStatus.error && this.props.captureStatus.error === 'no_captures' &&
+            <div styleName="captureError">
+              <p styleName="captureErrorText" className="italic">
+                We have a capturing issue. Try restarting Pursuit and Overwatch.
+                If it&apos;s still not working, send us a message on <a
+                  styleName="captureErrorText"
+                  className="underline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    electron.shell.openExternal('https://discord.gg/wqymsEZ');
+                  }}
+                >Discord</a>.
+              </p>
+            </div>
+          }
+          {this.props.captureStatus.error && this.props.captureStatus.error === 'not_tracking' &&
+            <div styleName="captureError">
+              <p styleName="captureErrorText" className="italic">
+                We are unable to track Overwatch. Try closing other recording
+                software and running Pursuit as admin. If you are on a laptop,
+                follow the instructions <a
+                  styleName="captureErrorText"
+                  className="underline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    electron.shell.openExternal('https://docsend.com/view/am2bnwi');
+                  }}
+                >here</a>.
+              </p>
+            </div>
+          }
         </div>
         <div styleName="subSection">
           <h4 styleName="subHeading"> Uploading </h4>
@@ -191,26 +228,12 @@ class HomePage extends Component {
             <a styleName="closeX" onClick={this.props.closeTroubleshootingTip}>
               <h1> X </h1>
             </a>
-            {this.props.computerType === 'laptop' &&
-              <h5>
-                If you aren&apos;t seeing matches after uploading, check the capture preview.
-                If it&apos;s black, you must relaunch the app using the instructions <a
-                  styleName="whiteLink"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    electron.shell.openExternal('https://docsend.com/view/am2bnwi');
-                  }}
-                >here</a>.
-              </h5>
-            }
-            {this.props.computerType !== 'laptop' &&
-              <div>
-                <h5> Make sure that Overwatch is running in: </h5>
-                <h5> - English </h5>
-                <h5> - 16:9 aspect ratio </h5>
-                <h5> - 1080p resolution or higher </h5>
-              </div>
-            }
+            <div>
+              <h5> Make sure that Overwatch is running in: </h5>
+              <h5> - English </h5>
+              <h5> - 16:9 aspect ratio </h5>
+              <h5> - 1080p resolution or higher </h5>
+            </div>
           </div>
         }
         <div styleName="troubleshootingFooter">

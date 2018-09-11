@@ -33,9 +33,7 @@ let appTray;
 let manualUploadNotificationTimeout = null;
 
 let obsInput;
-let obsScene;
-let obsSceneItem;
-let obsOutput;
+let obsFilter;
 let obsDisplayInfo = {
   name: 'Overwatch Display',
   show: false,
@@ -45,9 +43,13 @@ let obsDisplayInfo = {
   x: 0,
   y: 0,
   scaleRes: '1920x1080',
-  changingRes: false,
 };
-let resTrackingInterval;
+let overwatchTrackingInterval;
+const obsCaptureCounts = {
+  stops: 0,
+  startsNoCaptures: 0,
+  runningNotTracking: 0,
+};
 const userInfo = {
   userId: null,
   spectator: false,
@@ -109,8 +111,9 @@ const createOBSDisplay = () => {
   if (!obsDisplayInfo.capturing || !obsDisplayInfo.show) {
     return;
   }
-  nodeObs.OBS_content_createDisplay(
+  nodeObs.OBS_content_createSourcePreviewDisplay(
     mainWindow.getNativeWindowHandle(),
+    'Overwatch Capture',
     obsDisplayInfo.name,
   );
   nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
@@ -148,50 +151,22 @@ const startCapture = () => {
     obsDisplayInfo.capturing = true;
     return;
   }
-  if (!resTrackingInterval) {
-    resTrackingInterval = setInterval(() => {
-      const width = obsInput.width;
-      const height = obsInput.height;
-      if (width !== 0 && height !== 0) {
-        let xScale = 1;
-        let yScale = 1;
-        if (width / height < 16 / 9) {
-          xScale = 1920 / width;
-          yScale = Math.round(height * xScale) / height;
-          obsDisplayInfo.scaleRes = `1920x${Math.round(height * yScale)}`;
-        } else {
-          yScale = 1080 / height;
-          xScale = Math.round(width * yScale) / width;
-          obsDisplayInfo.scaleRes = `${Math.round(width * xScale)}x1080`;
-        }
-        const newScale = { x: xScale, y: yScale };
-        if (obsSceneItem.scale !== newScale) {
-          obsSceneItem.scale = newScale;
-        }
-        if (`${obsScene.source.width}x${obsScene.source.height}` !== obsDisplayInfo.scaleRes && !obsDisplayInfo.changingRes) {
-          obsDisplayInfo.changingRes = true;
-          obsOutput.stop();
-          updateOBSSettings('Video', {
-            Base: obsDisplayInfo.scaleRes,
-            Output: obsDisplayInfo.scaleRes,
-          });
-          if (resTrackingInterval) {
-            if (mainWindow) {
-              mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
-            }
-            obsOutput.start();
-          }
-          obsDisplayInfo.changingRes = false;
-        }
-      }
-    }, 500);
-  }
   if (mainWindow) {
     mainWindow.webContents.send('start-capture', obsDisplayInfo.scaleRes);
+    if (obsCaptureCounts.startsNoCaptures > 60) {
+      mainWindow.webContents.send('capture-error', 'no_captures');
+    }
   }
   obsDisplayInfo.capturing = true;
-  obsOutput.start();
-  createOBSDisplay();
+  if (!obsFilter) {
+    obsFilter = nodeObs.Filter.create(
+      'pursuit_frame_capture_filter',
+      'Pursuit Frame Capture Filter',
+      {},
+    );
+    obsInput.addFilter(obsFilter);
+    createOBSDisplay();
+  }
 };
 
 const stopCapture = () => {
@@ -210,17 +185,18 @@ const stopCapture = () => {
     obsDisplayInfo.capturing = false;
     return;
   }
-  if (resTrackingInterval) {
-    clearInterval(resTrackingInterval);
-    resTrackingInterval = undefined;
-  }
   if (mainWindow) {
     mainWindow.webContents.send('stop-capture');
+    if (obsCaptureCounts.runningNotTracking > 1) {
+      mainWindow.webContents.send('capture-error', 'not_tracking');
+    }
   }
-  removeOBSDisplay();
   obsDisplayInfo.capturing = false;
-  if (obsOutput) {
-    obsOutput.stop();
+  if (obsFilter) {
+    removeOBSDisplay();
+    obsInput.removeFilter(obsFilter);
+    obsFilter.release();
+    obsFilter = undefined;
   }
 };
 
@@ -249,7 +225,6 @@ const setupOBSCapture = () => {
   });
   nodeObs.OBS_service_resetVideoContext();
 
-  obsScene = nodeObs.Scene.create('Overwatch Capture Scene');
   const settings = {
     capture_mode: 'window',
     window: 'Overwatch:TankWindowClass:Overwatch.exe',
@@ -259,32 +234,46 @@ const setupOBSCapture = () => {
     scale_res: '0x0',
   };
   obsInput = nodeObs.Input.create('game_capture', 'Overwatch Capture', settings);
-  obsSceneItem = obsScene.add(obsInput);
-  nodeObs.Global.setOutputSource(0, obsScene.source);
-  obsOutput = nodeObs.Output.create(
-    'pursuit_frame_output',
-    'Pursuit Frame Output',
-    {},
-  );
+  nodeObs.Global.setOutputSource(0, obsInput);
+  overwatchTrackingInterval = setInterval(() => {
+    const width = obsInput.width;
+    const height = obsInput.height;
+    if (width !== 0 && height !== 0) {
+      if (width / height < 16 / 9) {
+        const xScale = 1920 / width;
+        const yScale = Math.round(height * xScale) / height;
+        obsDisplayInfo.scaleRes = `1920x${Math.round(height * yScale)}`;
+      } else {
+        const yScale = 1080 / height;
+        const xScale = Math.round(width * yScale) / width;
+        obsDisplayInfo.scaleRes = `${Math.round(width * xScale)}x1080`;
+      }
+      if (obsCaptureCounts.startsNoCaptures < 300) {
+        obsCaptureCounts.startsNoCaptures += 1;
+      }
+      obsCaptureCounts.stops = 0;
+      obsCaptureCounts.runningNotTracking = 0;
+      startCapture();
+    } else if (obsCaptureCounts.stops >= 5) {
+      stopCapture();
+    } else {
+      obsCaptureCounts.stops += 1;
+    }
+  }, 1000);
 };
 
 const destroyOBSCapture = () => {
   if (process.platform !== 'win32') {
     return;
   }
+  if (overwatchTrackingInterval) {
+    clearInterval(overwatchTrackingInterval);
+    overwatchTrackingInterval = undefined;
+  }
   stopCapture();
-  if (obsOutput) {
-    obsOutput.release();
-  }
   nodeObs.Global.setOutputSource(0, null);
-  if (obsSceneItem) {
-    obsSceneItem.remove();
-  }
   if (obsInput) {
     obsInput.release();
-  }
-  if (obsScene) {
-    obsScene.source.release();
   }
   nodeObs.OBS_API_destroyOBS_API();
 };
@@ -376,7 +365,7 @@ const createMainWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 700,
+    minHeight: 725,
     icon: nativeIcon,
     backgroundColor: '#F5F5F5',
     show: !process.argv.includes('--hidden'),
@@ -640,6 +629,7 @@ ipcMain.on('queue-capture-folder-upload', (event, folder) => {
   if (mainWindow && userInfo.userId) {
     mainWindow.webContents.send('queue-capture-folder-upload', folder, userInfo.userId, userInfo.spectator);
   }
+  obsCaptureCounts.startsNoCaptures = 0;
 });
 
 ipcMain.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
@@ -689,12 +679,20 @@ ipcMain.on('sign-out', (event, userId) => {
   stopCapture();
 });
 
-ipcMain.on('start-capture', () => {
-  startCapture();
+ipcMain.on('overwatch-running', () => {
+  if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
+    startCapture();
+    return;
+  }
+  if (obsCaptureCounts.runningNotTracking < 10) {
+    obsCaptureCounts.runningNotTracking += 1;
+  }
 });
 
-ipcMain.on('stop-capture', () => {
-  stopCapture();
+ipcMain.on('overwatch-not-running', () => {
+  if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
+    stopCapture();
+  }
 });
 
 ipcMain.on('create-obs-display', () => {

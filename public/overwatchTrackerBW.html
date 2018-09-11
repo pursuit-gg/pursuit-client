@@ -12,35 +12,26 @@
 
     const platform = os.platform();
     const ipc = electron.ipcRenderer;
-    const checkFrequency = 15000;
+    const checkFrequency = 20000;
     let checkInterval = null;
-    let errorNum = 0;
 
     if (platform === 'win32') {
       checkInterval = setInterval(() => {
         tasklist({ filter: ['imagename eq Overwatch.exe'] }).then((tasks) => {
           // console.log(tasks);
-          errorNum = 0;
           const running = tasks.length > 0;
           if (running) {
             console.log('start');
-            ipc.send('start-capture');
+            ipc.send('overwatch-running');
           } else {
             console.log('stop');
-            ipc.send('stop-capture');
+            ipc.send('overwatch-not-running');
           }
         }).catch((err) => {
-          errorNum += 1;
           if (err.name === 'TypeError' && err.message === 'Cannot read property \'replace\' of undefined') {
-            console.log('stop due to: ', err.message);
-            ipc.send('stop-capture');
+            console.log('overwatch not running: ', err.message);
+            ipc.send('overwatch-not-running');
           } else {
-            if (errorNum > 8) {
-              console.log('stop due to: ', err);
-              ipc.send('stop-capture');
-            } else {
-              console.log(err);
-            }
             Sentry.captureException(err);
           }
         });

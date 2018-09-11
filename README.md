@@ -26,7 +26,7 @@ This will start an electron client running the react app with hot reloading for 
 
   - Navigate to pursuit-client folder in terminal
   - Run ```npm install``` to install the package dependencies
-  - Run ```npm run install-plugin``` to download and copy the [obs-frame-output](https://github.com/pursuit-gg/obs-frame-output) plugin into the correct location
+  - Run ```npm run install-plugin``` to download and copy the [obs-frame-capture-filter](https://github.com/pursuit-gg/obs-frame-capture-filter) plugin into the correct location
   - Run ```npm run dev```
 
 ## Packaging
@@ -34,7 +34,7 @@ This will package the app into a .exe file along with a .yml file for auto updat
 
   - Navigate to pursuit-client folder in terminal
   - Run ```npm install``` to install the package dependencies
-  - Run ```npm run install-plugin``` to download and copy the [obs-frame-output](https://github.com/pursuit-gg/obs-frame-output) plugin into the correct location
+  - Run ```npm run install-plugin``` to download and copy the [obs-frame-capture-filter](https://github.com/pursuit-gg/obs-frame-capture-filter) plugin into the correct location
   - Run ```npm run build``` to create the built react app
   - Run ```npm run dist``` to create the packaged app in the dist folder
 

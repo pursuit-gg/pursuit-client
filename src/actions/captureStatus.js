@@ -1,6 +1,7 @@
 import {
   CAPTURE_STARTED,
   CAPTURE_STOPPED,
+  CAPTURE_ERRORED,
   QUEUE_CAPTURE_UPLOAD,
   REQUEUE_CAPTURE_UPLOAD,
   START_CAPTURE_UPLOAD,
@@ -21,6 +22,20 @@ export function captureStarted(scaleRes) {
 export function captureStopped() {
   return {
     type: CAPTURE_STOPPED,
+  };
+}
+
+export function captureErrored(error) {
+  return {
+    type: CAPTURE_ERRORED,
+    error,
+  };
+}
+
+export function clearCaptureError() {
+  return {
+    type: CAPTURE_ERRORED,
+    error: null,
   };
 }
 

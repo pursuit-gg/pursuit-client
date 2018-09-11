@@ -1,6 +1,7 @@
 import {
   CAPTURE_STARTED,
   CAPTURE_STOPPED,
+  CAPTURE_ERRORED,
   QUEUE_CAPTURE_UPLOAD,
   REQUEUE_CAPTURE_UPLOAD,
   START_CAPTURE_UPLOAD,
@@ -18,6 +19,7 @@ const INITIAL_STATE = {
   uploadQueue: [],
   currentUpload: null,
   latestUploadAt: null,
+  error: null,
 };
 
 const alreadyQueued = (uploadQueue, currentUpload, newUpload) => {
@@ -53,6 +55,11 @@ const captureStatus = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         capturing: false,
+      };
+    case CAPTURE_ERRORED:
+      return {
+        ...state,
+        error: action.error,
       };
     case QUEUE_CAPTURE_UPLOAD:
       if (alreadyQueued(state.uploadQueue, state.currentUpload, action.capture)) {

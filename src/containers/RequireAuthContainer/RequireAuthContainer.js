@@ -10,6 +10,8 @@ import mixpanel from 'mixpanel-browser';
 import {
   captureStarted,
   captureStopped,
+  captureErrored,
+  clearCaptureError,
   queueCaptureUpload,
   requeueCaptureUpload,
   startCaptureUpload,
@@ -77,6 +79,7 @@ class RequireAuthContainer extends Component {
       this.fetchInterval = this.props.setInterval(() => {
         this.props.loadMatchNotifications();
       }, 15000);
+      this.props.clearCaptureError();
     }
     handleUploadRestarting(this.props);
   }
@@ -84,6 +87,9 @@ class RequireAuthContainer extends Component {
   componentDidMount() {
     ipcRenderer.on('queue-capture-folder-upload', (event, folder, userId, spectator) => {
       this.props.queueCaptureUpload(folder, userId, spectator, this.props.manualCaptureUpload);
+      if (this.props.captureStatus.error === 'no_captures') {
+        this.props.clearCaptureError();
+      }
     });
     ipcRenderer.on('capture-folder-upload-finished', (event, folder, userId, spectator) => {
       this.props.captureUploadFinished(folder, userId, spectator);
@@ -99,9 +105,15 @@ class RequireAuthContainer extends Component {
     });
     ipcRenderer.on('start-capture', (event, scaleRes) => {
       this.props.captureStarted(scaleRes);
+      if (this.props.captureStatus.error === 'not_tracking') {
+        this.props.clearCaptureError();
+      }
     });
     ipcRenderer.on('stop-capture', () => {
       this.props.captureStopped();
+    });
+    ipcRenderer.on('capture-error', (event, error) => {
+      this.props.captureErrored(error);
     });
     ipcRenderer.on('pending-uploads-check', () => {
       ipcRenderer.send('pending-uploads', this.props.captureStatus.uploadQueue.length, this.props.captureStatus.currentUpload, this.props.manualCaptureUpload);
@@ -130,6 +142,7 @@ class RequireAuthContainer extends Component {
         this.fetchInterval = this.props.setInterval(() => {
           this.props.loadMatchNotifications();
         }, 15000);
+        this.props.clearCaptureError();
       }
       handleUploadRestarting(nextProps);
     } else {
@@ -175,6 +188,7 @@ class RequireAuthContainer extends Component {
     ipcRenderer.removeAllListeners('capture-folder-upload-error');
     ipcRenderer.removeAllListeners('start-capture');
     ipcRenderer.removeAllListeners('stop-capture');
+    ipcRenderer.removeAllListeners('capture-errored');
     ipcRenderer.removeAllListeners('pending-uploads-check');
     ipcRenderer.send('new-match-notifications', 0);
     ipcRenderer.send('cancel-capture-folder-uploads');
@@ -213,6 +227,8 @@ RequireAuthContainer.propTypes = {
   goWelcome: PropTypes.func.isRequired,
   captureStarted: PropTypes.func.isRequired,
   captureStopped: PropTypes.func.isRequired,
+  captureErrored: PropTypes.func.isRequired,
+  clearCaptureError: PropTypes.func.isRequired,
   queueCaptureUpload: PropTypes.func.isRequired,
   requeueCaptureUpload: PropTypes.func.isRequired,
   startCaptureUpload: PropTypes.func.isRequired,
@@ -246,6 +262,12 @@ const mapDispatchToProps = dispatch => ({
   },
   captureStopped: () => {
     dispatch(captureStopped());
+  },
+  captureErrored: (error) => {
+    dispatch(captureErrored(error));
+  },
+  clearCaptureError: () => {
+    dispatch(clearCaptureError());
   },
   queueCaptureUpload: (folder, userId, spectator, manualCaptureUpload) => {
     dispatch(queueCaptureUpload(folder, userId, spectator, manualCaptureUpload));
