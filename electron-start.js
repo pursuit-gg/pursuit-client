@@ -550,6 +550,7 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+autoUpdater.channel = 'beta';
 autoUpdater.on('update-downloaded', () => {
   // Wait 5 seconds, then quit and install
   // In your application, you don't need to wait 5 seconds.
