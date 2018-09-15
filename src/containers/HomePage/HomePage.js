@@ -204,7 +204,7 @@ class HomePage extends Component {
                   className="underline"
                   onClick={(e) => {
                     e.preventDefault();
-                    electron.shell.openExternal('https://docsend.com/view/am2bnwi');
+                    electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/laptop`);
                   }}
                 >here</a>.
               </p>
@@ -228,12 +228,26 @@ class HomePage extends Component {
             <a styleName="closeX" onClick={this.props.closeTroubleshootingTip}>
               <h1> X </h1>
             </a>
-            <div>
-              <h5> Make sure that Overwatch is running in: </h5>
-              <h5> - English </h5>
-              <h5> - 16:9 aspect ratio </h5>
-              <h5> - 1080p resolution or higher </h5>
-            </div>
+            {this.props.computerType === 'laptop' &&
+              <h5>
+                If you aren&apos;t seeing matches after uploading, check the capture preview.
+                If it&apos;s black, you must relaunch the app using the instructions <a
+                  styleName="whiteLink"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/laptop`);
+                  }}
+                >here</a>.
+              </h5>
+            }
+            {this.props.computerType !== 'laptop' &&
+              <div>
+                <h5> Make sure that Overwatch is running in: </h5>
+                <h5> - English </h5>
+                <h5> - 16:9 aspect ratio </h5>
+                <h5> - 1080p resolution or higher </h5>
+              </div>
+            }
           </div>
         }
         <div styleName="troubleshootingFooter">
