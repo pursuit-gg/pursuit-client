@@ -365,7 +365,7 @@ const createMainWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 725,
+    minHeight: 825,
     icon: nativeIcon,
     backgroundColor: '#F5F5F5',
     show: !process.argv.includes('--hidden'),
@@ -522,12 +522,37 @@ const createManualUploadNotification = () => {
   setTimeout(() => uploadNotif.close(), 5000);
 };
 
+const createBlizzardWarningNotification = () => {
+  const iconPath = process.platform === 'win32' ? `${buildFolder}/icon.ico` : `${buildFolder}/icon.png`;
+  const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+  const newWarningNotif = new Notification({
+    title: 'Blizzard has banned 3rd party software.',
+    body: 'Open for more details.',
+    silent: true,
+    icon: nativeIcon,
+  });
+  newWarningNotif.on('click', () => {
+    newWarningNotif.close();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.show();
+    }
+  });
+  newWarningNotif.show();
+  setTimeout(() => newWarningNotif.close(), 5000);
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createMainWindow();
   createTrackerWindow();
+  if (process.argv.includes('--hidden')) {
+    setTimeout(createBlizzardWarningNotification, 10000);
+  }
   autoUpdater.checkForUpdates();
 });
 

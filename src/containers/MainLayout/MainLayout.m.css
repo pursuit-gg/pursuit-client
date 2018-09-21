@@ -7,9 +7,56 @@
 }
 
 .addTop {
-  margin-top: 20px;
+  margin-top: 131px;
 }
 
 .addSpectatorTop {
-  margin-top: 33px;
+  margin-top: 144px;
+}
+
+.blizWarning {
+  position: fixed;
+  background-color: #FC8A23;
+  color: #FFFFFF;
+  text-align: left;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  padding: 10px;
+  z-index: 1;
+}
+
+.blizWarningSpectator {
+  position: fixed;
+  background-color: #FC8A23;
+  color: #FFFFFF;
+  text-align: left;
+  top: 63px;
+  left: 0px;
+  right: 0px;
+  padding: 10px;
+  z-index: 1;
+}
+
+.blizWarningMessage {
+  width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.paddingTop {
+  padding-top: 5px;
+}
+
+.warningList {
+  width: 450px;
+  padding-left: 30px;
+  font-size: 12px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.warningListItem {
+  padding-left: 10px;
 }
