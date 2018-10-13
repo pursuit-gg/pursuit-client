@@ -10,7 +10,7 @@
     Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 
     const ipc = electron.ipcRenderer;
-    const capturesPath = `${electron.remote.app.getPath('userData')}/Captures`;
+    const capturesPath = `${electron.remote.app.getPath('userData')}/Captures/Fortnite`;
 
     let watcher = null;
 
@@ -20,7 +20,7 @@
       }
       watcher = chokidar.watch(capturesPath, { ignored: /(^|[\\/])\..|\.jpeg$/ });
       watcher.on('add', (filePath) => {
-        const pathMatch = filePath.match(/(.+[\\/]Captures[\\/]\d+)[\\/]done$/);
+        const pathMatch = filePath.match(/(.+[\\/]Captures[\\/]Fortnite[\\/]\d+)[\\/]done$/);
         if (pathMatch) {
           console.log(pathMatch[1]);
           ipc.send('queue-capture-folder-upload', pathMatch[1]);

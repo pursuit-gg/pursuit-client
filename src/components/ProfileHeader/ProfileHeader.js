@@ -63,9 +63,9 @@ class ProfileHeader extends Component {
             <h5><a
               onClick={(e) => {
                 e.preventDefault();
-                electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/profile`);
+                electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/dashboard`);
               }}
-            >Match History {newMatches > 0 ? `(${newMatches})` : ''}</a></h5>
+            >Dashboard {newMatches > 0 ? `(${newMatches})` : ''}</a></h5>
             <h5><Link to="/settings"> Settings </Link></h5>
             <h5><a
               onClick={(e) => {

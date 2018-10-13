@@ -108,11 +108,11 @@ class HomePage extends Component {
       <div styleName="wrapper">
         <div styleName="buttonWrapper">
           <DefaultButton
-            text="Open Match History"
+            text="Open Dashboard"
             badge={numNewMatches(this.props.matchNotifications)}
             onClick={(e) => {
               e.preventDefault();
-              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/profile`);
+              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/dashboard`);
             }}
             slim
             color="Aqua"
@@ -125,7 +125,7 @@ class HomePage extends Component {
               <img src={tracking} alt="tracking" styleName="statusIcon" />
               <h2 styleName="statusText">
                 Tracking
-                <p className="italic"> Keep this running while you play Overwatch </p>
+                <p className="italic"> Keep this running while you play Fortnite </p>
               </h2>
             </div>
           }
@@ -134,7 +134,7 @@ class HomePage extends Component {
               <img src={notTracking} alt="not tracking" styleName="statusIcon" />
               <h2 styleName="statusText">
                 Not Tracking
-                <p className="italic"> Launch Overwatch and we&apos;ll automatically start tracking </p>
+                <p className="italic"> Launch Fortnite and we&apos;ll automatically start tracking </p>
               </h2>
             </div>
           }
@@ -182,7 +182,7 @@ class HomePage extends Component {
           {this.props.captureStatus.error && this.props.captureStatus.error === 'no_captures' &&
             <div styleName="captureError">
               <p styleName="captureErrorText" className="italic">
-                We have a capturing issue. Try restarting Pursuit and Overwatch.
+                We have a capturing issue. Try restarting Pursuit and Fortnite.
                 If it&apos;s still not working, send us a message on <a
                   styleName="captureErrorText"
                   className="underline"
@@ -197,7 +197,7 @@ class HomePage extends Component {
           {this.props.captureStatus.error && this.props.captureStatus.error === 'not_tracking' &&
             <div styleName="captureError">
               <p styleName="captureErrorText" className="italic">
-                We are unable to track Overwatch. Try closing other recording
+                We are unable to track Fortnite. Try closing other recording
                 software and running Pursuit as admin. If you are on a laptop,
                 follow the instructions <a
                   styleName="captureErrorText"
@@ -218,7 +218,7 @@ class HomePage extends Component {
           <UploadProgressBar />
         </div>
         <div styleName="tipWrapper">
-          <p> Once you finish a match, it should appear in <br />your match history within a few minutes. </p>
+          <p> Once you finish a match, it should appear on <br />your dashboard within a few minutes. </p>
         </div>
         {!this.props.troubleshootingTipClosed &&
           <div styleName="troubleshootingTip">
@@ -242,10 +242,10 @@ class HomePage extends Component {
             }
             {this.props.computerType !== 'laptop' &&
               <div>
-                <h5> Make sure that Overwatch is running in: </h5>
+                <h5> Make sure that Fortnite is running in: </h5>
                 <h5> - English </h5>
                 <h5> - 16:9 aspect ratio </h5>
-                <h5> - 1080p resolution or higher </h5>
+                <h5> - 720p resolution or higher </h5>
               </div>
             }
           </div>

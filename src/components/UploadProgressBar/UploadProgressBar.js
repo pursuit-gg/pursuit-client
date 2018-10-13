@@ -33,13 +33,13 @@ const UploadProgressBar = ({ captureStatus }) => {
   return (
     <div styleName="wrapper">
       <h5 className="bold">
-        {uploadTimeDisplay(uploadCount * 30)}
+        {uploadTimeDisplay(uploadCount * 20)}
       </h5>
       <h5>
         of gameplay left to upload <Tooltip
           placement="top"
           mouseLeaveDelay={0}
-          overlay="Pursuit takes screenshots every 2s while Overwatch is open. We upload these screenshots to analyze and process your stats."
+          overlay="Pursuit takes screenshots every 1s while Fortnite is open. We upload these screenshots to analyze and process your stats."
         ><i className="fa fa-info-circle" /></Tooltip>
       </h5>
       <div styleName="animatedProgressWrapper">

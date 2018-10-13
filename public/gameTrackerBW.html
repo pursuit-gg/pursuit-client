@@ -1,5 +1,5 @@
 <html>
-  <p> Track Overwatch </p>
+  <p> Track Game </p>
   <script type="text/javascript">
     const path = require('path');
     require('dotenv').config({ path: path.join(__dirname, '../.env') });
@@ -17,20 +17,20 @@
 
     if (platform === 'win32') {
       checkInterval = setInterval(() => {
-        tasklist({ filter: ['imagename eq Overwatch.exe'] }).then((tasks) => {
+        tasklist({ filter: ['imagename eq FortniteClient-Win64-Shipping.exe'] }).then((tasks) => {
           // console.log(tasks);
           const running = tasks.length > 0;
           if (running) {
             console.log('start');
-            ipc.send('overwatch-running');
+            ipc.send('game-running');
           } else {
             console.log('stop');
-            ipc.send('overwatch-not-running');
+            ipc.send('game-not-running');
           }
         }).catch((err) => {
           if (err.name === 'TypeError' && err.message === 'Cannot read property \'replace\' of undefined') {
-            console.log('overwatch not running: ', err.message);
-            ipc.send('overwatch-not-running');
+            console.log('game not running: ', err.message);
+            ipc.send('game-not-running');
           } else {
             Sentry.captureException(err);
           }
