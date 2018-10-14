@@ -232,7 +232,7 @@ class HomePage extends Component {
               <h5>
                 If you aren&apos;t seeing matches after uploading, check the capture preview.
                 If it&apos;s black, you must relaunch the app using the instructions <a
-                  styleName="whiteLink"
+                  styleName="underlinedLink"
                   onClick={(e) => {
                     e.preventDefault();
                     electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/laptop`);

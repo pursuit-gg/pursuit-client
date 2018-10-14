@@ -27,7 +27,7 @@ import {
 } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import SelectInput from 'components/SelectInput/SelectInput';
-import xIcon from 'images/genericIcons/darkGreyX.svg';
+import xIcon from 'images/genericIcons/lightGreyX.svg';
 import './SettingsPage.m.css';
 
 const electron = window.require('electron');

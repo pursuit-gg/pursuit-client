@@ -5,7 +5,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 const styles = {
   root: {
-    backgroundColor: '#E5E6E7',
+    backgroundColor: '#464646',
     width: '200px',
   },
   rootRed: {
@@ -16,7 +16,7 @@ const styles = {
     backgroundColor: '#4FC1E9',
   },
   barColorEmpty: {
-    backgroundColor: '#E5E6E7',
+    backgroundColor: '#464646',
   },
   barColorRed: {
     backgroundColor: '#DB6955',

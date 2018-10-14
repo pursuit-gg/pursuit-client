@@ -367,7 +367,7 @@ const createMainWindow = () => {
     minWidth: 475,
     minHeight: 725,
     icon: nativeIcon,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#3C3C3C',
     show: !process.argv.includes('--hidden'),
   });
 

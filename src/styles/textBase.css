@@ -42,7 +42,7 @@ h5 {
 }
 
 a {
-  color: #636161;
+  color: #FFFFFF;
   text-decoration: none;
 }
 
@@ -51,9 +51,17 @@ a:hover {
   text-decoration: underline;
 }
 
+a:focus {
+  outline: none;
+}
+
 .blueLink {
   color: #61BFE1;
   text-decoration: underline;
+}
+
+.darkText {
+  color: #1B1B1B;
 }
 
 .largeText {

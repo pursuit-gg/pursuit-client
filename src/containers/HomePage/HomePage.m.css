@@ -106,7 +106,6 @@
   align-items: center;
   padding: 5px;
   background-color: #7289DA;
-  color: #FFFFFF;
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -126,12 +125,11 @@
 .troubleshootingTip {
   position: absolute;
   bottom: 25px;
-  background-color: #636161;
+  background-color: #504F4F;
   width: 100%;
   box-sizing: border-box;
   left: 0px;
   padding: 15px 25px;
-  color: #FFF;
   z-index: 2;
 }
 
@@ -140,9 +138,8 @@
   right: 2px;
   top: 2px;
   border: none;
-  background-color: #636161;
-  color: #FFF;
 }
+
 .closeX:hover {
   text-decoration: none;
   color: #FFF;
@@ -162,8 +159,6 @@
   width: 100%;
 }
 
-.whiteLink {
+.underlinedLink {
   text-decoration: underline;
-  color: #FFF;
 }
-

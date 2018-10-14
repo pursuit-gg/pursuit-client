@@ -3,9 +3,9 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import twitter from 'images/genericIcons/twitterDarkLogo.png';
-import discord from 'images/genericIcons/discordDarkLogo.png';
-import xIcon from 'images/genericIcons/darkGreyX.svg';
+import twitter from 'images/genericIcons/twitterLogo.png';
+import discord from 'images/genericIcons/discordLogo.png';
+import xIcon from 'images/genericIcons/lightGreyX.svg';
 import './AboutPage.m.css';
 
 const electron = window.require('electron');

@@ -9,13 +9,17 @@
 }
 
 .outlinedInput {
-  border: 1px solid #D8D8D8;
-  background-color: #FFFFFF;
+  border: 1px solid #1B1B1B;
+  background-color: #636161;
+  color: #FFFFFF;
   width: 100%;
   border-radius: 4px;
-  color: #636161;
   padding: 10px 10px;
   box-sizing: border-box;
   font-size: 12px;
   line-height: 13px;
+}
+
+.outlinedInput:focus {
+  outline: none;
 }
