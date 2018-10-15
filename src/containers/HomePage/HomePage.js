@@ -204,7 +204,7 @@ class HomePage extends Component {
                   className="underline"
                   onClick={(e) => {
                     e.preventDefault();
-                    electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/laptop`);
+                    electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/troubleshoot/laptop`);
                   }}
                 >here</a>.
               </p>
@@ -235,7 +235,7 @@ class HomePage extends Component {
                   styleName="underlinedLink"
                   onClick={(e) => {
                     e.preventDefault();
-                    electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot/laptop`);
+                    electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/troubleshoot/laptop`);
                   }}
                 >here</a>.
               </h5>
@@ -256,7 +256,7 @@ class HomePage extends Component {
             text="Troubleshooting"
             onClick={(e) => {
               e.preventDefault();
-              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/troubleshoot`);
+              electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/troubleshoot`);
             }}
             slim
             color="Aqua"

@@ -56,7 +56,7 @@ const AboutPage = () => (
           styleName="underlinedLink"
           onClick={(e) => {
             e.preventDefault();
-            electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/faq`);
+            electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/faq`);
           }}
         > FAQ </a></h5>
         <h5 styleName="linkSpacing"><a
