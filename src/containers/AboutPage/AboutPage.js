@@ -78,14 +78,14 @@ const AboutPage = () => (
         styleName="socialIconWrapper"
         onClick={(e) => {
           e.preventDefault();
-          electron.shell.openExternal('https://twitter.com/pursuitgg');
+          electron.shell.openExternal('https://twitter.com/PursuitFortnite');
         }}
       ><img styleName="socialIcon" src={twitter} alt="twitter" /></a>
       <a
         styleName="socialIconWrapper"
         onClick={(e) => {
           e.preventDefault();
-          electron.shell.openExternal('https://discord.gg/wqymsEZ');
+          electron.shell.openExternal('https://discord.gg/8gSYCuV');
         }}
       ><img styleName="socialIcon" src={discord} alt="discord" /></a>
     </div>

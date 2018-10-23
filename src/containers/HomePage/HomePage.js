@@ -188,7 +188,7 @@ class HomePage extends Component {
                   className="underline"
                   onClick={(e) => {
                     e.preventDefault();
-                    electron.shell.openExternal('https://discord.gg/wqymsEZ');
+                    electron.shell.openExternal('https://discord.gg/8gSYCuV');
                   }}
                 >Discord</a>.
               </p>
@@ -267,7 +267,7 @@ class HomePage extends Component {
           styleName="discordFooter"
           onClick={(e) => {
             e.preventDefault();
-            electron.shell.openExternal('https://discord.gg/wqymsEZ');
+            electron.shell.openExternal('https://discord.gg/8gSYCuV');
           }}
         >
           <img styleName="discordLogo" src={discord} alt="discord" />
