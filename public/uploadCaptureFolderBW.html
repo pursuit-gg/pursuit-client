@@ -74,7 +74,7 @@
           return;
         }
         const folderName = folder.match(/[\\/]([^\\/]+)$/)[1];
-        const uploadKey = `${spectator ? 'spectator/' : ''}packed/${userId}/${folderName}.tar.gz`;
+        const uploadKey = `fortnite/packed/${userId}/${folderName}.tar.gz`;
         console.log('pre zip');
         const passThrough = new PassThrough();
         tar.create({ gzip: true }, [folder]).pipe(passThrough);

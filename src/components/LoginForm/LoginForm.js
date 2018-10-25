@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { login } from 'actions/user';
-import WhiteInverseInput from 'components/WhiteInverseInput/WhiteInverseInput';
+import DarkInput from 'components/DarkInput/DarkInput';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import StandardError from 'components/StandardError/StandardError';
 import './LoginForm.m.css';
@@ -38,13 +38,13 @@ class LoginForm extends Component {
     return (
       <div styleName="wrapper">
         <form onSubmit={this.handleSubmit}>
-          <WhiteInverseInput
+          <DarkInput
             type="email"
             label="Email"
             value={this.state.email}
             onChange={event => this.handleChange(event, 'email')}
           />
-          <WhiteInverseInput
+          <DarkInput
             type="password"
             label="Password"
             value={this.state.password}

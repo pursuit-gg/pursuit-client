@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { updateUser, clearUserMessage } from 'actions/user';
-import WhiteCard from 'components/WhiteCard/WhiteCard';
-import WhiteInverseInput from 'components/WhiteInverseInput/WhiteInverseInput';
+import DarkCard from 'components/DarkCard/DarkCard';
+import DarkInput from 'components/DarkInput/DarkInput';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import StandardError from 'components/StandardError/StandardError';
 import './SetUsernamePage.m.css';
@@ -36,9 +36,9 @@ class SetUsernamePage extends Component {
       <div styleName="wrapper">
         <img src={logoLarge} alt="Pursuit" />
         <h1 styleName="title"> Set Up Your Account </h1>
-        <WhiteCard>
+        <DarkCard>
           <form onSubmit={this.handleSubmit}>
-            <WhiteInverseInput
+            <DarkInput
               type="text"
               label="Username"
               value={this.state.username}
@@ -56,7 +56,7 @@ class SetUsernamePage extends Component {
               }
             </div>
           </form>
-        </WhiteCard>
+        </DarkCard>
       </div>
     );
   }

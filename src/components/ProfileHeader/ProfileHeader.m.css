@@ -1,8 +1,7 @@
 .header {
   opacity: 1;
-  color: #FFFFFF;
   position: fixed;
-  background-color: #504F4F;
+  background-color: #323232;
   width: 100%;
   z-index: 3;
   top: 0px;
@@ -30,9 +29,9 @@
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #FFFFFF;
+  background-color: #504F4F;
   min-width: 120px;
-  box-shadow: 0 2px 4px 1px #BBBDBF;
+  box-shadow: 0 2px 4px 1px #1B1B1B;
   z-index: 2;
   right: 20px;
   top: 40px;
@@ -80,9 +79,9 @@
 .updateDropdown {
   display: none;
   position: absolute;
-  background-color: #FFFFFF;
+  background-color: #504F4F;
   min-width: 130px;
-  box-shadow: 0 2px 4px 1px #BBBDBF;
+  box-shadow: 0 2px 4px 1px #1B1B1B;
   z-index: 2;
   right: -5px;
   top: 40px;
@@ -110,5 +109,5 @@
 .spectator {
   text-align: center;
   padding: 4px;
-  border-top: 1px solid #636161;
+  border-top: 1px solid #1B1B1B;
 }

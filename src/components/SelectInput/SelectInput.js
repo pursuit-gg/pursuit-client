@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import triangle from 'images/genericIcons/triangleGrey.svg';
 import triangleWhite from 'images/genericIcons/triangleWhite.svg';
 
 import './SelectInput.m.css';
@@ -33,7 +32,7 @@ class SelectInput extends Component {
     return (
       <div styleName={`${this.wrapperStyle()}`}>
         {!this.state.open &&
-          <div styleName={`closedDropdown ${this.props.inverted ? 'inverted' : ''}`} onClick={() => this.setState({ open: true })}>
+          <div styleName="closedDropdown" onClick={() => this.setState({ open: true })}>
             {this.props.large &&
               <h3 className="ellipsis"> {selectedOption.title} </h3>
             }
@@ -43,7 +42,7 @@ class SelectInput extends Component {
             {!this.props.large && !this.props.small &&
               <h5 className="ellipsis"> {selectedOption.title} </h5>
             }
-            <img styleName="triangle" src={this.props.inverted ? triangleWhite : triangle} alt="dropdown arrow" />
+            <img styleName="triangle" src={triangleWhite} alt="dropdown arrow" />
           </div>
         }
         {this.state.open &&
@@ -80,13 +79,11 @@ SelectInput.propTypes = {
   selectOption: PropTypes.func.isRequired,
   selectedOption: PropTypes.object.isRequired,
   large: PropTypes.bool.isRequired,
-  inverted: PropTypes.bool.isRequired,
   small: PropTypes.bool.isRequired,
 };
 
 SelectInput.defaultProps = {
   large: false,
-  inverted: false,
   small: false,
 };
 

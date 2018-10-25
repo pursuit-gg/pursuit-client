@@ -32,10 +32,10 @@
 }
 .rc-tooltip-inner {
   padding: 8px 10px;
-  color: #636161;
+  color: #FFFFFF;
   text-align: center;
   text-decoration: none;
-  background-color: #FFFFFF;
+  background-color: #504F4F;
   border-radius: 4px;
   box-shadow: 0 2px 5px 1px rgba(0,0,0,0.27);
   max-width: 160px;
@@ -53,7 +53,7 @@
   bottom: 0px;
   margin-left: -10px;
   border-width: 10px 10px 0px 10px;
-  border-top-color: #FFFFFF;
+  border-top-color: #504F4F;
 }
 .rc-tooltip-placement-top .rc-tooltip-arrow {
   left: 50%;
@@ -70,7 +70,7 @@
   left: 0px;
   margin-top: -10px;
   border-width: 10px 10px 10px 0;
-  border-right-color: #FFFFFF;
+  border-right-color: #504F4F;
 }
 .rc-tooltip-placement-right .rc-tooltip-arrow {
   top: 50%;
@@ -88,7 +88,7 @@
   right: 0px;
   margin-top: -10px;
   border-width: 10px 0 10px 10px;
-  border-left-color: #FFFFFF;
+  border-left-color: #504F4F;
 }
 .rc-tooltip-placement-left .rc-tooltip-arrow {
   top: 50%;
@@ -106,7 +106,7 @@
   top: 0px;
   margin-left: -10px;
   border-width: 0px 10px 10px 10px;
-  border-bottom-color: #FFFFFF;
+  border-bottom-color: #504F4F;
 }
 .rc-tooltip-placement-bottom .rc-tooltip-arrow {
   left: 50%;

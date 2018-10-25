@@ -5,28 +5,6 @@
   margin-right: 20px;
 }
 
-.progressBackground {
-  height: 20px;
-  width: 100%;
-  border-radius: 4px;
-  background-color: #BBBDBF;
-  overflow: hidden;
-  margin: 5px 0px;
-}
-
-.progressBar {
-  height: 20px;
-  background-color: #48CFAD;
-}
-
-.progressError {
-  height: 20px;
-  width: 100%;
-  border-radius: 4px;
-  background-color: #ED5565;
-  overflow: hidden;
-}
-
 .animatedProgressWrapper {
   max-width: 200px;
   margin-left: auto;

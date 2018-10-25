@@ -17,7 +17,7 @@ const WelcomePage = ({ goToLogin, goToSignUp }) => (
       <img src={logo} alt="logo" />
     </div>
     <h1 styleName="title"> Welcome </h1>
-    <h2 styleName="description"> Overwatch analytics that help you understand every game and accelerate improvement! </h2>
+    <h2 styleName="description"> Fortnite analytics that help you understand every game and accelerate improvement! </h2>
     <h2 styleName="description"> No FPS drops. Promise! </h2>
     <div>
       <DefaultButton

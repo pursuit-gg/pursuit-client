@@ -35,7 +35,7 @@ let manualUploadNotificationTimeout = null;
 let obsInput;
 let obsFilter;
 let obsDisplayInfo = {
-  name: 'Overwatch Display',
+  name: 'Fortnite Display',
   show: false,
   capturing: false,
   width: 174,
@@ -44,7 +44,7 @@ let obsDisplayInfo = {
   y: 0,
   scaleRes: '1920x1080',
 };
-let overwatchTrackingInterval;
+let gameTrackingInterval;
 const obsCaptureCounts = {
   stops: 0,
   startsNoCaptures: 0,
@@ -113,7 +113,7 @@ const createOBSDisplay = () => {
   }
   nodeObs.OBS_content_createSourcePreviewDisplay(
     mainWindow.getNativeWindowHandle(),
-    'Overwatch Capture',
+    'Fortnite Capture',
     obsDisplayInfo.name,
   );
   nodeObs.OBS_content_resizeDisplay(obsDisplayInfo.name, obsDisplayInfo.width, obsDisplayInfo.height);
@@ -162,7 +162,7 @@ const startCapture = () => {
     obsFilter = nodeObs.Filter.create(
       'pursuit_frame_capture_filter',
       'Pursuit Frame Capture Filter',
-      {},
+      { game: 'fortnite' },
     );
     obsInput.addFilter(obsFilter);
     createOBSDisplay();
@@ -218,7 +218,7 @@ const setupOBSCapture = () => {
   });
   updateOBSSettings('Video', {
     FPSNum: 1,
-    FPSDen: 2,
+    FPSDen: 1,
   });
   updateOBSSettings('Advanced', {
     ColorFormat: 'RGB',
@@ -227,15 +227,15 @@ const setupOBSCapture = () => {
 
   const settings = {
     capture_mode: 'window',
-    window: 'Overwatch:TankWindowClass:Overwatch.exe',
+    window: 'Fortnite  :UnrealWindow:FortniteClient-Win64-Shipping.exe',
     priority: 2,
     limit_framerate: true,
     force_scaling: false,
     scale_res: '0x0',
   };
-  obsInput = nodeObs.Input.create('game_capture', 'Overwatch Capture', settings);
+  obsInput = nodeObs.Input.create('game_capture', 'Fortnite Capture', settings);
   nodeObs.Global.setOutputSource(0, obsInput);
-  overwatchTrackingInterval = setInterval(() => {
+  gameTrackingInterval = setInterval(() => {
     const width = obsInput.width;
     const height = obsInput.height;
     if (width !== 0 && height !== 0) {
@@ -266,9 +266,9 @@ const destroyOBSCapture = () => {
   if (process.platform !== 'win32') {
     return;
   }
-  if (overwatchTrackingInterval) {
-    clearInterval(overwatchTrackingInterval);
-    overwatchTrackingInterval = undefined;
+  if (gameTrackingInterval) {
+    clearInterval(gameTrackingInterval);
+    gameTrackingInterval = undefined;
   }
   stopCapture();
   nodeObs.Global.setOutputSource(0, null);
@@ -308,9 +308,9 @@ const setAppTrayContextMenu = () => {
         },
       },
       {
-        label: `Open Match History${userInfo.newMatchNotifications > 0 ? ` (${userInfo.newMatchNotifications})` : ''}`,
+        label: `Open Dashboard${userInfo.newMatchNotifications > 0 ? ` (${userInfo.newMatchNotifications})` : ''}`,
         click: () => {
-          electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/profile`);
+          electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/dashboard`);
         },
       },
       {
@@ -365,9 +365,9 @@ const createMainWindow = () => {
     width: 475,
     height: 875,
     minWidth: 475,
-    minHeight: 825,
+    minHeight: 725,
     icon: nativeIcon,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#3C3C3C',
     show: !process.argv.includes('--hidden'),
   });
 
@@ -441,7 +441,7 @@ const createTrackCapturesWindow = () => {
 
 const createTrackerWindow = () => {
   const trackerWindowURL = url.format({
-    pathname: path.join(__dirname, `${buildFolder}/overwatchTrackerBW.html`),
+    pathname: path.join(__dirname, `${buildFolder}/gameTrackerBW.html`),
     protocol: 'file:',
     slashes: true,
   });
@@ -522,37 +522,12 @@ const createManualUploadNotification = () => {
   setTimeout(() => uploadNotif.close(), 5000);
 };
 
-const createBlizzardWarningNotification = () => {
-  const iconPath = process.platform === 'win32' ? `${buildFolder}/icon.ico` : `${buildFolder}/icon.png`;
-  const nativeIcon = nativeImage.createFromPath(path.join(__dirname, iconPath));
-  const newWarningNotif = new Notification({
-    title: 'Blizzard has banned 3rd party software.',
-    body: 'Open for more details.',
-    silent: true,
-    icon: nativeIcon,
-  });
-  newWarningNotif.on('click', () => {
-    newWarningNotif.close();
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) {
-        mainWindow.restore();
-      }
-      mainWindow.show();
-    }
-  });
-  newWarningNotif.show();
-  setTimeout(() => newWarningNotif.close(), 5000);
-};
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createMainWindow();
   createTrackerWindow();
-  if (process.argv.includes('--hidden')) {
-    setTimeout(createBlizzardWarningNotification, 10000);
-  }
   autoUpdater.checkForUpdates();
 });
 
@@ -623,7 +598,7 @@ ipcMain.on('set-manual-upload-notifications', (event, manualUploadNotifications)
 
 ipcMain.on('pending-uploads', (event, pendingUploadsCount, currentUpload, manualUpload) => {
   if (userInfo.userId && userInfo.manualUploadNotifications && manualUpload &&
-      pendingUploadsCount >= 5 && currentUpload === null) {
+      pendingUploadsCount >= 9 && currentUpload === null) {
     createManualUploadNotification();
   }
 });
@@ -703,7 +678,7 @@ ipcMain.on('sign-out', (event, userId) => {
   stopCapture();
 });
 
-ipcMain.on('overwatch-running', () => {
+ipcMain.on('game-running', () => {
   if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
     startCapture();
     return;
@@ -713,7 +688,7 @@ ipcMain.on('overwatch-running', () => {
   }
 });
 
-ipcMain.on('overwatch-not-running', () => {
+ipcMain.on('game-not-running', () => {
   if (userInfo.externalOBSCapture !== null && userInfo.externalOBSCapture) {
     stopCapture();
   }

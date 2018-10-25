@@ -3,9 +3,9 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import twitter from 'images/genericIcons/twitterDarkLogo.png';
-import discord from 'images/genericIcons/discordDarkLogo.png';
-import xIcon from 'images/genericIcons/darkGreyX.svg';
+import twitter from 'images/genericIcons/twitterLogo.png';
+import discord from 'images/genericIcons/discordLogo.png';
+import xIcon from 'images/genericIcons/lightGreyX.svg';
 import './AboutPage.m.css';
 
 const electron = window.require('electron');
@@ -56,7 +56,7 @@ const AboutPage = () => (
           styleName="underlinedLink"
           onClick={(e) => {
             e.preventDefault();
-            electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/faq`);
+            electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/fortnite/faq`);
           }}
         > FAQ </a></h5>
         <h5 styleName="linkSpacing"><a
@@ -78,14 +78,14 @@ const AboutPage = () => (
         styleName="socialIconWrapper"
         onClick={(e) => {
           e.preventDefault();
-          electron.shell.openExternal('https://twitter.com/pursuitgg');
+          electron.shell.openExternal('https://twitter.com/PursuitFortnite');
         }}
       ><img styleName="socialIcon" src={twitter} alt="twitter" /></a>
       <a
         styleName="socialIconWrapper"
         onClick={(e) => {
           e.preventDefault();
-          electron.shell.openExternal('https://discord.gg/wqymsEZ');
+          electron.shell.openExternal('https://discord.gg/8gSYCuV');
         }}
       ><img styleName="socialIcon" src={discord} alt="discord" /></a>
     </div>

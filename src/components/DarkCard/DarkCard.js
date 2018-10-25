@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './WhiteCard.m.css';
+import './DarkCard.m.css';
 
-class WhiteCard extends Component {
+class DarkCard extends Component {
   render() {
     return (
       <div styleName={`wrapper ${this.props.slim ? 'slimPadding' : 'fullPadding'}`}>
@@ -13,7 +13,7 @@ class WhiteCard extends Component {
   }
 }
 
-WhiteCard.propTypes = {
+DarkCard.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.object,
     PropTypes.array,
@@ -21,8 +21,8 @@ WhiteCard.propTypes = {
   slim: PropTypes.bool.isRequired,
 };
 
-WhiteCard.defaultProps = {
+DarkCard.defaultProps = {
   slim: false,
 };
 
-export default WhiteCard;
+export default DarkCard;

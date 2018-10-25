@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router';
 
 import SignupForm from 'components/SignupForm/SignupForm';
-import WhiteCard from 'components/WhiteCard/WhiteCard';
+import DarkCard from 'components/DarkCard/DarkCard';
 import './SignupPage.m.css';
 
 const electron = window.require('electron');
@@ -11,7 +11,7 @@ const electron = window.require('electron');
 const SignupPage = () => (
   <div styleName="wrapper">
     <h1 styleName="title"> Sign Up </h1>
-    <WhiteCard>
+    <DarkCard>
       <SignupForm />
       <h5><Link
         to="/login"
@@ -24,7 +24,7 @@ const SignupPage = () => (
           electron.shell.openExternal(`${process.env.REACT_APP_TAVERN_ROOT_URL}/users/forgot_password`);
         }}
       > Forgot your password? </a></h5>
-    </WhiteCard>
+    </DarkCard>
   </div>
 );
 
