@@ -4,7 +4,7 @@ import Tooltip from 'rc-tooltip';
 import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
-import { MP_AUTO_UPLOAD_MODE_TOGGLE } from 'actions/mixpanelTypes';
+import { MP_USER_SETTING_CHANGE } from 'actions/mixpanelTypes';
 import { startCaptureUpload } from 'actions/captureStatus';
 import { setManualCaptureUpload } from 'actions/settings';
 import './ManualCaptureUploadToggle.m.css';
@@ -22,11 +22,13 @@ class ManualCaptureUploadToggle extends Component {
         this.props.captureStatus.uploadQueue.length !== 0) {
       this.props.startCaptureUpload();
     }
-    mixpanel.track(MP_AUTO_UPLOAD_MODE_TOGGLE, {
-      state: !this.props.manualCaptureUpload,
+    mixpanel.track(MP_USER_SETTING_CHANGE, {
+      setting: 'auto_upload',
+      before: !this.props.manualCaptureUpload,
+      after: this.props.manualCaptureUpload,
     });
     mixpanel.people.set({
-      auto_upload: !this.props.manualCaptureUpload,
+      auto_upload: this.props.manualCaptureUpload,
     });
   }
 

@@ -6,14 +6,7 @@ import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
 import {
-  MP_OPEN_ON_STARTUP_TOGGLE,
-  MP_MINIMIZE_ON_STARTUP_TOGGLE,
-  MP_MINIMIZE_TO_TRAY_TOGGLE,
-  MP_UPLOAD_BANDWIDTH_SELECT,
-  MP_OBS_MODE_TOGGLE,
-  MP_MATCH_PROCESSED_SOUND_TOGGLE,
-  MP_NOTIFICATIONS_BADGE_TOGGLE,
-  MP_MANUAL_UPLOAD_NOTIFICATIONS_TOGGLE,
+  MP_USER_SETTING_CHANGE,
 } from 'actions/mixpanelTypes';
 import {
   setLaunchOnStartup,
@@ -100,7 +93,7 @@ class SettingsPage extends Component {
                   onChange={() => {
                     ipcRenderer.send('set-startup-settings', !launchOnStartup, minimizeOnStartup);
                     this.props.setLaunchOnStartup(!launchOnStartup);
-                    mixpanel.track(MP_OPEN_ON_STARTUP_TOGGLE, { state: !launchOnStartup });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'open_on_startup', before: launchOnStartup, after: !launchOnStartup });
                     mixpanel.people.set({ open_on_startup: !launchOnStartup });
                   }}
                 />
@@ -118,7 +111,7 @@ class SettingsPage extends Component {
                   onChange={() => {
                     ipcRenderer.send('set-startup-settings', launchOnStartup, !minimizeOnStartup);
                     this.props.setMinimizeOnStartup(!minimizeOnStartup);
-                    mixpanel.track(MP_MINIMIZE_ON_STARTUP_TOGGLE, { state: !minimizeOnStartup });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'minimize_on_startup', before: minimizeOnStartup, after: !minimizeOnStartup });
                     mixpanel.people.set({ minimize_on_startup: !minimizeOnStartup });
                   }}
                 />
@@ -140,7 +133,7 @@ class SettingsPage extends Component {
                   onChange={() => {
                     ipcRenderer.send('set-minimize-to-tray', !minimizeToTray);
                     this.props.setMinimizeToTray(!minimizeToTray);
-                    mixpanel.track(MP_MINIMIZE_TO_TRAY_TOGGLE, { state: !minimizeToTray });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'minimize_to_tray', before: minimizeToTray, after: !minimizeToTray });
                     mixpanel.people.set({ minimize_to_tray: !minimizeToTray });
                   }}
                 />
@@ -159,7 +152,7 @@ class SettingsPage extends Component {
                   options={availableUploadBandwidths}
                   selectOption={(bandwidth) => {
                     this.props.setUploadBandwidth(bandwidth);
-                    mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: bandwidth });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'upload_bandwidth', before: uploadBandwidth, after: bandwidth });
                     mixpanel.people.set({ upload_bandwidth: bandwidth });
                   }}
                   selectedOption={availableUploadBandwidths.filter(bandwidth => bandwidth.val === uploadBandwidth)[0]}
@@ -184,7 +177,7 @@ class SettingsPage extends Component {
                   checked={pendingExternalOBSCapture}
                   onChange={() => {
                     this.props.setExternalOBSCapture(!pendingExternalOBSCapture);
-                    mixpanel.track(MP_OBS_MODE_TOGGLE, { state: !pendingExternalOBSCapture });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'obs_mode', before: pendingExternalOBSCapture, after: !pendingExternalOBSCapture });
                     mixpanel.people.set({ obs_mode: !pendingExternalOBSCapture });
                   }}
                 />
@@ -216,7 +209,7 @@ class SettingsPage extends Component {
                   checked={matchProcessedSound}
                   onChange={() => {
                     this.props.setMatchProcessedSound(!matchProcessedSound);
-                    mixpanel.track(MP_MATCH_PROCESSED_SOUND_TOGGLE, { state: !matchProcessedSound });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'match_processed_sound', before: matchProcessedSound, after: !matchProcessedSound });
                     mixpanel.people.set({ match_processed_sound: !matchProcessedSound });
                   }}
                 />
@@ -236,7 +229,7 @@ class SettingsPage extends Component {
                   onChange={() => {
                     ipcRenderer.send('set-notifications-badge', !notificationsBadge);
                     this.props.setNotificationsBadge(!notificationsBadge);
-                    mixpanel.track(MP_NOTIFICATIONS_BADGE_TOGGLE, { state: !notificationsBadge });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'notifications_badge', before: notificationsBadge, after: !notificationsBadge });
                     mixpanel.people.set({ notifications_badge: !notificationsBadge });
                   }}
                 />
@@ -256,7 +249,7 @@ class SettingsPage extends Component {
                   onChange={() => {
                     ipcRenderer.send('set-manual-upload-notifications', !manualUploadNotifications);
                     this.props.setManualUploadNotifications(!manualUploadNotifications);
-                    mixpanel.track(MP_MANUAL_UPLOAD_NOTIFICATIONS_TOGGLE, { state: !manualUploadNotifications });
+                    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'manual_upload_notifications', before: manualUploadNotifications, after: !manualUploadNotifications });
                     mixpanel.people.set({ manual_upload_notifications: !manualUploadNotifications });
                   }}
                 />

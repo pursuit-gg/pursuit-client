@@ -8,7 +8,7 @@ import mixpanel from 'mixpanel-browser';
 
 import {
   MP_ONBOARDING_NEXT,
-  MP_UPLOAD_BANDWIDTH_SELECT,
+  MP_USER_SETTING_CHANGE,
 } from 'actions/mixpanelTypes';
 import { setOnboardingComplete, setUploadBandwidth, setComputerType } from 'actions/settings';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
@@ -88,7 +88,7 @@ class OnboardingPage extends Component {
             <input
               type="radio"
               value="1.5"
-              checked={this.state.selectedUpload === "1.5"}
+              checked={this.state.selectedUpload === '1.5'}
               onChange={this.selectUpload}
             />
             <h5 className="inline"> 1.5 Mbps </h5>
@@ -97,7 +97,7 @@ class OnboardingPage extends Component {
             <input
               type="radio"
               value="2"
-              checked={this.state.selectedUpload === "2"}
+              checked={this.state.selectedUpload === '2'}
               onChange={this.selectUpload}
             />
             <h5 className="inline"> 2 Mbps </h5>
@@ -106,7 +106,7 @@ class OnboardingPage extends Component {
             <input
               type="radio"
               value="3"
-              checked={this.state.selectedUpload === "3"}
+              checked={this.state.selectedUpload === '3'}
               onChange={this.selectUpload}
             />
             <h5 className="inline"> 3 Mbps (Recommended)</h5>
@@ -115,7 +115,7 @@ class OnboardingPage extends Component {
             <input
               type="radio"
               value="5"
-              checked={this.state.selectedUpload === "5"}
+              checked={this.state.selectedUpload === '5'}
               onChange={this.selectUpload}
             />
             <h5 className="inline"> 5 Mbps</h5>
@@ -256,7 +256,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(setComputerType(computerType));
   },
   goToHome: (uploadBandwidth) => {
-    mixpanel.track(MP_UPLOAD_BANDWIDTH_SELECT, { upload_bandwidth: uploadBandwidth });
+    mixpanel.track(MP_USER_SETTING_CHANGE, { setting: 'upload_bandwidth', before: 0, after: uploadBandwidth });
     mixpanel.people.set({ upload_bandwidth: uploadBandwidth });
     dispatch(setUploadBandwidth(uploadBandwidth));
     dispatch(setOnboardingComplete(true));

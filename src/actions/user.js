@@ -11,6 +11,7 @@ import {
 } from 'actions/types';
 import {
   MP_USER_SIGNUP,
+  MP_USER_COMPLETED_SIGNUP,
   MP_USER_LOGIN,
 } from 'actions/mixpanelTypes';
 import {
@@ -50,7 +51,7 @@ function authSuccess(json, signUp) {
     meta: {
       mixpanel: {
         event: signUp ? MP_USER_SIGNUP : MP_USER_LOGIN,
-        props: {},
+        props: { location: 'client' },
       },
     },
   };
@@ -74,7 +75,7 @@ export function authChange() {
   };
 }
 
-function updateUserSuccess(json) {
+function updateUserSuccess(json, signupCompleted) {
   mixpanel.identify(json.data.id);
   mixpanel.people.set({
     $username: json.data.username,
@@ -83,6 +84,11 @@ function updateUserSuccess(json) {
   mixpanel.register({
     username: json.data.username,
   });
+  if (signupCompleted) {
+    mixpanel.track(MP_USER_COMPLETED_SIGNUP, {
+      location: 'client',
+    });
+  }
   return {
     type: UPDATE_USER_SUCCESS,
     user: json.data,
@@ -96,7 +102,7 @@ export const updateUser = (params, continueOnboarding = false) => (
     dispatch(removeError('updateUser'));
     dispatch(clearUserMessage());
     updateUserPost(getState().user, params).then((data) => {
-      dispatch(updateUserSuccess(data));
+      dispatch(updateUserSuccess(data, continueOnboarding));
       dispatch(removeRequest('updateUser'));
       if (continueOnboarding) {
         dispatch(push('/onboarding'));

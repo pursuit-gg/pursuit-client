@@ -34,6 +34,17 @@ class HomePage extends Component {
 
   componentDidMount() {
     mixpanel.track(MP_CLIENT_LOAD, {});
+    mixpanel.people.set({
+      open_on_startup: this.props.settings.launchOnStartup,
+      minimize_on_startup: this.props.settings.minimizeOnStartup,
+      minimize_to_tray: this.props.settings.minimizeToTray,
+      upload_bandwidth: this.props.settings.uploadBandwidth,
+      obs_mode: this.props.settings.pendingExternalOBSCapture,
+      match_processed_sound: this.props.settings.matchProcessedSound,
+      notifications_badge: this.props.settings.notificationsBadge,
+      manual_upload_notifications: this.props.settings.manualUploadNotifications,
+      auto_upload: this.props.settings.manualCaptureUpload,
+    });
   }
 
   renderUploadStatus() {
@@ -279,6 +290,7 @@ class HomePage extends Component {
 }
 
 HomePage.propTypes = {
+  settings: PropTypes.object.isRequired,
   showCapturePreview: PropTypes.bool.isRequired,
   manualCaptureUpload: PropTypes.bool.isRequired,
   externalOBSCapture: PropTypes.bool.isRequired,
@@ -295,6 +307,7 @@ HomePage.defaultProps = {
 };
 
 const mapStateToProps = ({ settings, captureStatus, notifications }) => ({
+  settings,
   showCapturePreview: settings.showCapturePreview,
   manualCaptureUpload: settings.manualCaptureUpload,
   externalOBSCapture: settings.externalOBSCapture,

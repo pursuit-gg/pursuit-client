@@ -3,12 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { updateUser, clearUserMessage } from 'actions/user';
+
 import DarkCard from 'components/DarkCard/DarkCard';
 import DarkInput from 'components/DarkInput/DarkInput';
 import DefaultButton from 'components/DefaultButton/DefaultButton';
 import StandardError from 'components/StandardError/StandardError';
-import './SetUsernamePage.m.css';
+
 import logoLarge from 'images/logo/logoLarge.png';
+
+import './SetUsernamePage.m.css';
 
 class SetUsernamePage extends Component {
   constructor(props) {
@@ -27,7 +30,7 @@ class SetUsernamePage extends Component {
   }
 
   handleSubmit(event) {
-    this.props.updateUser(this.state, this.props.redirectToOnboarding);
+    this.props.updateUser(this.state, true);
     event.preventDefault();
   }
 
@@ -67,18 +70,16 @@ SetUsernamePage.propTypes = {
   clearUserMessage: PropTypes.func.isRequired,
   error: PropTypes.object,
   isFetching: PropTypes.bool.isRequired,
-  redirectToOnboarding: PropTypes.bool.isRequired,
 };
 
 SetUsernamePage.defaultProps = {
   error: null,
 };
 
-const mapStateToProps = ({ settings, errors, requests }) => {
-  const redirectToOnboarding = !settings.onboardingComplete;
+const mapStateToProps = ({ errors, requests }) => {
   const error = errors.updateUser;
   const isFetching = (Boolean(requests.updateUser) && Boolean(requests.updateUser.length));
-  return { redirectToOnboarding, error, isFetching };
+  return { error, isFetching };
 };
 
 export default connect(mapStateToProps, { updateUser, clearUserMessage })(SetUsernamePage);
