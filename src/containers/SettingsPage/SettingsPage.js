@@ -27,16 +27,14 @@ const electron = window.require('electron');
 const ipcRenderer = electron.ipcRenderer;
 
 const availableUploadBandwidths = [
+  { title: '512 Kbps', val: 0.5 },
   { title: '768 Kbps', val: 0.75 },
   { title: '1 Mbps', val: 1 },
   { title: '1.5 Mbps', val: 1.5 },
   { title: '2 Mbps', val: 2 },
   { title: '3 Mbps', val: 3 },
-  { title: '4 Mbps', val: 4 },
   { title: '5 Mbps', val: 5 },
   { title: '10 Mbps', val: 10 },
-  { title: '20 Mbps', val: 20 },
-  { title: '50 Mbps', val: 50 },
   { title: 'unlimited', val: 0 },
 ];
 
@@ -160,7 +158,7 @@ class SettingsPage extends Component {
               </div>
             </div>
             <p styleName="settingSubtext">
-              Pursuit operates best with at least 3 Mbps. <br />
+              Pursuit operates best with at least 1.5 Mbps. <br />
               If you experience latency spikes in game try a lower value. <br />
             </p>
           </div>

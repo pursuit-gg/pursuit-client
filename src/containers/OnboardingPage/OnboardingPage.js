@@ -23,7 +23,7 @@ const ipcRenderer = window.require('electron').ipcRenderer;
 class OnboardingPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { step: 1, selectedUpload: '3' };
+    this.state = { step: 1, selectedUpload: '1.5' };
     this.nextStep = this.nextStep.bind(this);
     this.goToHome = this.goToHome.bind(this);
     this.selectUpload = this.selectUpload.bind(this);
@@ -87,11 +87,20 @@ class OnboardingPage extends Component {
           <div styleName="radio">
             <input
               type="radio"
+              value="1"
+              checked={this.state.selectedUpload === '1'}
+              onChange={this.selectUpload}
+            />
+            <h5 className="inline"> 1 Mbps </h5>
+          </div>
+          <div styleName="radio">
+            <input
+              type="radio"
               value="1.5"
               checked={this.state.selectedUpload === '1.5'}
               onChange={this.selectUpload}
             />
-            <h5 className="inline"> 1.5 Mbps </h5>
+            <h5 className="inline"> 1.5 Mbps (Recommended) </h5>
           </div>
           <div styleName="radio">
             <input
@@ -105,15 +114,6 @@ class OnboardingPage extends Component {
           <div styleName="radio">
             <input
               type="radio"
-              value="3"
-              checked={this.state.selectedUpload === '3'}
-              onChange={this.selectUpload}
-            />
-            <h5 className="inline"> 3 Mbps (Recommended)</h5>
-          </div>
-          <div styleName="radio">
-            <input
-              type="radio"
               value="5"
               checked={this.state.selectedUpload === '5'}
               onChange={this.selectUpload}
@@ -122,7 +122,7 @@ class OnboardingPage extends Component {
           </div>
         </div>
         <h5 className="italic textLeft">
-          Pursuit operates best with at least 3 Mbps. <br /> If you experience latency spikes in game try a lower value in your settings.
+          Pursuit operates best with at least 1.5 Mbps. <br /> If you experience latency spikes in game try a lower value in your settings.
         </h5>
       </div>
     );
