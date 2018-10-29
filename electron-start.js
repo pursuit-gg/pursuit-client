@@ -187,7 +187,7 @@ const stopCapture = () => {
   }
   if (mainWindow) {
     mainWindow.webContents.send('stop-capture');
-    if (obsCaptureCounts.runningNotTracking > 1) {
+    if (obsCaptureCounts.runningNotTracking > 2) {
       mainWindow.webContents.send('capture-error', 'not_tracking');
     }
   }
