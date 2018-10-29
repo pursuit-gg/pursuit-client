@@ -1,15 +1,15 @@
 {
-  "name": "Pursuit",
-  "version": "0.6.2",
+  "name": "PursuitGG",
+  "version": "0.7.0",
   "author": {
     "name": "Revlo Inc."
   },
-  "description": "Pursuit",
+  "description": "PursuitGG",
   "license": "GPL-3.0",
   "main": "electron-start.js",
   "homepage": "./",
   "build": {
-    "appId": "com.revlo.pursuit",
+    "appId": "com.revlo.pursuitgg",
     "mac": {
       "category": "public.app-category.games"
     },
@@ -37,7 +37,7 @@
       {
         "provider": "s3",
         "bucket": "pursuitgg",
-        "path": "application"
+        "path": "client"
       }
     ]
   },

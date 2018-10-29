@@ -74,8 +74,8 @@ Sentry.init({
   },
 });
 
-app.setAppUserModelId('com.revlo.pursuit');
-app.setAsDefaultProtocolClient('pursuit://');
+app.setAppUserModelId('com.revlo.pursuitgg');
+app.setAsDefaultProtocolClient('pursuitgg://');
 app.disableHardwareAcceleration();
 const isSecondInstance = app.makeSingleInstance(() => {
   if (mainWindow) {
