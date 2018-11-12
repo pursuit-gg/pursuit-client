@@ -5,4 +5,4 @@ export const MP_USER_SETTING_CHANGE = 'User - Client Setting Change';
 
 export const MP_ONBOARDING_NEXT = 'Onboarding - Next';
 
-export const MP_CLIENT_LOAD = 'Client Load';
+export const MP_FORTNITE_CLIENT_LOAD = 'Fortnite Client Load';

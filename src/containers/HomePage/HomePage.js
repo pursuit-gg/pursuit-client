@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 
-import { MP_CLIENT_LOAD } from 'actions/mixpanelTypes';
+import { MP_FORTNITE_CLIENT_LOAD } from 'actions/mixpanelTypes';
 import { setShowCapturePreview, closeTroubleshootingTip } from 'actions/settings';
 import { numNewMatches } from 'helpers/notifications';
 import ManualCaptureUploadToggle from 'components/ManualCaptureUploadToggle/ManualCaptureUploadToggle';
@@ -33,7 +33,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    mixpanel.track(MP_CLIENT_LOAD, {});
+    mixpanel.track(MP_FORTNITE_CLIENT_LOAD, {});
     mixpanel.people.set({
       open_on_startup: this.props.settings.launchOnStartup,
       minimize_on_startup: this.props.settings.minimizeOnStartup,
